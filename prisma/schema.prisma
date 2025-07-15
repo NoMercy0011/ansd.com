@@ -1,0 +1,272 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model annee_scolaire {
+  id_annee_scolaire                                         Int            @id
+  annee_scolaire                                            String         @db.VarChar(255)
+  annee_debut                                               DateTime?      @db.DateTime(0)
+  annee_fin                                                 DateTime?      @db.DateTime(0)
+  etablissement                                             Int
+  status                                                    String?        @db.VarChar(100)
+  etablissement_annee_scolaire_etablissementToetablissement etablissement  @relation("annee_scolaire_etablissementToetablissement", fields: [etablissement], references: [id_etablissement], onUpdate: Restrict, map: "annee_etablissement")
+  classe_classe_annee_scolaireToannee_scolaire              classe[]       @relation("classe_annee_scolaireToannee_scolaire")
+  enseignant_enseignant_annee_scolaireToannee_scolaire      enseignant[]   @relation("enseignant_annee_scolaireToannee_scolaire")
+  enseignement_enseignement_annee_scolaireToannee_scolaire  enseignement[] @relation("enseignement_annee_scolaireToannee_scolaire")
+  inscription_inscription_annee_scolaireToannee_scolaire    inscription[]  @relation("inscription_annee_scolaireToannee_scolaire")
+
+  @@index([etablissement], map: "annee_etablissement")
+}
+
+model bulletin {
+  id_bulletin       Int      @id @default(autoincrement())
+  id_etudiant       Int
+  total_coefficient Int
+  total_note        Float
+  moyenne           Float
+  observation       String   @db.VarChar(80)
+  etudiant          etudiant @relation(fields: [id_etudiant], references: [id_etudiant], onUpdate: Restrict, map: "bulletin_etudiant")
+
+  @@index([id_etudiant], map: "bulletin_etudiant")
+}
+
+model classe {
+  id_classe                                            Int             @id @default(autoincrement())
+  classe                                               String?         @db.VarChar(100)
+  niveau                                               Int?
+  responsable                                          Int?
+  etablissement                                        Int?
+  chef_etablissement                                   Int?
+  date_creation                                        DateTime?       @default(now()) @db.Timestamp(0)
+  modificateur                                         Int?
+  dernier_modification                                 DateTime?       @db.Timestamp(0)
+  annee_scolaire                                       Int?
+  annee_scolaire_classe_annee_scolaireToannee_scolaire annee_scolaire? @relation("classe_annee_scolaireToannee_scolaire", fields: [annee_scolaire], references: [id_annee_scolaire], onDelete: Restrict, onUpdate: Restrict, map: "classe_annee")
+  user_classe_chef_etablissementTouser                 user?           @relation("classe_chef_etablissementTouser", fields: [chef_etablissement], references: [id_user], onDelete: Restrict, onUpdate: Restrict, map: "classe_chefEtablissement")
+  etablissement_classe_etablissementToetablissement    etablissement?  @relation("classe_etablissementToetablissement", fields: [etablissement], references: [id_etablissement], onDelete: Restrict, onUpdate: Restrict, map: "classe_etablissement")
+  user_classe_modificateurTouser                       user?           @relation("classe_modificateurTouser", fields: [modificateur], references: [id_user], onDelete: Restrict, onUpdate: Restrict, map: "classe_modificateur")
+  niveau_classe_niveauToniveau                         niveau?         @relation("classe_niveauToniveau", fields: [niveau], references: [id_niveau], onDelete: Restrict, onUpdate: Restrict, map: "classe_niveau")
+  enseignant                                           enseignant?     @relation(fields: [responsable], references: [id_enseignant], onDelete: Restrict, onUpdate: Restrict, map: "classe_responsable")
+  enseignement_enseignement_classeToclasse             enseignement[]  @relation("enseignement_classeToclasse")
+  etudiant                                             etudiant[]
+  inscription_inscription_classeToclasse               inscription[]   @relation("inscription_classeToclasse")
+
+  @@index([annee_scolaire], map: "classe_annee")
+  @@index([chef_etablissement], map: "classe_chefEtablissement")
+  @@index([etablissement], map: "classe_etablissement")
+  @@index([modificateur], map: "classe_modificateur")
+  @@index([niveau], map: "classe_niveau")
+  @@index([responsable], map: "classe_responsable")
+}
+
+model coefficient {
+  id_coefficient Int @id @default(autoincrement())
+  coefficient    Int
+}
+
+model enseignant {
+  id_enseignant                                            Int             @id @default(autoincrement())
+  enseignant                                               Int?
+  id_etablissement                                         Int?
+  chef_etablissement                                       Int?
+  date_creation                                            DateTime?       @default(now()) @db.Timestamp(0)
+  date_modification                                        DateTime?       @db.Timestamp(0)
+  modificateur                                             Int?
+  date_suppression                                         DateTime?       @db.Timestamp(0)
+  suppresseur                                              Int?
+  status                                                   String?         @db.VarChar(100)
+  annee_scolaire                                           Int?
+  classe                                                   classe[]
+  annee_scolaire_enseignant_annee_scolaireToannee_scolaire annee_scolaire? @relation("enseignant_annee_scolaireToannee_scolaire", fields: [annee_scolaire], references: [id_annee_scolaire], onDelete: Restrict, onUpdate: Restrict, map: "enseignant_annee")
+  user_enseignant_chef_etablissementTouser                 user?           @relation("enseignant_chef_etablissementTouser", fields: [chef_etablissement], references: [id_user], onDelete: Restrict, onUpdate: Restrict, map: "enseignant_chef")
+  etablissement                                            etablissement?  @relation(fields: [id_etablissement], references: [id_etablissement], onDelete: Restrict, onUpdate: Restrict, map: "enseignant_etablissement")
+  user_enseignant_enseignantTouser                         user?           @relation("enseignant_enseignantTouser", fields: [enseignant], references: [id_user], onDelete: Restrict, onUpdate: Restrict, map: "enseignant_user")
+  enseignement_enseignement_enseignantToenseignant         enseignement[]  @relation("enseignement_enseignantToenseignant")
+
+  @@index([annee_scolaire], map: "enseignant_annee")
+  @@index([chef_etablissement], map: "enseignant_chef")
+  @@index([id_etablissement], map: "enseignant_etablissement")
+  @@index([enseignant], map: "enseignant_user")
+}
+
+model enseignement {
+  id_enseignement                                            Int             @id @default(autoincrement())
+  classe                                                     Int?
+  matiere                                                    Int?
+  enseignant                                                 Int?
+  coefficient                                                Int?
+  horaire                                                    String          @db.LongText
+  annee_scolaire                                             Int?
+  chef_etablissement                                         Int?
+  date_creation                                              DateTime?       @default(now()) @db.Timestamp(0)
+  modificateur                                               Int?
+  dernier_modification                                       DateTime?       @db.Timestamp(0)
+  date_suppression                                           DateTime?       @db.Timestamp(0)
+  suppresseur                                                Int?
+  status                                                     String?         @db.VarChar(100)
+  annee_scolaire_enseignement_annee_scolaireToannee_scolaire annee_scolaire? @relation("enseignement_annee_scolaireToannee_scolaire", fields: [annee_scolaire], references: [id_annee_scolaire], onDelete: Restrict, onUpdate: Restrict, map: "enseignement_anneeScolaire")
+  user_enseignement_chef_etablissementTouser                 user?           @relation("enseignement_chef_etablissementTouser", fields: [chef_etablissement], references: [id_user], onDelete: Restrict, onUpdate: Restrict, map: "enseignement_chefEtablissement")
+  classe_enseignement_classeToclasse                         classe?         @relation("enseignement_classeToclasse", fields: [classe], references: [id_classe], onDelete: Restrict, onUpdate: Restrict, map: "enseignement_classe")
+  enseignant_enseignement_enseignantToenseignant             enseignant?     @relation("enseignement_enseignantToenseignant", fields: [enseignant], references: [id_enseignant], onDelete: Restrict, onUpdate: Restrict, map: "enseignement_enseignant")
+  matiere_enseignement_matiereTomatiere                      matiere?        @relation("enseignement_matiereTomatiere", fields: [matiere], references: [id_matiere], onDelete: Restrict, onUpdate: Restrict, map: "enseignement_matiere")
+  user_enseignement_modificateurTouser                       user?           @relation("enseignement_modificateurTouser", fields: [modificateur], references: [id_user], onDelete: Restrict, onUpdate: Restrict, map: "enseignement_modificateur")
+  user_enseignement_suppresseurTouser                        user?           @relation("enseignement_suppresseurTouser", fields: [suppresseur], references: [id_user], onDelete: Restrict, onUpdate: Restrict, map: "enseignement_suppresseur")
+
+  @@index([annee_scolaire], map: "enseignement_anneeScolaire")
+  @@index([chef_etablissement], map: "enseignement_chefEtablissement")
+  @@index([classe], map: "enseignement_classe")
+  @@index([enseignant], map: "enseignement_enseignant")
+  @@index([matiere], map: "enseignement_matiere")
+  @@index([modificateur], map: "enseignement_modificateur")
+  @@index([suppresseur], map: "enseignement_suppresseur")
+}
+
+model etablissement {
+  id_etablissement                                           Int              @id @default(autoincrement())
+  etablissement                                              String?          @db.VarChar(80)
+  dren                                                       String?          @db.VarChar(80)
+  cisco                                                      String?          @db.VarChar(80)
+  chef_etablissement                                         Int              @unique(map: "chef_etablissement")
+  contact                                                    String?          @db.Text
+  code                                                       String?          @db.Text
+  email                                                      String?          @db.VarChar(80)
+  date_creation                                              DateTime?        @default(now()) @db.Timestamp(0)
+  modificateur                                               Int?
+  dernier_modification                                       DateTime?        @db.Timestamp(0)
+  annee_scolaire_annee_scolaire_etablissementToetablissement annee_scolaire[] @relation("annee_scolaire_etablissementToetablissement")
+  classe_classe_etablissementToetablissement                 classe[]         @relation("classe_etablissementToetablissement")
+  enseignant                                                 enseignant[]
+  user_etablissement_chef_etablissementTouser                user             @relation("etablissement_chef_etablissementTouser", fields: [chef_etablissement], references: [id_user], onUpdate: Restrict, map: "etablissement_chef")
+  user_etablissement_modificateurTouser                      user?            @relation("etablissement_modificateurTouser", fields: [modificateur], references: [id_user], onDelete: Restrict, onUpdate: Restrict, map: "etablissement_modification")
+  etudiant                                                   etudiant[]
+  inscription_inscription_etablissementToetablissement       inscription[]    @relation("inscription_etablissementToetablissement")
+
+  @@index([modificateur], map: "etablissement_modification")
+}
+
+model etudiant {
+  id_etudiant      Int           @id @default(autoincrement())
+  nom              String?       @db.VarChar(80)
+  prenom           String?       @db.VarChar(150)
+  id_niveau        Int
+  id_classe        Int
+  id_etablissement Int
+  bulletin         bulletin[]
+  classe           classe        @relation(fields: [id_classe], references: [id_classe], onUpdate: Restrict, map: "etudiant_classe")
+  etablissement    etablissement @relation(fields: [id_etablissement], references: [id_etablissement], onUpdate: Restrict, map: "etudiant_etablissement")
+  niveau           niveau        @relation(fields: [id_niveau], references: [id_niveau], onUpdate: Restrict, map: "etudiant_niveau")
+  note             note[]
+
+  @@index([id_classe], map: "etudiant_classe")
+  @@index([id_etablissement], map: "etudiant_etablissement")
+  @@index([id_niveau], map: "etudiant_niveau")
+}
+
+model matiere {
+  id_matiere                                 Int            @id @default(autoincrement())
+  matiere                                    String         @db.VarChar(80)
+  enseignement_enseignement_matiereTomatiere enseignement[] @relation("enseignement_matiereTomatiere")
+  note                                       note[]
+}
+
+model niveau {
+  id_niveau                    Int        @id @default(autoincrement())
+  niveau                       String     @db.VarChar(50)
+  classe_classe_niveauToniveau classe[]   @relation("classe_niveauToniveau")
+  etudiant                     etudiant[]
+}
+
+model note {
+  id_note           Int       @id @default(autoincrement())
+  id_user           Int
+  id_etudiant       Int
+  id_matiere        Int
+  note              Float     @db.Float
+  ds                Boolean   @default(false)
+  examen            Boolean   @default(false)
+  date_creation     DateTime  @default(now()) @db.DateTime(0)
+  date_modification DateTime? @db.DateTime(0)
+  etudiant          etudiant  @relation(fields: [id_etudiant], references: [id_etudiant], onUpdate: Restrict, map: "note_etudiant")
+  matiere           matiere   @relation(fields: [id_matiere], references: [id_matiere], onUpdate: Restrict, map: "note_matiere")
+  user              user      @relation(fields: [id_user], references: [id_user], onUpdate: Restrict, map: "note_user")
+
+  @@index([id_etudiant], map: "note_etudiant")
+  @@index([id_matiere], map: "note_matiere")
+  @@index([id_user], map: "note_user")
+}
+
+model user {
+  id_user                                              Int             @id @default(autoincrement())
+  email                                                String          @unique(map: "email") @db.VarChar(255)
+  password                                             String          @db.VarChar(255)
+  nom                                                  String          @db.VarChar(80)
+  prenom                                               String          @db.VarChar(80)
+  sexe                                                 String?         @default("M") @db.VarChar(1)
+  date_naissance                                       DateTime?       @db.DateTime(0)
+  lieu_naissance                                       String?         @db.VarChar(50)
+  telephone                                            String?         @db.VarChar(15)
+  photo                                                String?         @db.VarChar(50)
+  role                                                 String          @db.VarChar(80)
+  date_creation                                        DateTime?       @default(now()) @db.Timestamp(0)
+  classe_classe_chef_etablissementTouser               classe[]        @relation("classe_chef_etablissementTouser")
+  classe_classe_modificateurTouser                     classe[]        @relation("classe_modificateurTouser")
+  enseignant_enseignant_chef_etablissementTouser       enseignant[]    @relation("enseignant_chef_etablissementTouser")
+  enseignant_enseignant_enseignantTouser               enseignant[]    @relation("enseignant_enseignantTouser")
+  enseignement_enseignement_chef_etablissementTouser   enseignement[]  @relation("enseignement_chef_etablissementTouser")
+  enseignement_enseignement_modificateurTouser         enseignement[]  @relation("enseignement_modificateurTouser")
+  enseignement_enseignement_suppresseurTouser          enseignement[]  @relation("enseignement_suppresseurTouser")
+  etablissement_etablissement_chef_etablissementTouser etablissement?  @relation("etablissement_chef_etablissementTouser")
+  etablissement_etablissement_modificateurTouser       etablissement[] @relation("etablissement_modificateurTouser")
+  inscription                                          inscription[]
+  note                                                 note[]
+}
+
+model etudiants {
+  id_etudiant          Int           @id
+  nom                  String?       @db.VarChar(100)
+  prenom               String?       @db.VarChar(255)
+  date_naissance       DateTime      @db.Date
+  lieu_naissance       String?       @db.VarChar(100)
+  sexe                 String?       @db.VarChar(100)
+  domicile             String?       @db.VarChar(100)
+  nom_pere             String?       @db.VarChar(100)
+  nom_mere             String?       @db.VarChar(100)
+  telephone_parent     String?       @db.VarChar(20)
+  nom_tuteur           String?       @db.VarChar(100)
+  telephone_tuteur     String?       @db.VarChar(20)
+  date_creation        DateTime?     @default(now()) @db.DateTime(0)
+  dernier_modification DateTime?     @db.DateTime(0)
+  inscription          inscription[]
+}
+
+model inscription {
+  id_inscription                                            Int            @id
+  etudiant                                                  Int
+  matricule                                                 Int
+  etablissement                                             Int
+  classe                                                    Int
+  date_creation                                             Int
+  createur                                                  Int
+  date_entree                                               Int
+  date_sortie                                               Int
+  annee_scolaire                                            Int
+  ecole_precedente                                          Int
+  status                                                    Int
+  etat                                                      Int
+  annee_scolaire_inscription_annee_scolaireToannee_scolaire annee_scolaire @relation("inscription_annee_scolaireToannee_scolaire", fields: [annee_scolaire], references: [id_annee_scolaire], onUpdate: Restrict, map: "inscription_annee")
+  classe_inscription_classeToclasse                         classe         @relation("inscription_classeToclasse", fields: [classe], references: [id_classe], onUpdate: Restrict, map: "inscription_classe")
+  user                                                      user           @relation(fields: [createur], references: [id_user], onUpdate: Restrict, map: "inscription_createur")
+  etablissement_inscription_etablissementToetablissement    etablissement  @relation("inscription_etablissementToetablissement", fields: [etablissement], references: [id_etablissement], onUpdate: Restrict, map: "inscription_etablissement")
+  etudiants                                                 etudiants      @relation(fields: [etudiant], references: [id_etudiant], onUpdate: Restrict, map: "inscription_etudiant")
+
+  @@index([annee_scolaire], map: "inscription_annee")
+  @@index([classe], map: "inscription_classe")
+  @@index([createur], map: "inscription_createur")
+  @@index([etablissement], map: "inscription_etablissement")
+  @@index([etudiant], map: "inscription_etudiant")
+}
