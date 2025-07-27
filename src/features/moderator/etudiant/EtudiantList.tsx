@@ -25,20 +25,20 @@ export default async function EtudiantList( { data , success, message } : Enseig
         </thead>
         <tbody className="bg-white divide-y divide-gray-200 text-start">
           {data && data.map((enseignant) => (
-            <tr key={enseignant.user_enseignant_enseignantTouser.id_user} className="hover:bg-gray-50 ">
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-start">{enseignant.user_enseignant_enseignantTouser.nom} {enseignant.user_enseignant_enseignantTouser.prenom}</td>
+            <tr key={} className="hover:bg-gray-50 ">
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-start">"nom" "prenom"</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {enseignant.user_enseignant_enseignantTouser.sexe === 'M' ? 'Masculin' : 'Féminin'}
+                  "sexe === 'M' ? 'Masculin' : 'Féminin'"
                 </td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-start">
-                { enseignant?.user_enseignant_enseignantTouser?.date_naissance?.toLocaleDateString()}
+                "date_naissance?.toLocaleDateString()"
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{enseignant.user_enseignant_enseignantTouser.lieu_naissance}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{enseignant.user_enseignant_enseignantTouser.telephone}</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">"lieu_naissance"</td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">"telephone"</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 justify-center text-center inline-grid grid-cols-2 ">
 
-              <EditEnseignantButton enseignant={enseignant.user_enseignant_enseignantTouser} />
-              <DeleteEnseignantButton id_enseignant={enseignant.user_enseignant_enseignantTouser.id_user} enseignant = {enseignant.user_enseignant_enseignantTouser} />
+              <EditEnseignantButton enseignant={'enseignant.user_enseignant_enseignantTouser'} />
+              <DeleteEnseignantButton id_enseignant={'enseignant.user_enseignant_enseignantTouser.id_user'} enseignant = {'enseignant.user_enseignant_enseignantTouser'} />
               </td>
             </tr>
           ))}
@@ -48,6 +48,4 @@ export default async function EtudiantList( { data , success, message } : Enseig
         </div> 
       </div>
     )
-
-  
 }

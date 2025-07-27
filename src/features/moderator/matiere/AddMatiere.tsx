@@ -4,9 +4,13 @@ import { classeType, EnseignantType, EnseignementProps, EnseignementType, Matier
 import { useEffect, useState } from "react"
 import MatiereModal from "./MatiereModal";
 import MatiereList from "./MatiereList";
+import { ReadClasse } from "@/src/actions/moderator/crud.classe.action";
+import { ReadMatiere } from "@/src/actions/moderator/crud.matiere.action";
+import { ReadEnseignant } from "@/src/actions/moderator/crud.enseignant.action";
+import { ReadEnseignement } from "@/src/actions/moderator/crud.enseignement.action";
 
 export default function AddMatiere( props : EnseignementProps) {
-    const [classes, setClasses] = useState<classeType[]>([]);
+    const [classes, setClasses] = useState([]);
     const [selectedClasse, setSelectedClasse] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [enseignement, setEnseignement] = useState<EnseignementType[]> ([])
@@ -15,11 +19,10 @@ export default function AddMatiere( props : EnseignementProps) {
       const [enseignants, setEnseignants] = useState<EnseignantType[]>([]);
 
     useEffect(() => {
-        setClasses([...props.dataClasse!]);
-        setEnseignement([...props.dataEnseignement!]);
-        setMatieres([...props.dataMatiere!]);
-        setEnseignants([...props.dataEnseignant!]);
-
+        ReadClasse().then(res => res.data).then(setClasses);
+        ReadMatiere().then(res => res.data).then(setMatieres);
+        ReadEnseignant().then(res => res.data).then(setEnseignants);
+        ReadEnseignement().then(res => res.data).then(setEnseignement);
     }, [])
 
     const initAddForm = () => {

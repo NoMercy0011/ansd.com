@@ -1,6 +1,6 @@
 "use client"
 import { CreateClasse } from '@/src/actions/moderator/crud.classe.action';
-import { ReadEnseignantAction } from '@/src/actions/moderator/crud.enseignant.action';
+import { ReadEnseignant, ReadEnseignantAction } from '@/src/actions/moderator/crud.enseignant.action';
 import GetNiveau from '@/src/actions/moderator/niveau.action';
 import { WarningIcon } from '@/src/components/ui/icon';
 import { classeType, EnseignantType } from '@/src/types/type';
@@ -82,7 +82,7 @@ export default function ClasseModal(props : ClasseModalProps) {
     }
     useEffect(() => {
        GetNiveau().then((res) => res.niveau).then(setNiveau);
-       ReadEnseignantAction().then((res) => res.data!).then(setEnseignants);
+       ReadEnseignant().then((res) => res.data!).then(setEnseignants);
     }, [])
 
     const handleDelete = () => {

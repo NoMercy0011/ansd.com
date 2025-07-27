@@ -9,27 +9,30 @@ import { responseType, userLoginType } from "@/src/types/type";
 import LovaLogo from "@/src/components/LovaLogo";
 import LovaFooter from "@/src/components/LovaFooter";
 import Link from "next/link";
+import { LoginRequest } from "@/src/actions/auth/auth.action";
 
 
 export default function Login() {
   const router = useRouter();
   const [userLogin, setUserLogin] = useState<userLoginType> ({
-    email: '',
+    pseudo: '',
     password: '',
+    header:'',
   })
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const getToken = async () => {
+  // const getToken = async () => {
 
-    const response = await getCookiesAction() as responseType;
-    if (response.success) {
-      router.push(String(response.redirectTo));
-    }
-  } 
+  //   const response = await getCookiesAction() as responseType;
+  //   console.log(response);
+  //   if (response.success) {
+  //     router.push(String(response.redirectTo));
+  //   }
+  // } 
   
   useEffect(() => {
-    getToken();
+    //getToken();
   }, []);
 
   const handleChange = (e : React.ChangeEvent<HTMLInputElement>) => {
@@ -40,21 +43,25 @@ export default function Login() {
   const handleLogin = async (e : React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       try{
-        const response = await loginAction({...userLogin}) as responseType;
-
-        if (! response.success) {
-          setSuccess('')
-          setError(response.error!);
-        }else {
-          
-          setSuccess(response.message!);
-          setError('');
-          console.log('redirection :' , response.redirectTo)
-          router.push(String(response.redirectTo));
+        const response = await LoginRequest({...userLogin});
+        console.log(response);
+        if(response.status === 404 || 401 || 403){
+          setSuccess('');
+          setError(response.message);
         }
+        if(response.status === 201){
+          setSuccess(response.message);
+          setError('');
 
+          if( response.user.role === 'admin'){
+            router.push('/moderator');
+          } 
+          if( response.user.role === 'user') {
+            router.push('/user');
+          }
+        }
       }catch{
-        setError('Erreur inatendu');
+        setError('Connexion interrompue, réessayez plus tard');
         }
       }
   return (
@@ -72,10 +79,10 @@ export default function Login() {
         <form onSubmit ={ handleLogin} className="">
           <div className="relative mb-3 h-[10vh]">
             <input
-              type="email"
+              type="text"
               required
               onChange={handleChange}
-              name="email"
+              name="pseudo"
               className="peer m-auto block max-h-[8vh] min-h-[5vh]  md:w-md sm:w-sm rounded border border-solid border-secondary-500 bg-transparent bg-clip-padding px-2 py-3 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-primary focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:shadow-twe-primary focus:outline-none peer-focus:text-primary dark:border-neutral-400 dark:text-gray-700 dark:autofill:shadow-autofill dark:focus:border-primary dark:peer-focus:text-primary [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem] focus:shadow focus:border-blue-600"
               id="floatingInput"
               placeholder="name@example.com"
@@ -84,7 +91,7 @@ export default function Login() {
               htmlFor="floatingInput"
               className="pointer-events-none absolute left-[4vh] text-sm top-0 origin-[0_0] border border-solid border-transparent px-2 py-3 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none dark:text-neutral-400 dark:peer-focus:text-primary"
             >
-              Email
+              Email ou Pseudo
             </label>
           </div>
 
@@ -103,6 +110,23 @@ export default function Login() {
               className=" text-md pointer-events-none absolute left-[4vh] text-sm top-0 origin-[0_0] border border-solid border-transparent px-2 py-3 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none dark:text-neutral-400 dark:peer-focus:text-primary"
             >
               Mot de passe
+            </label>
+          </div>
+          <div className="relative mb-3 h-[10vh]">
+            <input
+              type="text"
+              required
+              onChange={handleChange}
+              name="header"
+              className="peer m-auto block max-h-[8vh] min-h-[5vh]  md:w-md sm:w-sm rounded border border-solid border-secondary-500 bg-transparent bg-clip-padding px-2 py-3 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-primary focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:shadow-twe-primary focus:outline-none peer-focus:text-primary dark:border-neutral-400 dark:text-gray-700 dark:autofill:shadow-autofill dark:focus:border-primary dark:peer-focus:text-primary [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem] focus:shadow focus:border-blue-600"
+              id="floatingInput"
+              placeholder="name@example.com"
+            />
+            <label
+              htmlFor="floatingInput"
+              className="pointer-events-none absolute left-[4vh] text-sm top-0 origin-[0_0] border border-solid border-transparent px-2 py-3 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none dark:text-neutral-400 dark:peer-focus:text-primary"
+            >
+              Nom ou Code d' Etablissement
             </label>
           </div>
           <div> 

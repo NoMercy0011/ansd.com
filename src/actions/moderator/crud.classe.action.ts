@@ -3,33 +3,25 @@
 import { PrismaClient } from "@prisma/client"
 import { ModeratorDescriptionAction } from "./moderator.description.action";
 import { classeType } from "@/src/types/type";
+import { cookies } from "next/headers";
 
  const prisma = new PrismaClient();
 
 export async function ReadClasse() {
-    const etablissement = await ModeratorDescriptionAction();
+
+    const header = (await cookies()).get('header')?.value;
+    const token = (await cookies()).get('token')?.value;
+    
     try{
-
-        const classe = await prisma.classe.findMany({
-            where : {
-                etablissement: etablissement.data.id_etablissement,
-            }
-        })
-
-        if(!classe[0]) {
-            console.log("Vous avez aucune classe inscrit pour l'instant")
-            return{
-                success: false,
-                message : "Vous avez aucune classe inscrit pour l'instant",
-                data: [],
-            }
-        }
-        console.log(classe)
-
-        return {
+        const response = await fetch (`${process.env.NEXT_PUBLIC_API_URI}/classe`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" , "client-id" : `${header}`, "Authorization" : `Bearer ${token}`},
+        });
+        const classe = await response.json();
+          return {
             success: true,
             message: '',
-            data : classe,
+            data : classe.classes,
         }
 
     }catch (error) {

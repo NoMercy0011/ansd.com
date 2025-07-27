@@ -1,53 +1,125 @@
+"use client"
 
-import DeleteEnseignantButton from '@/src/components/moderator/enseignant/DeleteEnseignant';
-import EditEnseignantButton from '@/src/components/moderator/enseignant/EditEnseignantButon';
-import { EnseignantListProps } from '@/src/types/type';
+import { Badge, Button, Select } from '@/src/components/ui';
+import { UserMinus, UserPlus, UserRoundCogIcon } from 'lucide-react';
+import React, { useState } from 'react'
+import EnseignantTable from './EnseignantTable';
+import { EnseignantType } from '@/src/types/type';
 
+type EnseignantStatProps = {
+  enseignantActive ?: EnseignantType | undefined;
+  enseignantQuitte ?: EnseignantType | undefined;
 
+}
 
-export default async function EnseignantList( { data , success, message } : EnseignantListProps) {
-    return(
-      <div className='my-5 w-full'>
-        <div>
-        { !success && <div className='text-center text-sm my-5 p-2 bg-amber-400 text-gray-700 rounded shadow'>{ message } ! </div> }
-        </div>
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sexe</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Naiss.</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lieu Naiss.</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Téléphone</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200 text-start">
-          {data && data.map((enseignant) => (
-            <tr key={enseignant.user_enseignant_enseignantTouser.id_user} className="hover:bg-gray-50 ">
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-start">{enseignant.user_enseignant_enseignantTouser.nom} {enseignant.user_enseignant_enseignantTouser.prenom}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {enseignant.user_enseignant_enseignantTouser.sexe === 'M' ? 'Masculin' : 'Féminin'}
-                </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-start">
-                { enseignant?.user_enseignant_enseignantTouser?.date_naissance?.toLocaleDateString()}
-              </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{enseignant.user_enseignant_enseignantTouser.lieu_naissance}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{enseignant.user_enseignant_enseignantTouser.telephone}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 justify-center text-center inline-grid grid-cols-2 ">
+export default function EnseignantList( props : EnseignantStatProps) {
 
-              <EditEnseignantButton enseignant={enseignant.user_enseignant_enseignantTouser} />
-              <DeleteEnseignantButton id_enseignant={enseignant.user_enseignant_enseignantTouser.id_user} enseignant = {enseignant.user_enseignant_enseignantTouser} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-      {!data?.length && <div className='text-center text-gray-700 text-sm p-4'> { message } ! </div> }
-        </div> 
-      </div>
-    )
-
+    const [activeSection, setActiveSection] = useState<"onLine" | "new" | "quit">("onLine");
   
+  return (
+    <>
+      <div className="flex border-b border-gray-200">
+        <button
+          className={`px-4 py-2 font-medium text-sm border-b-2 ${activeSection === "onLine" ? "border-green-600 text-green-600" : "border-transparent hover:text-green-500"}`}
+          onClick={() => setActiveSection("onLine")}
+        >
+          <div className="flex items-center gap-2">
+            <UserRoundCogIcon className="h-4 w-4" /> En ligne
+          </div>
+        </button>
+        <button
+          className={`px-4 py-2 font-medium text-sm border-b-2 ${activeSection === "new" ? "border-sky-600 text-sky-600" : "border-transparent hover:text-sky-500"}`}
+          onClick={() => setActiveSection("new")}
+        >
+          <div className="flex items-center gap-2">
+            <UserPlus className="h-4 w-4" /> Nouveaux
+          </div>
+        </button>
+        <button
+          className={`px-4 py-2 font-medium text-sm border-b-2 ${activeSection === "quit" ? "border-red-600 text-red-600" : "border-transparent hover:text-red-500"}`}
+          onClick={() => setActiveSection("quit")}
+        >
+          <div className="flex items-center gap-2">
+            <UserMinus className="h-4 w-4" /> Quittés
+          </div>
+        </button>
+      </div>
+
+      {/* Filtres */}
+      <div className="bg-gray-50 p-4 rounded-lg">
+        <div className="flex flex-wrap items-center gap-4">
+          <Select 
+            placeholder="Niveau" 
+            options={["Tous", "Terminale", "1ère", "2nde", "3ème"]}
+            className="w-full sm:w-48"
+          />
+          <Select 
+            placeholder="Classe" 
+            options={["Toutes", "A", "B", "C"]}
+            className="w-full sm:w-40"
+          />
+          <Select 
+            placeholder="Période" 
+            options={["Année", "Trimestre 1", "Trimestre 2"]}
+            className="w-full sm:w-48"
+          />
+          <Button variant="secondary" size="sm" className="ml-auto">
+            Appliquer
+          </Button>
+        </div>
+      </div>
+
+      {/* Contenu des sections */}
+      <div className="space-y-6">
+        {activeSection === "onLine" && (
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Enseignants connectés</h3>
+            <EnseignantTable
+              data={props.enseignantActive}
+              columns={[
+                { header: "Nom", accessor: "nom"},
+                { header: "Prenom", accessor: "prenom"},
+                { header: "pseudo", accessor: "pseudo" },
+                { header: "Sexe", accessor: "sexe"},
+                { header: "Action", accessor: "average"},
+              ]}
+            />
+          </div>
+        )}
+
+        {activeSection === "new" && (
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Liste des enseignants</h3>
+            <EnseignantTable
+              data={props.enseignantActive}
+              columns={[
+                { header: "Nom", accessor: "nom"},
+                { header: "Prenom", accessor: "prenom"},
+                { header: "pseudo", accessor: "pseudo" },
+                { header: "Sexe", accessor: "sexe"},
+                { header: "Action", accessor: "average"},
+              ]}
+            />
+          </div>
+        )}
+
+        {activeSection === "quit" && (
+          <div>
+            <h3 className="text-lg font-semibold mb-4">Enseignants Quittés</h3>
+            <EnseignantTable
+              data={props.enseignantQuitte}
+              columns={[
+                { header: "Nom", accessor: "nom"},
+                { header: "Prenom", accessor: "prenom"},
+                { header: "pseudo", accessor: "pseudo" },
+                { header: "Sexe", accessor: "sexe"},
+                { header: "Action", accessor: "average"},
+              ]}
+            />
+            {!props.enseignantQuitte?.enseignants?.length &&  <div className='flex justify-center text-center bg-white/70 text-sm h-10 items-center rounded-sm mt-0.5'> Donnée vide pour l'instant !</div> }
+          </div>
+        )}
+      </div>
+    </>
+  )
 }

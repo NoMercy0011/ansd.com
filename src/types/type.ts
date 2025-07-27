@@ -1,7 +1,8 @@
 
 export type userLoginType = {
-  email : string;
+  pseudo : string;
   password : string;
+  header: string;
 }
 
 export type responseType = {
@@ -46,30 +47,14 @@ export type userSchema = {
 }
 
 export type EnseignantType = {
-  success?: boolean;
-  message?: string;
-  data?: {
-    id_enseignant?: number | null;
-    enseignant?: number | null;
-    id_etablissement?: number | null;
-    chef_etablissement?: number | null;
-    date_creation?: Date | null;
-    date_modification?: Date |null;
-    modificateur?: number | null;
-    date_suppression?: Date |null;
-    suppresseur?: number | null;
-    status?: string | null;
-    annee_scolaire?: number | null;
-    user_enseignant_enseignantTouser?: {
-            email?: string;
-            id_user?: number;
-            nom?: string;
-            prenom?: string;
-            sexe?: string | null;
-            date_naissance?: Date | null;
-            lieu_naissance?: string | null;
-            telephone?: string | null;
-          }};
+    total : number;
+  enseignants : {
+    id_enseignant : number;
+    pseudo: string;
+    nom: string;
+    premon: string;
+    sexe: string;
+    }[];
 }
 
 export type EnseignantModalProps = {

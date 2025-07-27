@@ -3,6 +3,7 @@
 import { PlusIcon } from "@/src/components/ui/icon";
 import EnseignantModal from "@/src/features/moderator/enseignant/EnseignantModal";
 import { useState } from "react";
+import EtudiantModal from "./EtudiantModal";
 
 export default function AddEtudiantButton() {
     const [showModal, setShowModal] = useState(false);
@@ -22,9 +23,9 @@ export default function AddEtudiantButton() {
                 onClick={handleClick}
               >
                 <PlusIcon />
-                <span className="ml-2">Ajouter un enseignant</span>
+                <span className="ml-2">inscription</span>
           </button>
-          { showModal && <EnseignantModal isNew = {isNew} onClose ={ onClose } /> }
+          { showModal && <EtudiantModal isNew = {isNew} onClose ={ onClose } /> }
     </div>
   )
 }

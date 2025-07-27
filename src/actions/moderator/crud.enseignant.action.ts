@@ -1,122 +1,65 @@
 "use server"
 
 import { EnseignantType } from "@/src/types/type";
-import { PrismaClient } from "@prisma/client"
-import bcrypt from "bcryptjs";
-import { ModeratorDescriptionAction } from "./moderator.description.action";
+import { cookies } from "next/headers";
 
 
-const prisma = new PrismaClient();
-
-
-export async function CreateEnseignantAction(data : EnseignantType){
-    console.log(data)
+export async function CreateEnseignant(Enseignant : EnseignantType){
+    console.log(Enseignant)
+    
+    const header = (await cookies()).get('header')?.value;
+    const token = (await cookies()).get('token')?.value;
     try{
-        const [existingUser] = await prisma.user.findMany(
-            {
-              where : {
-                email : data.email
-              }
-            }
-          );
-          if (existingUser) {
-            return {
-              success : false,
-              message : 'Un utilisateur existe déjà avec cet email.'
-            }
-          }
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "client-id" : `${header}`, "Authorization" : `Bearer ${token}` },
+        body: JSON.stringify(Enseignant),
+        });
 
-          const salt = bcrypt.genSaltSync(10);
-          const hashedPassword = await bcrypt.hash(String(data.password), salt);
-          console.log(hashedPassword)
+        const data = await response.json();
 
-          const userCreated = await prisma.user.create({
-            data : {
-              email: data.email,
-              password : hashedPassword,
-              nom : data.nom,
-              prenom : data.prenom,
-              date_naissance: data.date_naissance?.toString(),
-              lieu_naissance: data.lieu_naissance,
-              sexe: data.sexe,
-              role: 'User',
-              telephone: data.telephone,
-            },
-          });
-
-          console.log(userCreated)
-
-          const etablissement = await ModeratorDescriptionAction();
-
-          if(!etablissement.success){
-            return {
-                success : false,
-                message : "Erreur s'est produite lors de l'ajout de l'enseignant"
-            }
-          }
-
-           await prisma.enseignant.create({
-            data : {
-
-                enseignant: userCreated.id_user,
-                id_etablissement: etablissement.data.id_etablissement,
-                chef_etablissement: etablissement.data.chef_etablissement,
-            }
-          })
-
-          return {
-            success : true,
-            message: "Inscription reussie "
-          }
+        return data;
     } catch(error) {
         console.log(error)
         throw new Error(" Erreur lors de l'inscription de l'enseignant :", error! )
     }
+
+    
 }
 
 export async function UpdateEnseignantAction(data : EnseignantType){
     console.log(data)
 }
 
-export async function ReadEnseignantAction(){
+export async function ReadEnseignant(){
 
+    const header = (await cookies()).get('header')?.value;
+    const token = (await cookies()).get('token')?.value;
         try{
     
-            const etablissement =  await ModeratorDescriptionAction();
-    
-            const enseignants = await prisma.enseignant.findMany(
-            {
-                where : {
-                        id_etablissement : Number(etablissement?.data.id_etablissement),
-                },
-                include : {
-                  user_enseignant_enseignantTouser : {
-                        select : {
-                            id_user: true,
-                            nom: true,
-                            prenom: true,
-                            email: true,
-                            sexe: true,
-                            date_naissance: true,
-                            lieu_naissance: true,
-                            telephone: true,
-                        }
-                    }
-                }
-            })
-    
-            if(!enseignants[0]) {
-                console.log("Vous avez aucun enseignant inscrit pour l'instant")
-                return{
-                    success: false,
-                    message : "Vous avez aucun enseignant inscrit pour l'instant",
-                    data: [],
-                }
-            }
+            const active = await fetch (`${process.env.NEXT_PUBLIC_API_URI}/enseignants`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" , "client-id" : `${header}`, "Authorization" : `Bearer ${token}`},
+            });
+
+            const quitte = await fetch (`${process.env.NEXT_PUBLIC_API_URI}/enseignants-quitte`, {
+            method: "GET",
+            headers: { "Content-Type": "application/json" , "client-id" : `${header}`, "Authorization" : `Bearer ${token}`},
+            });
+
+            // const onLine = await fetch (`${process.env.NEXT_PUBLIC_API_URI}/enseignants-enLigne`, {
+            // method: "GET",
+            // headers: { "Content-Type": "application/json" , "client-id" : `${header}`, "Authorization" : `Bearer ${token}`},
+            // });
+
+            const enseignantsQuitte = await quitte.json();
+            const enseignantsActive = await  active.json();
+            //const enseignantsOnLine = await  onLine.json();
+
             return {
-                success: true,
-                message: '',
-                data : enseignants,
+                enseignantsQuitte : enseignantsQuitte,
+                enseignantsActive : enseignantsActive,
+                enseignantsOnLine : enseignantsActive,
             }
     
         }catch (error){
@@ -126,6 +69,6 @@ export async function ReadEnseignantAction(){
 }
 
 export async function DeleteEnseignantAction( id : number){
-    console.log(id);
+    //console.log(id);
 }
 

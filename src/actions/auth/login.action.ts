@@ -11,11 +11,11 @@ const prisma = new PrismaClient();
 
 
 export async function loginAction( payload : userLoginType) {
-  const { email, password } = payload;
+  const { pseudo, password } = payload;
   try {
     const user = await prisma.user.findUnique({
       where: {
-        email : email,
+        email : pseudo,
       }
     }) as userSchema;
     

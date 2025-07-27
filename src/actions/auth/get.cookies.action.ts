@@ -1,34 +1,23 @@
 "use server"
 
-import { jwtVerify } from "jose";
 import { cookies } from "next/headers";
 
 export default async function getCookiesAction() {
-  const token = (await cookies()).get('token')?.value;
+  const role = (await cookies()).get('role')?.value;
   try{
-    if(!token) {
-        return {
-        success : false,
-      } }
-    const { payload }  = await jwtVerify(
-        token,
-        new TextEncoder().encode(process.env.JWT_SECRET)
-         );
-
-    const { role } = payload;
-
+    if(!role) {
     let redirectTo : string = '/'; 
 
-    if (role === 'User') { 
+    if (role === 'user') { 
       redirectTo = '/user';
-    } else if (role === 'Moderator') {
+    } else if (role === 'admin') {
       redirectTo = '/moderator';
     }
 
     return {
       success : true,
       redirectTo,
-    }     
+    }}     
 }catch (error) {
     throw new Error(" Erreur lors de la recuperation du token" , error!)
   }
