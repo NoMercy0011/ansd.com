@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { PlusIcon } from '../../ui/icon'
-import ClasseModal from '@/src/features/moderator/classe/ClasseModal';
+import ClasseModal from '@/src/features/moderator/classe/ClasseForm';
 
 export default function AddClasseButton() {
     const [showModal, setShowModal] = useState(false);

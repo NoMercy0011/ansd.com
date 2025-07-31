@@ -48,14 +48,40 @@ export type userSchema = {
 
 export type EnseignantType = {
     total : number;
-  enseignants : {
-    id_enseignant : number;
-    pseudo: string;
-    nom: string;
-    premon: string;
-    sexe: string;
-    }[];
+  enseignants : EnseignantIdType[];
 }
+
+export type EnseignantIdType = {
+  id_enseignant: number;
+	pseudo: string;
+	nom: string;
+	prenom: string;
+	email: string;
+	sexe: string;
+	section: string;
+	role: string;
+	date_naissance: Date;
+	lieu_naissance: string;
+	telephone: string;
+	photo: string;
+	salaire: string;
+	status: string;
+	date_entree: string;
+}
+
+export type CreateEnseignantType = {
+    id_user: number;
+    nom: string;
+    prenom: string;
+    pseudo: string;
+    sexe: string;
+    section: string;
+    date_naissance: Date;
+    lieu_naissance: string;
+    telephone: string;
+    password: string;
+    role: string;
+};
 
 export type EnseignantModalProps = {
   isEditing?: boolean;
@@ -116,13 +142,11 @@ export type classeType = {
     id_classe?: number;
     classe?: string | null;
     niveau?: number | null;
+    section?: number | null;
     responsable?: number | null;
-    etablissement?: number | null;
-    chef_etablissement?: number | null;
-    date_creation?: Date | null;
-    modificateur?: number | null;
-    dernier_modification?: Date | null;
     annee_scolaire?: number | null;
+    created_at?: Date | null;
+    updated_at?: Date | null;
 }
 
 export type MatiereProps = {
@@ -160,3 +184,10 @@ export type MatiereType = {
   id_matiere : number | null;
   matiere ?: string | null;
 }
+
+export type NiveauType = {
+  id_niveau : number;
+  niveau: string;
+  created_at: string;
+  updated_at: string;
+}[]

@@ -1,6 +1,5 @@
 import { cn } from "@/src/lib/utils";
 import { Loader2 } from "lucide-react";
-import Link from "next/link";
 import { Url } from "url";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -12,7 +11,6 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 export function Button({
-  href,
   className,
   variant = "primary",
   size = "default",

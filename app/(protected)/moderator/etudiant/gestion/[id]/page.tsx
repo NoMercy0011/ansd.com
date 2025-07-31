@@ -1,5 +1,6 @@
 import { Button } from "@/src/components/ui";
-import StudentCard from "@/src/features/moderator/etudiant/gestion/EtudiantCard";
+import StudentCard from "@/src/features/moderator/etudiant/EtudiantCard";
+import Link from "next/link";
 
 
 // Mock data pour la démo
@@ -25,9 +26,11 @@ export default function StudentDetailPage() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Fiche Étudiante</h1>
         <div className="flex gap-2">
-          <Button variant="secondary" href={`/moderator/etudiant/editer/${mockStudent.id}`}>
+          <Link href={`/moderator/etudiant/editer/${mockStudent.id}`}>
+          <Button variant="secondary" >
             Modifier
           </Button>
+          </Link>
           <Button variant="danger">Archiver</Button>
         </div>
       </div>

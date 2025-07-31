@@ -2,7 +2,7 @@
 import { ReactNode } from "react";
 
 interface ButtonProps {
-  variant?: "primary" | "secondary" | "ghost" | "danger";
+  variant?: "primary" | "secondary" | "ghost" | "danger" | "outline";
   size?: "sm" | "md" | "lg";
   children: ReactNode;
   className?: string;
@@ -24,7 +24,8 @@ export function Button({
     primary: "bg-gradient-to-r from-orange-600 to-pink-700 text-white hover:from-orange-700 hover:to-pink-800 shadow-sm",
     secondary: "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm",
     ghost: "hover:bg-gray-100 text-gray-700",
-    danger: "bg-red-600 text-white hover:bg-red-700 shadow-sm"
+    danger: "bg-red-600 text-white hover:bg-red-700 shadow-sm",
+    outline: "bg-white/70 border border-stone-300 text-gray-700 hover:bg-stone-50 shadow-sm"
   };
 
   // Tailles

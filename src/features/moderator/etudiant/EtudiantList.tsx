@@ -1,51 +1,58 @@
+import { Button } from "@/src/components/ui";
+import Link from "next/link";
 
-import DeleteEnseignantButton from '@/src/components/moderator/enseignant/DeleteEnseignant';
-import EditEnseignantButton from '@/src/components/moderator/enseignant/EditEnseignantButon';
-import { EnseignantListProps } from '@/src/types/type';
-
-
-
-export default async function EtudiantList( { data , success, message } : EnseignantListProps) {
-    return(
-      <div className='my-5 w-full'>
-        <div>
-        { !success && <div className='text-center text-sm my-5 p-2 bg-amber-400 text-gray-700 rounded shadow'>{ message } ! </div> }
-        </div>
-        <div className="bg-white rounded-lg shadow overflow-hidden">
+export default function StudentList({ students }: { students: any[] }) {
+  return (
+    <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">
         <thead className="bg-gray-50">
           <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nom</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sexe</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Naiss.</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Lieu Naiss.</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Téléphone</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Matricule</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nom Complet</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Classe</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Moyenne</th>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
           </tr>
         </thead>
-        <tbody className="bg-white divide-y divide-gray-200 text-start">
-          {data && data.map((enseignant) => (
-            <tr key={} className="hover:bg-gray-50 ">
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 text-start">"nom" "prenom"</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  "sexe === 'M' ? 'Masculin' : 'Féminin'"
-                </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-start">
-                "date_naissance?.toLocaleDateString()"
+        <tbody className="bg-white divide-y divide-gray-200">
+          {students.map((student) => (
+            <tr key={student.id} className="hover:bg-gray-50">
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                {student.id}
               </td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">"lieu_naissance"</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">"telephone"</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 justify-center text-center inline-grid grid-cols-2 ">
-
-              <EditEnseignantButton enseignant={'enseignant.user_enseignant_enseignantTouser'} />
-              <DeleteEnseignantButton id_enseignant={'enseignant.user_enseignant_enseignantTouser.id_user'} enseignant = {'enseignant.user_enseignant_enseignantTouser'} />
+              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                {student.prenom} {student.nom}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                {student.classe}
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <span className={`px-2 py-1 rounded-full text-xs ${
+                  student.moyenne >= 16 ? 'bg-green-100 text-green-800' :
+                  student.moyenne >= 12 ? 'bg-amber-100 text-amber-800' :
+                  'bg-red-100 text-red-800'
+                }`}>
+                  {student.moyenne}/20
+                </span>
+              </td>
+              <td className="px-6 py-4 whitespace-nowrap text-sm">
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="sm">
+                    <Link href={`/moderator/etudiant/${student.id}`}>
+                      Voir
+                    </Link>
+                  </Button>
+                  <Button variant="ghost" size="sm" >
+                    <Link href={`/moderator/etudiant/editer/${student.id}`}>
+                      Éditer
+                    </Link>
+                  </Button>
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {!data?.length && <div className='text-center text-gray-700 text-sm p-4'> { message } ! </div> }
-        </div> 
-      </div>
-    )
+    </div>
+  );
 }

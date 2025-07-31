@@ -13,11 +13,11 @@ export async function middleware(req: NextRequest) {
     const pathname = new URL(req.url).pathname;
     console.log(pathname);
     
-    if (pathname.startsWith('/moderator') && role !== 'admin') {
+    if (pathname.startsWith('/moderator') && role !== 'Admin') {
       return NextResponse.redirect(new URL('/unauthorized', req.url));
     }
 
-    if (pathname.startsWith('/user') && role !== 'user') {
+    if (pathname.startsWith('/user') && role !== 'User') {
       return NextResponse.redirect(new URL('/unauthorized', req.url));
     }
 

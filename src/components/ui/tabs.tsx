@@ -10,7 +10,6 @@ interface TabsProps {
 }
 
 export function Tabs({ defaultValue, children, className }: TabsProps) {
-  const [activeTab, setActiveTab] = useState(defaultValue);
 
   return (
     <div className={cn("flex flex-col", className)}>

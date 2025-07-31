@@ -1,6 +1,7 @@
 "use client"
 import { Card, Button, Select } from "@/src/components/ui";
 import { Plus, CalendarDays, Clock, ChevronRight } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 
 // Mock data réaliste
@@ -26,9 +27,11 @@ export default function EmploiDuTempsPage() {
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <CalendarDays className="text-orange-600" /> Emplois du temps
         </h1>
-        <Button href="/moderator/matiere/gestion" icon={<Plus size={18} />}>
+        <Link href="/moderator/matiere/gestion"> 
+        <Button  icon={<Plus size={18} />}>
           Créer un créneau
         </Button>
+        </Link>
       </div>
 
       {/* Statistiques globales */}
@@ -51,22 +54,21 @@ export default function EmploiDuTempsPage() {
       <Card className="p-4">
         <div className="flex flex-col sm:flex-row gap-4 items-center">
           <Select
-            items={mockClasses.map(c => ({ 
-              value: c.id, 
-              label: `${c.niveau} ${c.nom}` 
-            }))}
-            selected={selectedClass}
+            options={['Terminale', 'Premiere']}
+            //selected={selectedClass}
             onSelect={setSelectedClass}
             placeholder="Sélectionnez une classe"
             className="flex-1"
           />
           {selectedClass && (
+            <Link href={`/moderator/matiere/${selectedClass}`}> 
             <Button 
-              href={`/moderator/matiere/${selectedClass}`}
+              
               variant="primary"
             >
-              "Voir l'emploi du temps"
+              Voir l&apos; emploi du temps
             </Button>
+            </Link>
           )}
         </div>
       </Card>
@@ -84,13 +86,14 @@ export default function EmploiDuTempsPage() {
                 <h4 className="font-medium">{classe.niveau} {classe.nom}</h4>
                 <p className="text-sm text-gray-500 mt-1">18 créneaux cette semaine</p>
               </div>
+              <Link  href={`/moderator/matiere/${classe.id}`}>
               <Button 
                 variant="ghost" 
-                href={`/moderator/matiere/${classe.id}`}
                 icon={<ChevronRight className="h-4 w-4" />}
               >
                 Voir
               </Button>
+              </Link>
             </div>
           ))}
         </div>

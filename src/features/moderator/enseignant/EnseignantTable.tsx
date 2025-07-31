@@ -26,7 +26,7 @@ export default function EnseignantTable({ data, columns }: EnseignantTableProps)
           </tr>
         </thead>
         <tbody className="bg-white divide-y divide-gray-200">
-          {data?.enseignants.map((enseignant) => (
+          {data?.map((enseignant) => (
             <tr key={enseignant.id_enseignant} className="hover:bg-gray-50">
               {columns.map((column, colIdx) => (
                 <td key={colIdx} className="px-6 py-4 whitespace-nowrap text-sm">

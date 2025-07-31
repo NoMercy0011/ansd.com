@@ -1,7 +1,5 @@
 "use server"
 
-import { PrismaClient } from "@prisma/client";
-import { ModeratorDescriptionAction } from "./moderator.description.action";
 import { cookies } from "next/headers";
 
 

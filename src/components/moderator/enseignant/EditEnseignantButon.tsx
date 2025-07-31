@@ -1,6 +1,6 @@
 "use client"
 
-import EnseignantModal from "@/src/features/moderator/enseignant/EnseignantModal";
+import EnseignantModal from "@/src/features/moderator/enseignant/EnseignantForm";
 import { EditIcon } from "../../ui/icon"
 import { useState } from "react";
 import { EnseignantType } from "@/src/types/type";

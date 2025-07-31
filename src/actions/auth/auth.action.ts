@@ -10,7 +10,7 @@ export async function LoginRequest(login : userLoginType){
         (await cookies()).set('header', login.header, {
               httpOnly: true,
               secure: process.env.NODE_ENV === 'production',
-              maxAge: 60 * 60, // 12 hours
+              maxAge: 12 * 60 * 60, // 12 hours
               path: '/',
         });
         
@@ -25,19 +25,13 @@ export async function LoginRequest(login : userLoginType){
             (await cookies()).set('token', data.token, {
               httpOnly: true,
               secure: process.env.NODE_ENV === 'production',
-              maxAge: 60 * 60, // 12 hours
+              maxAge: 12 * 60 * 60, // 12 hours
               path: '/',
         });
         (await cookies()).set('role', data.user.role, {
               httpOnly: true,
               secure: process.env.NODE_ENV === 'production',
-              maxAge: 60 * 60, // 12 hours
-              path: '/',
-        });
-        (await cookies()).set('header', login.header, {
-              httpOnly: true,
-              secure: process.env.NODE_ENV === 'production',
-              maxAge: 60 * 60, // 12 hours
+              maxAge: 12 * 60 * 60, // 12 hours
               path: '/',
         });
         }

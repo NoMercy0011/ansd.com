@@ -132,7 +132,7 @@ export default function PerformanceClasses({ data = mockData }: PerformanceClass
         </select>
       </div>
       <div className="h-80">
-        <Bar data={chartData} options={options} />
+        {/* <Bar data={chartData} options={options} /> */}
       </div>
       <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
         {data.slice(0, 3).map((classItem) => (

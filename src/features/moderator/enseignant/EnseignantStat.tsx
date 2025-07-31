@@ -1,19 +1,17 @@
 "use client"
 import Loading from '@/app/(protected)/moderator/loading'
-import { ReadEnseignant } from '@/src/actions/moderator/crud.enseignant.action'
+import { useEnseignant } from '@/hooks/useModerator'
 import { Button, Card } from '@/src/components/ui'
-import { EnseignantType } from '@/src/types/type'
-import { AlertTriangle, Circle, GraduationCap, Medal, MessageCircle, Plus, Search, TrendingUp, UserCircle2 } from 'lucide-react'
+import { AlertTriangle,  GraduationCap, Plus, Search, TrendingUp, UserCircle2 } from 'lucide-react'
 import Link from 'next/link'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
-type EnseignantStatProps = {
-  enseignantActive ?: EnseignantType | undefined;
-  enseignantQuitte ?: EnseignantType | undefined;
 
-}
+export default function EnseignantStat() {
+  
+  const { actifs, enseignantsLoading, quittes, onLine} = useEnseignant();
+  const [isLoading, setIsLoading] = useState(false);
 
-export default function EnseignantStat( props : EnseignantStatProps) {
 
   return (
     <>
@@ -31,8 +29,8 @@ export default function EnseignantStat( props : EnseignantStatProps) {
                   className="pl-10 w-full pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent"
                 />
               </div>
-              <Link href='/moderator/enseignant/gestion' >
-              <Button variant="primary" icon={<Plus size={18} />} className="shrink-0">
+              <Link href='/moderator/enseignant/gestion' onClick={() => setIsLoading(true)}>
+              <Button variant="primary" icon={<Plus size={18} />} className="shrink-0" isLoading={isLoading}>
                 Ajouter un enseignant
               </Button>
               </Link>
@@ -44,7 +42,7 @@ export default function EnseignantStat( props : EnseignantStatProps) {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-gray-700">Enseignants en ligne</p>
-              <h3 className="text-3xl font-bold mt-1 ">10 </h3>
+              <h3 className="text-3xl font-bold mt-1 ">{ enseignantsLoading ? <Loading /> : onLine.enseignants.length }  </h3>
               <p className="text-xs text-gray-700 mt-2">en développement ...</p>
             </div>
             <div className="p-2 bg-gray-100 rounded-lg text-orange-600">
@@ -57,7 +55,7 @@ export default function EnseignantStat( props : EnseignantStatProps) {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-gray-700">Efféctifs Enseignants</p>
-              <h3 className="text-2xl font-bold mt-1">{props.enseignantActive?.total || <Loading />} </h3>
+              <h3 className="text-2xl font-bold mt-1">{enseignantsLoading ? <Loading /> : actifs.enseignants.length } </h3>
             <div className='flex'>
                 <p className="text-xs text-gray-700 mt-2">dernier ajout </p>
                 <p className="text-xs text-gray-700 m-2 text-end">- il y a 1h</p>
@@ -73,7 +71,7 @@ export default function EnseignantStat( props : EnseignantStatProps) {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-gray-700">Retraites - Démmissions</p>
-              <h3 className="text-2xl font-bold mt-1 text-red-500"> {props.enseignantQuitte?.total /*|| <Loading />*/}</h3>
+              <h3 className="text-2xl font-bold mt-1 text-red-500"> {enseignantsLoading ? <Loading /> : quittes.enseignants.length }</h3>
               <div className='flex'>
                 <p className="text-xs text-gray-700 mt-2">dernier sortie </p>
                 <p className="text-xs text-gray-700 m-2 text-end">- il y a 1 ans</p>

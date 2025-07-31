@@ -2,8 +2,7 @@
 "use client"
 
 import { usePathname } from "next/navigation";
-import { Award, BarChart3, BookOpen, Calendar, ChevronRight, FileText, GraduationCap, Menu, Settings, Users, X } from "lucide-react";
-import { useState } from "react";
+import { Award, BarChart3, BookOpen, Calendar, ChevronRight, FileText, GraduationCap, Settings, Users, X } from "lucide-react";
 import Link from "next/link";
 
 interface LateralBarProps {

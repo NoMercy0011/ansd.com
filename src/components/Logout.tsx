@@ -1,12 +1,27 @@
+"use client"
+
+import { useState } from "react";
 import logoutAction from "../actions/auth/logout.action";
+import { useRouter } from "next/navigation";
+import { Button } from "./ui";
+import { LogOutIcon } from "lucide-react";
 
-export default async function Logout(){
+export default function Logout(){
+    const router = useRouter();
+    const [isLoading, setIsLoading] = useState(false);
 
+    const logout = () => {
+
+        setIsLoading(true);
+        logoutAction();
+        router.push('/login');
+        setIsLoading(false);
+    }
     return (
         <>
-            <button onClick={logoutAction} className="text-sm font-semibold text-red-500 dark:text-red-500 hover:underline">
-                Deconnexion
-            </button>
+            <Button onClick={logout} isLoading={isLoading} >
+                Deconnexion <LogOutIcon className="ml-3"/>
+            </Button>
         </>
     )
 }

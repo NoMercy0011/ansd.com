@@ -17,7 +17,7 @@ export default function Legendes(){
           setCharge((prevIndex) => (prevIndex + 1) % legende.length);
         }, 5000); 
         return () => clearInterval(interval);
-      }, []);
+      }, [legende.length]);
 
     return(
         <div className='text-md font-sans text-blue-500 h-10'>

@@ -3,7 +3,7 @@
 import { EditIcon } from "../../ui/icon"
 import { useState } from "react";
 import { classeType } from "@/src/types/type";
-import ClasseModal from "@/src/features/moderator/classe/ClasseModal";
+import ClasseModal from "@/src/features/moderator/classe/ClasseForm";
 
 type ClasseProps = {
     classe: classeType;

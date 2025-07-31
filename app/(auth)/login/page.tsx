@@ -2,10 +2,8 @@
 
 import Legendes from "@/src/components/Legendes";
 import { useEffect, useState } from "react";
-import { loginAction } from "@/src/actions/auth/login.action";
 import { useRouter } from "next/navigation";
-import getCookiesAction from "@/src/actions/auth/get.cookies.action";
-import { responseType, userLoginType } from "@/src/types/type";
+import { userLoginType } from "@/src/types/type";
 import LovaLogo from "@/src/components/LovaLogo";
 import LovaFooter from "@/src/components/LovaFooter";
 import Link from "next/link";
@@ -53,10 +51,10 @@ export default function Login() {
           setSuccess(response.message);
           setError('');
 
-          if( response.user.role === 'admin'){
+          if( response.user.role === 'Admin'){
             router.push('/moderator');
           } 
-          if( response.user.role === 'user') {
+          else if( response.user.role === 'User') {
             router.push('/user');
           }
         }
@@ -126,7 +124,7 @@ export default function Login() {
               htmlFor="floatingInput"
               className="pointer-events-none absolute left-[4vh] text-sm top-0 origin-[0_0] border border-solid border-transparent px-2 py-3 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none dark:text-neutral-400 dark:peer-focus:text-primary"
             >
-              Nom ou Code d' Etablissement
+              Nom ou Code d&apos; Etablissement
             </label>
           </div>
           <div> 
@@ -164,7 +162,7 @@ export default function Login() {
               href={"/register"}
               className="px-2 py-2 m-auto w-3xs border text-sm border-gray-700 bg-gray-100 text-gray-600 font-bold  rounded hover:bg-gray-300 hover:cursor-pointer"
             >
-              S` inscrire gratuitement
+              S&apos; inscrire gratuitement
             </Link>
             </div>
           </div>

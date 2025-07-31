@@ -1,21 +1,31 @@
 "use client"
 
-import { Badge, Button, Select } from '@/src/components/ui';
+import { Button, Select } from '@/src/components/ui';
 import { UserMinus, UserPlus, UserRoundCogIcon } from 'lucide-react';
 import React, { useState } from 'react'
-import EnseignantTable from './EnseignantTable';
-import { EnseignantType } from '@/src/types/type';
+import OnLineTable from './OnLineTable';
+import ActiveTable from './ActiveTable';
+import QuitteTable from './QuitteTable';
+import { useEnseignant } from '@/hooks/useModerator';
 
-type EnseignantStatProps = {
-  enseignantActive ?: EnseignantType | undefined;
-  enseignantQuitte ?: EnseignantType | undefined;
-
-}
-
-export default function EnseignantList( props : EnseignantStatProps) {
+export default function EnseignantList() {
+    const { actifs, enseignantsError, enseignantsLoading, quittes, onLine} = useEnseignant();
 
     const [activeSection, setActiveSection] = useState<"onLine" | "new" | "quit">("onLine");
-  
+  if(enseignantsLoading) {
+    return (
+      <div className='text-orange-600'>
+        chargement...
+      </div>
+    )
+  }
+  if(enseignantsError) {
+    return (
+      <div className='text-red-600 font-bold'>
+        { enseignantsError }
+      </div>
+    )
+  }
   return (
     <>
       <div className="flex border-b border-gray-200">
@@ -32,7 +42,7 @@ export default function EnseignantList( props : EnseignantStatProps) {
           onClick={() => setActiveSection("new")}
         >
           <div className="flex items-center gap-2">
-            <UserPlus className="h-4 w-4" /> Nouveaux
+            <UserPlus className="h-4 w-4" /> Enseignants
           </div>
         </button>
         <button
@@ -74,49 +84,24 @@ export default function EnseignantList( props : EnseignantStatProps) {
         {activeSection === "onLine" && (
           <div>
             <h3 className="text-lg font-semibold mb-4">Enseignants connectés</h3>
-            <EnseignantTable
-              data={props.enseignantActive}
-              columns={[
-                { header: "Nom", accessor: "nom"},
-                { header: "Prenom", accessor: "prenom"},
-                { header: "pseudo", accessor: "pseudo" },
-                { header: "Sexe", accessor: "sexe"},
-                { header: "Action", accessor: "average"},
-              ]}
-            />
+            <OnLineTable />
+            {onLine.enseignants?.length === 0 &&  <div className='flex justify-center text-center bg-white/70 text-sm h-10 items-center rounded-sm mt-0.5'> aucune enseignant en ligne !</div> }
           </div>
         )}
 
         {activeSection === "new" && (
           <div>
             <h3 className="text-lg font-semibold mb-4">Liste des enseignants</h3>
-            <EnseignantTable
-              data={props.enseignantActive}
-              columns={[
-                { header: "Nom", accessor: "nom"},
-                { header: "Prenom", accessor: "prenom"},
-                { header: "pseudo", accessor: "pseudo" },
-                { header: "Sexe", accessor: "sexe"},
-                { header: "Action", accessor: "average"},
-              ]}
-            />
+            <ActiveTable />
+            {actifs.enseignants?.length === 0 &&  <div className='flex justify-center text-center bg-white/70 text-sm h-10 items-center rounded-sm mt-0.5'> Donnée vide pour l'instant !</div> }
           </div>
         )}
 
         {activeSection === "quit" && (
           <div>
             <h3 className="text-lg font-semibold mb-4">Enseignants Quittés</h3>
-            <EnseignantTable
-              data={props.enseignantQuitte}
-              columns={[
-                { header: "Nom", accessor: "nom"},
-                { header: "Prenom", accessor: "prenom"},
-                { header: "pseudo", accessor: "pseudo" },
-                { header: "Sexe", accessor: "sexe"},
-                { header: "Action", accessor: "average"},
-              ]}
-            />
-            {!props.enseignantQuitte?.enseignants?.length &&  <div className='flex justify-center text-center bg-white/70 text-sm h-10 items-center rounded-sm mt-0.5'> Donnée vide pour l'instant !</div> }
+            <QuitteTable />
+            {quittes.enseignants?.length === 0 &&  <div className='flex justify-center text-center bg-white/70 text-sm h-10 items-center rounded-sm mt-0.5'> Donnée vide pour l'instant !</div> }
           </div>
         )}
       </div>

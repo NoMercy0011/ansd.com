@@ -1,10 +1,10 @@
 "use server"
 
-import { EnseignantType } from "@/src/types/type";
+import { CreateEnseignantType, EnseignantType } from "@/src/types/type";
 import { cookies } from "next/headers";
 
 
-export async function CreateEnseignant(Enseignant : EnseignantType){
+export async function CreateEnseignant(Enseignant : CreateEnseignantType){
     console.log(Enseignant)
     
     const header = (await cookies()).get('header')?.value;
@@ -69,6 +69,6 @@ export async function ReadEnseignant(){
 }
 
 export async function DeleteEnseignantAction( id : number){
-    //console.log(id);
+    console.log(id);
 }
 

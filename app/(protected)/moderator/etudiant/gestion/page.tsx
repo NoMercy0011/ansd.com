@@ -4,7 +4,7 @@ import { Card, Button } from "@/src/components/ui";
 import { Plus } from "lucide-react";
 import { SearchInput } from "@/src/components/ui/etudiant/SearchInput";
 import { Select } from "@/src/components/ui/etudiant/select";
-import StudentList from "@/src/features/moderator/etudiant/gestion/EtudiantList";
+import StudentList from "@/src/features/moderator/etudiant/EtudiantList";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -27,9 +27,11 @@ export default function EtudiantPage() {
         <h1 className="text-2xl font-bold">Gestion des Étudiants</h1>
         <div className="flex gap-3">
           <SearchInput placeholder="Rechercher..." />
-          <Button href='/moderator/etudiant/gestion/ajouter' icon={<Plus size={16} />}>
+          <Link href='/moderator/etudiant/gestion/ajouter'>
+          <Button icon={<Plus size={16} />}>
             Nouvel étudiant
           </Button>
+          </Link>
         </div>
       </div>
 

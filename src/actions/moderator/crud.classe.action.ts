@@ -1,11 +1,7 @@
 "use server"
 
-import { PrismaClient } from "@prisma/client"
-import { ModeratorDescriptionAction } from "./moderator.description.action";
 import { classeType } from "@/src/types/type";
 import { cookies } from "next/headers";
-
- const prisma = new PrismaClient();
 
 export async function ReadClasse() {
 
@@ -19,8 +15,6 @@ export async function ReadClasse() {
         });
         const classe = await response.json();
           return {
-            success: true,
-            message: '',
             data : classe.classes,
         }
 
@@ -30,60 +24,34 @@ export async function ReadClasse() {
 }
 
 export async function CreateClasse(data: classeType) {
-    console.log(data)
+    const header = (await cookies()).get('header')?.value;
+    const token = (await cookies()).get('token')?.value;
+    console.log(data);
     try{
+        const response = await fetch (`${process.env.NEXT_PUBLIC_API_URI}/classe`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" , "client-id" : `${header}`, "Authorization" : `Bearer ${token}`},
+            body: JSON.stringify(data),
+        });
 
-        const etablissement = await ModeratorDescriptionAction();
-        //const niveau = await GetNiveau();
-        //const enseignant = await ReadEnseignantAction();
-        console.log(etablissement)
-
-        const [existingClasse] = await prisma.classe.findMany({
-            where : {
-                classe : String(data.classe),
-            }
-        })
-        
-        console.log(existingClasse);
-
-        const [existingResponsable] = await prisma.classe.findMany({
-            where: {
-                responsable: Number(data.responsable),
-            }
-        })
-        console.log(existingResponsable);
-
-        if(existingClasse) {
-            return {
-                success : false,
-                message: " Une classe de même nom existe déjà, veuillez utiliser un autre nom",
-                classe: existingClasse,
+        const classe = await response.json();
+        if(classe.status){
+            return{
+                message: "La classe éxiste déjà",
+                status:401
             }
         }
-
-        if(existingResponsable) {
-            return {
-                success : false,
-                message: " Cet enseignant est déjà responsable d'une classe",
-                enseignant: existingResponsable,
-            }
+          return {
+            message : classe.message,
+            status:201
         }
 
-        const success = await prisma.classe.create({
-            data: {
-                classe: String(data.classe),
-                niveau: Number(data.niveau),
-                responsable: Number(data.responsable),
-                etablissement: Number(etablissement.data.id_etablissement),
-                chef_etablissement: Number(etablissement.data.chef_etablissement),
-                annee_scolaire: Number(data.annee_scolaire),
-            }
-        })
-
-            console.log(success)
     }catch(error){
         console.error(error)
-        throw new Error('Erreur lors de la création de la classe ', error!)
+        return {
+            erreur: 'Erreur lors de la création de la classe ',
+            content: error
+        }
     }
 }
 

@@ -1,6 +1,6 @@
 "use client"
 
-import EnseignantModal from "@/src/features/moderator/enseignant/EnseignantModal";
+import EnseignantModal from "@/src/features/moderator/enseignant/EnseignantForm";
 import { PlusIcon } from "../../ui/icon"
 import { useState } from "react";
 

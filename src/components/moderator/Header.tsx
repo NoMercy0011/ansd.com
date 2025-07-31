@@ -1,8 +1,8 @@
 // components/Header.tsx
 "use client"
 
-import { Bell, Icon, LucideIcon, LucideProps, MailIcon, Menu, Search } from "lucide-react";
-import { ForwardRefExoticComponent, RefAttributes, useEffect, useState } from "react";
+import { Bell, MailIcon, Menu } from "lucide-react";
+import {  useEffect, useState } from "react";
 
 interface HeaderProps {
   title: string;

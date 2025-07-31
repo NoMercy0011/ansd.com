@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { TrashIcon } from "../../ui/icon";
 import { classeType } from "@/src/types/type";
-import ClasseModal from "@/src/features/moderator/classe/ClasseModal";
+import ClasseModal from "@/src/features/moderator/classe/ClasseForm";
 
 type Id_ClasseProps = {
     id_classe: number;

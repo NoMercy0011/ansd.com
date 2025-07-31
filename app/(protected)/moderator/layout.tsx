@@ -1,8 +1,7 @@
 // app/moderator/layout.tsx
 "use client"
 
-import { ForwardRefExoticComponent, RefAttributes, useState } from "react";
-import { Award, BarChart3, BookOpen, Calendar, FileText, GraduationCap, LucideIcon, LucideProps, Menu, Settings, Users } from "lucide-react";
+import {useState } from "react";
 import { usePathname } from "next/navigation";
 import Header from "@/src/components/moderator/Header";
 import LateralBar from "@/src/components/moderator/LateralBar";
@@ -41,8 +40,6 @@ export default function ModeratorLayout({
           {children}
         </main>
       </div>
-
-      {/* Sidebar Overlay */}
       {isSidebarOpen && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"

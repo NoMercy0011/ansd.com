@@ -12,7 +12,7 @@ export function Card({
   return (
     <div
       className={cn(
-        "rounded-xl border bg-white shadow-sm",
+        "rounded-md border-1 border-gray-400 bg-white shadow-sm",
         variant === "hover" && "hover:shadow-md transition-shadow",
         className
       )}
