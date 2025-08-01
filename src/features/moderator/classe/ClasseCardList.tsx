@@ -40,7 +40,7 @@ export default function ClasseCardList(props : ClasseCardProps) {
           onClick={() => setActiveTab('general')}
           icon={<Users className="h-4 w-4 mr-2" />}
         >
-          Vue d'ensemble
+          Vue d&apos; ensemble
         </TabButton>
         <TabButton 
           active={activeTab === 'analytics'} 
@@ -58,7 +58,6 @@ export default function ClasseCardList(props : ClasseCardProps) {
         </TabButton>
       </div>
 
-      {/* Liste des étudiants avec fonctionnalités avancées */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="grid grid-cols-12 bg-gray-50 p-4 border-b border-gray-100 font-medium text-gray-500">
           <div className="col-span-4">Étudiant</div>
@@ -72,9 +71,6 @@ export default function ClasseCardList(props : ClasseCardProps) {
           <div key={student.id} className="grid grid-cols-12 items-center p-4 border-b border-gray-100 hover:bg-blue-50 transition-colors">
             <div className="col-span-4 flex items-center">
               {/* <Avatar className="h-10 w-10 mr-3">
-                <AvatarImage src={student.avatar} />
-                <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
-              </Avatar> */}
               <div>
                 <p className="font-medium">{student.name}</p>
                 <p className="text-sm text-gray-500">Dern. éval: {student.lastEvaluation}/20</p>
@@ -123,13 +119,11 @@ export default function ClasseCardList(props : ClasseCardProps) {
                         <span>Mathématiques</span>
                         <span>15.2/20</span>
                       </div>
-                      {/* <Progress value={76} className="h-1" /> */}
-                      {/* Ajouter d'autres matières */}
                     </div>
                   </div>
                   <div>
                     <h4 className="font-medium mb-2">Commentaires</h4>
-                    <p className="text-sm text-gray-600">Excellent travail ce mois-ci, continuez ainsi!</p>
+                    <p className="text-sm text-gray-600">Excellent travail ce mois-ci &lsquo; continuez ainsi!</p>
                   </div>
                   <div>
                     <h4 className="font-medium mb-2">Actions rapides</h4>
@@ -152,9 +146,8 @@ export default function ClasseCardList(props : ClasseCardProps) {
             <TrendingUp className="h-5 w-5 mr-2 text-blue-600" />
             Évolution de la classe
           </h3>
-          {/* Intégrer un graphique ici */}
           <div className="h-40 bg-gray-100 rounded flex items-center justify-center text-gray-400">
-            Graphique d&apos; évolution
+            Graphique d &apos; évolution
           </div>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -168,9 +161,7 @@ export default function ClasseCardList(props : ClasseCardProps) {
                 <span>Analyse critique</span>
                 <span>82%</span>
               </div>
-              {/* <Progress value={82} className="h-2" /> */}
             </div>
-            {/* Ajouter d'autres compétences */}
           </div>
         </div>
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
@@ -188,7 +179,6 @@ export default function ClasseCardList(props : ClasseCardProps) {
                 <p className="text-sm text-gray-500">3 étudiants concernés</p>
               </div>
             </div>
-            {/* Ajouter d'autres alertes */}
           </div>
         </div>
       </div>

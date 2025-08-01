@@ -1,7 +1,6 @@
 "use client"
 
 import { useEnseignant } from "@/hooks/useModerator";
-import { EnseignantType } from "@/src/types/type";
 
 
 export default function OnLineTable() {
@@ -40,7 +39,7 @@ export default function OnLineTable() {
               </tr>
             </>) : (
               (<>
-          {onLine.enseignants.map((enseignant : any) => (
+          {onLine.enseignants.map((enseignant) => (
             <tr key={enseignant.id_enseignant} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{ enseignant.photo || null} </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{ enseignant.nom} </td>

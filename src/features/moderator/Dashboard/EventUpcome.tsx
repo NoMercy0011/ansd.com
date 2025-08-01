@@ -1,5 +1,5 @@
+import { Card } from '@/src/components/ui'
 import { Button } from '@/src/components/ui/button'
-import { Card } from '@/src/components/ui/card'
 import { Calendar } from 'lucide-react'
 import React from 'react'
 

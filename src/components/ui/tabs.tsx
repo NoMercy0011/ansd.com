@@ -1,7 +1,6 @@
 "use client"
 
 import { cn } from "@/src/lib/utils";
-import { useState } from "react";
 
 interface TabsProps {
   defaultValue: string;
@@ -9,7 +8,7 @@ interface TabsProps {
   className?: string;
 }
 
-export function Tabs({ defaultValue, children, className }: TabsProps) {
+export function Tabs({ children, className }: TabsProps) {
 
   return (
     <div className={cn("flex flex-col", className)}>

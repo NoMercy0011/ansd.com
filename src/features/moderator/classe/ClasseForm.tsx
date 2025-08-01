@@ -9,21 +9,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 
-type ClasseFormProps = {
-    isEditing?: boolean;
-    isNew?: boolean;
-    params?: number;
-}
-
-type ClasseType = {
-  classe: string;
-  niveau: string;
-  responsable: string;
-  section: string;
-}
-
-
-export default function ClasseForm( props : ClasseFormProps) {
+export default function ClasseForm( ) {
     const { actifs, enseignantsLoading } = useEnseignant();
     const { niveaux, niveauxLoading } = useNiveau();
     const { sections, sectionsLoading } = useSection();
@@ -71,10 +57,6 @@ export default function ClasseForm( props : ClasseFormProps) {
                 setSuccess('');
         }, 3000);
       }
-    }
-
-    const handleDelete = () => {
- 
     }
 
   return (
@@ -135,7 +117,7 @@ export default function ClasseForm( props : ClasseFormProps) {
                       { sectionsLoading ? ( <option value=""> Chargement ...</option> ) :
                        (<>
                         <option value="">Sélectionner la section</option>
-                        {sections.map((section : any) => (
+                        {sections.map((section) => (
                           <option key={section.id_section} value={section.id_section}>
                             {section.section}
                           </option>
@@ -158,7 +140,7 @@ export default function ClasseForm( props : ClasseFormProps) {
                         (
                           <>
                             <option value="">Sélectionner un professeur</option>
-                            {actifs.enseignants.map((enseignant : any) => (
+                            {actifs.enseignants.map((enseignant) => (
                               <option key={enseignant.id_enseignant} value={enseignant.id_enseignant}>
                                 {enseignant.nom} {enseignant.prenom} 
                               </option>

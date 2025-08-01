@@ -1,6 +1,6 @@
 "use client"
 import { useState } from "react";
-import { Card, Button, Badge } from "@/src/components/ui";
+import { Card, Button } from "@/src/components/ui";
 import { ChevronDown, ChevronUp, Edit, Printer } from "lucide-react";
 
 const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];

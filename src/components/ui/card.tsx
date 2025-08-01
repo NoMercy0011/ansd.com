@@ -31,12 +31,12 @@
 // }
 
 // export function CardStat({ title, value, change, icon: Icon, color }: CardStatProps) {
-//   const colorClasses = {
-//     sky: "bg-sky-100 text-sky-600",
-//     pink: "bg-pink-100 text-pink-600",
-//     orange: "bg-orange-100 text-orange-600",
-//     purple: "bg-purple-100 text-purple-600"
-//   };
+//   const colorClasses = [
+//     {sky: "bg-sky-100 text-sky-600"},
+//     {pink: "bg-pink-100 text-pink-600"},
+//     {orange: "bg-orange-100 text-orange-600"},
+//     {purple: "bg-purple-100 text-purple-600"}
+// ];
 
 //   return (
 //     <div className="bg-white rounded-xl border border-gray-200 p-6">

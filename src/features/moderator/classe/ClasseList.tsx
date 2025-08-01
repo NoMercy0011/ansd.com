@@ -6,32 +6,15 @@ import { TableOfContentsIcon } from 'lucide-react';
 import Link from 'next/link';
 import React, {useState } from 'react'
 
-// const mockClasses = [
-//   { id: "CLA-2023-1",niveau: "Terminale", nom: "A", effectif: 32, responsable: "Prof. Diallo", moyenne: 14.2,topStudents: 8,aboveAverage: 24,belowAverage: 4},
-//   { id: "CLA-2023-2", niveau: "Terminale", nom: "B", effectif: 28, responsable: "Prof. Konaté", moyenne: 13.7,topStudents: 8,aboveAverage: 10,belowAverage: 2},
-//   { id: "CLA-2023-3", niveau: "1ère", nom: "B", effectif: 25, responsable: "Prof. Ndiaye", moyenne: 12.9,topStudents: 8,aboveAverage: 17,belowAverage: 0},
-//   { id: "CLA-2023-4",niveau: "1ère", nom: "B", effectif: 30,responsable: "Prof. Traoré", moyenne: 11.8,topStudents: 5,aboveAverage: 19,belowAverage: 6},
-//   { id: "CLA-2023-5", niveau: "2nde", nom: "A", effectif: 29, responsable: "Prof. Rakoto", moyenne: 13.5, topStudents: 10, aboveAverage: 19, belowAverage: 0},
-//   { id: "CLA-2023-6", niveau: "2nde", nom: "B", effectif: 31, responsable: "Prof. Razafy", moyenne: 12.9, topStudents: 12, aboveAverage: 18, belowAverage: 1},
-// ]
 
 export default function ClasseList() {
-    //const { classes, niveaux, sections, error, isLoading } = useModerator();
       const { classes,classesLoading } = useClasse();
       const { niveaux, niveauxLoading, niveauxError} = useNiveau();
       const { sections, sectionsLoading, sectionsError} = useSection();
 
-    //const [selectedLevel, setSelectedLevel] = useState("Terminale");
-    //const [selectedClass, setSelectedClass] = useState("CLA-2023-1");
     const [isLoading, setIsLoading] = useState(false);
 
 
-    // const currentClass = mockClasses.find(c => c.id === selectedClass);
-  
-    // // Filtrer les classes par niveau
-    // const filteredClasses = selectedLevel === "Tous les niveaux" 
-    //   ? mockClasses 
-    //   : mockClasses.filter(c => c.niveau === selectedLevel);
   
   return (
     <>
@@ -47,7 +30,7 @@ export default function ClasseList() {
             {niveauxError && <option value="">{ niveauxError } </option> }
             {niveauxLoading ? (<option value=""> Chargement...</option> ) :
             ( <>
-              {niveaux?.map((niveau : any) => (
+              {niveaux?.map((niveau) => (
                 <React.Fragment key={niveau.id_niveau}>
                     <option value={niveau.id_niveau} >{niveau.niveau} </option>
                 </React.Fragment>
@@ -68,7 +51,7 @@ export default function ClasseList() {
             {sectionsError && <option value="">{ sectionsError } </option> }
             {sectionsLoading ? (<option value=""> Chargement...</option>) : 
             (<>
-            { sections?.map((section : any) => (
+            { sections?.map((section) => (
                 <React.Fragment key={section.id_section}>
                     <option value={section.id_section} >{section.section} </option>
                 </React.Fragment>
@@ -78,7 +61,6 @@ export default function ClasseList() {
         </select>
       </div>
 
-      {/* Liste des classes */}
       <Card>
         <div className="overflow-x-auto rounded-2xl border-2 border-white">
           <table className="min-w-full divide-y divide-gray-200">
@@ -112,19 +94,19 @@ export default function ClasseList() {
               </tr>
               </> ) : (
                 <>
-                {classes.map((classe : any) => (
+                {classes.map((classe) => (
                   <tr key={classe.id_classe} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap font-medium">
                       {classe.classe}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {classe.responsable.nom} {classe.responsable.prenom} 
+                      {classe?.responsable?.nom} {classe?.responsable?.prenom} 
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      {classe.niveau.niveau}
+                      {classe?.niveau?.niveau}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                        {classe.section.section}
+                        {classe.section?.section}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Link href={`/moderator/classe/gestion/${classe.id_classe}`} onClick={() => setIsLoading(true)}>

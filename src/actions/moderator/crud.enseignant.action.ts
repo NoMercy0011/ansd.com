@@ -1,6 +1,6 @@
 "use server"
 
-import { CreateEnseignantType, EnseignantType } from "@/src/types/type";
+import { CreateEnseignantType, EnseignantIdType } from "@/src/types/type";
 import { cookies } from "next/headers";
 
 
@@ -27,7 +27,7 @@ export async function CreateEnseignant(Enseignant : CreateEnseignantType){
     
 }
 
-export async function UpdateEnseignantAction(data : EnseignantType){
+export async function UpdateEnseignantAction(data : EnseignantIdType){
     console.log(data)
 }
 

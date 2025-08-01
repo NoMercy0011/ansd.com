@@ -1,5 +1,4 @@
 // components/dashboard/StudentDistribution.tsx
-import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
@@ -24,46 +23,46 @@ const mockData: LevelDistribution[] = [
 ];
 
 export default function StudentDistribution({ data = mockData }: StudentDistributionProps) {
-  const chartData = {
-    labels: data.map(item => item.level),
-    datasets: [
-      {
-        label: 'Nombre d\'élèves',
-        data: data.map(item => item.count),
-        backgroundColor: [
-          'rgba(234, 88, 12, 0.7)',
-          'rgba(219, 39, 119, 0.7)',
-          'rgba(14, 165, 233, 0.7)',
-          'rgba(139, 92, 246, 0.7)',
-          'rgba(20, 184, 166, 0.7)'
-        ],
-        borderColor: [
-          'rgba(234, 88, 12, 1)',
-          'rgba(219, 39, 119, 1)',
-          'rgba(14, 165, 233, 1)',
-          'rgba(139, 92, 246, 1)',
-          'rgba(20, 184, 166, 1)'
-        ],
-        borderWidth: 1,
-      },
-    ],
-  };
+  // const chartData = {
+  //   labels: data.map(item => item.level),
+  //   datasets: [
+  //     {
+  //       label: 'Nombre d\'élèves',
+  //       data: data.map(item => item.count),
+  //       backgroundColor: [
+  //         'rgba(234, 88, 12, 0.7)',
+  //         'rgba(219, 39, 119, 0.7)',
+  //         'rgba(14, 165, 233, 0.7)',
+  //         'rgba(139, 92, 246, 0.7)',
+  //         'rgba(20, 184, 166, 0.7)'
+  //       ],
+  //       borderColor: [
+  //         'rgba(234, 88, 12, 1)',
+  //         'rgba(219, 39, 119, 1)',
+  //         'rgba(14, 165, 233, 1)',
+  //         'rgba(139, 92, 246, 1)',
+  //         'rgba(20, 184, 166, 1)'
+  //       ],
+  //       borderWidth: 1,
+  //     },
+  //   ],
+  // };
 
-  const options = {
-    plugins: {
-      tooltip: {
-        callbacks: {
-          afterBody: (context: any) => {
-            const dataIndex = context[0].dataIndex;
-            return [
-              `Garçons: ${data[dataIndex].male} (${Math.round((data[dataIndex].male / data[dataIndex].count) * 100)}%)`,
-              `Filles: ${data[dataIndex].female} (${Math.round((data[dataIndex].female / data[dataIndex].count) * 100)}%)`
-            ];
-          }
-        }
-      }
-    }
-  };
+  // const options = {
+  //   plugins: {
+  //     tooltip: {
+  //       callbacks: {
+  //         afterBody: (context) => {
+  //           const dataIndex = context[0].dataIndex;
+  //           return [
+  //             `Garçons: ${data[dataIndex].male} (${Math.round((data[dataIndex].male / data[dataIndex].count) * 100)}%)`,
+  //             `Filles: ${data[dataIndex].female} (${Math.round((data[dataIndex].female / data[dataIndex].count) * 100)}%)`
+  //           ];
+  //         }
+  //       }
+  //     }
+  //   }
+  // };
 
   return (
     <div className="bg-white p-6 rounded-xl border border-gray-200">
@@ -76,7 +75,7 @@ export default function StudentDistribution({ data = mockData }: StudentDistribu
         </div>
       </div>
       <div className="h-80">
-        <Pie data={chartData} options={options} />
+        {/* <Pie data={chartData} options={options} /> */}
       </div>
       <div className="mt-4 grid grid-cols-2 gap-4">
         {data.map((level) => (

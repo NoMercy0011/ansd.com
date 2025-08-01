@@ -1,4 +1,5 @@
-import { Card } from '@/src/components/ui/card'
+
+import { Card } from '@/src/components/ui';
 import { ChevronRight, FileText, Users } from 'lucide-react'
 import React from 'react'
 

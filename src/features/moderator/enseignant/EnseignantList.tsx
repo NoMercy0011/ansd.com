@@ -93,7 +93,7 @@ export default function EnseignantList() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Liste des enseignants</h3>
             <ActiveTable />
-            {actifs.enseignants?.length === 0 &&  <div className='flex justify-center text-center bg-white/70 text-sm h-10 items-center rounded-sm mt-0.5'> Donnée vide pour l'instant !</div> }
+            {actifs.enseignants?.length === 0 &&  <div className='flex justify-center text-center bg-white/70 text-sm h-10 items-center rounded-sm mt-0.5'> Donnée vide pour l&apos; instant !</div> }
           </div>
         )}
 
@@ -101,7 +101,7 @@ export default function EnseignantList() {
           <div>
             <h3 className="text-lg font-semibold mb-4">Enseignants Quittés</h3>
             <QuitteTable />
-            {quittes.enseignants?.length === 0 &&  <div className='flex justify-center text-center bg-white/70 text-sm h-10 items-center rounded-sm mt-0.5'> Donnée vide pour l'instant !</div> }
+            {quittes.enseignants?.length === 0 &&  <div className='flex justify-center text-center bg-white/70 text-sm h-10 items-center rounded-sm mt-0.5'> Donnée vide pour l&apos; instant !</div> }
           </div>
         )}
       </div>

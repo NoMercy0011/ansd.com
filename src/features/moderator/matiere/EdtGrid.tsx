@@ -13,7 +13,9 @@ export default function EdtGrid({ classeId }: { classeId: string }) {
 
   const handleCellClick = (jour: string, creneau: string) => {
     // Logique pour ajouter/modifier un cours
+    setEdtData({...edtData});
     console.log(`Créneau ${creneau} du ${jour} cliqué`);
+    console.log(classeId);
   };
 
   return (

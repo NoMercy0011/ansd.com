@@ -1,3 +1,14 @@
+import React from 'react'
+
+export default function page() {
+  return (
+    <div>
+      
+    </div>
+  )
+}
+
+
 // "use client"
 
 // import { Card, Button, Badge, Select } from "@/src/components/ui";

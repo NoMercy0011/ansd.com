@@ -1,5 +1,4 @@
 // components/dashboard/PerformanceClasses.tsx
-import { Bar } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -45,80 +44,80 @@ const mockData: ClassPerformance[] = [
 ];
 
 export default function PerformanceClasses({ data = mockData }: PerformanceClassesProps) {
-  const chartData = {
-    labels: data.map(item => item.className),
-    datasets: [
-      {
-        label: 'Moyenne de classe',
-        data: data.map(item => item.averageGrade),
-        backgroundColor: 'rgba(234, 88, 12, 0.7)',
-        borderColor: 'rgba(234, 88, 12, 1)',
-        borderWidth: 1,
-        yAxisID: 'y',
-      },
-      {
-        label: 'Taux de réussite (%)',
-        data: data.map(item => item.successRate),
-        backgroundColor: 'rgba(14, 165, 233, 0.7)',
-        borderColor: 'rgba(14, 165, 233, 1)',
-        borderWidth: 1,
-        yAxisID: 'y1',
-        type: 'line' as const,
-        // Configuration spécifique pour la ligne
-        tension: 0.1,
-        pointRadius: 5,
-        pointHoverRadius: 7,
-      }
-    ],
-  };
+  // const chartData = {
+  //   labels: data.map(item => item.className),
+  //   datasets: [
+  //     {
+  //       label: 'Moyenne de classe',
+  //       data: data.map(item => item.averageGrade),
+  //       backgroundColor: 'rgba(234, 88, 12, 0.7)',
+  //       borderColor: 'rgba(234, 88, 12, 1)',
+  //       borderWidth: 1,
+  //       yAxisID: 'y',
+  //     },
+  //     {
+  //       label: 'Taux de réussite (%)',
+  //       data: data.map(item => item.successRate),
+  //       backgroundColor: 'rgba(14, 165, 233, 0.7)',
+  //       borderColor: 'rgba(14, 165, 233, 1)',
+  //       borderWidth: 1,
+  //       yAxisID: 'y1',
+  //       type: 'line' as const,
+  //       // Configuration spécifique pour la ligne
+  //       tension: 0.1,
+  //       pointRadius: 5,
+  //       pointHoverRadius: 7,
+  //     }
+  //   ],
+  // };
 
-  const options = {
-    responsive: true,
-    interaction: {
-      mode: 'index' as const,
-      intersect: false,
-    },
-    scales: {
-      y: {
-        type: 'linear' as const,
-        display: true,
-        position: 'left' as const,
-        title: {
-          display: true,
-          text: 'Moyenne /20',
-        },
-        max: 20,
-        min: 0,
-      },
-      y1: {
-        type: 'linear' as const,
-        display: true,
-        position: 'right' as const,
-        title: {
-          display: true,
-          text: 'Réussite %',
-        },
-        max: 100,
-        min: 0,
-        grid: {
-          drawOnChartArea: false,
-        },
-      },
-    },
-    plugins: {
-      tooltip: {
-        callbacks: {
-          afterBody: (context: any) => {
-            const dataIndex = context[0].dataIndex;
-            return [
-              `Élèves excellents: ${data[dataIndex].topStudents}`,
-              `Taux réussite: ${data[dataIndex].successRate}%`
-            ];
-          }
-        }
-      }
-    }
-  };
+  // const options = {
+  //   responsive: true,
+  //   interaction: {
+  //     mode: 'index' as const,
+  //     intersect: false,
+  //   },
+  //   scales: {
+  //     y: {
+  //       type: 'linear' as const,
+  //       display: true,
+  //       position: 'left' as const,
+  //       title: {
+  //         display: true,
+  //         text: 'Moyenne /20',
+  //       },
+  //       max: 20,
+  //       min: 0,
+  //     },
+  //     y1: {
+  //       type: 'linear' as const,
+  //       display: true,
+  //       position: 'right' as const,
+  //       title: {
+  //         display: true,
+  //         text: 'Réussite %',
+  //       },
+  //       max: 100,
+  //       min: 0,
+  //       grid: {
+  //         drawOnChartArea: false,
+  //       },
+  //     },
+  //   },
+  //   plugins: {
+  //     tooltip: {
+  //       callbacks: {
+  //         afterBody: (context: any) => {
+  //           const dataIndex = context[0].dataIndex;
+  //           return [
+  //             `Élèves excellents: ${data[dataIndex].topStudents}`,
+  //             `Taux réussite: ${data[dataIndex].successRate}%`
+  //           ];
+  //         }
+  //       }
+  //     }
+  //   }
+  // };
 
   return (
     <div className="bg-white p-6 rounded-xl border border-gray-200">
@@ -132,7 +131,7 @@ export default function PerformanceClasses({ data = mockData }: PerformanceClass
         </select>
       </div>
       <div className="h-80">
-        {/* <Bar data={chartData} options={options} /> */}
+        {/* <Bar data={chartData || null} options={options} /> */}
       </div>
       <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
         {data.slice(0, 3).map((classItem) => (

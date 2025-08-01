@@ -1,7 +1,19 @@
 import { Button } from "@/src/components/ui";
 import Link from "next/link";
 
-export default function StudentList({ students }: { students: any[] }) {
+type studentData = {
+  nom: string;
+  prenom: string;
+  id:number | string;
+  classe: string;
+  moyenne:number;
+  dateNaissance?:string;
+  telephone?:string;
+  email?:string;
+  tuteur?:string;
+}
+
+export default function StudentList({ students }: { students: studentData[] }) {
   return (
     <div className="overflow-x-auto">
       <table className="min-w-full divide-y divide-gray-200">

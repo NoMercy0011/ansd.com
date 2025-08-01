@@ -46,9 +46,9 @@ export type userSchema = {
   role : string;
 }
 
-export type EnseignantType = {
+export type EnseignantData = {
     total : number;
-  enseignants : EnseignantIdType[];
+    enseignants : EnseignantIdType[];
 }
 
 export type EnseignantIdType = {
@@ -149,6 +149,29 @@ export type classeType = {
     updated_at?: Date | null;
 }
 
+export type classesData = {
+    id_classe?: number;
+    classe?: string | null;
+    niveau?: {
+      id_niveau: number | null;
+      niveau: string | null;
+    };
+    section?: {
+      id_section:number | null;
+      section:string | null;
+    };
+    responsable?: {
+      id_user: number | null;
+      nom: string | null;
+      prenom: string | null;
+      sexe: string | null;
+    };
+    annee_scolaire?: {
+      id_annee_scolaire: number | null;
+      annee_scolaire: string | null;
+    };
+}
+
 export type MatiereProps = {
   message ?: string | null;
   classeSelected? : string | null;
@@ -176,7 +199,7 @@ export type EnseignementProps = {
   dataClasse ?: classeType[];
   dataEnseignement ?: EnseignementType[];
   dataMatiere ?: MatiereType[];
-  dataEnseignant ?: EnseignantType[];
+  dataEnseignant ?: EnseignantData[];
   selectedClasse ?: string | null;
 }
 
@@ -191,3 +214,11 @@ export type NiveauType = {
   created_at: string;
   updated_at: string;
 }[]
+
+export type SectionData ={
+  id_section: number;
+  section: string;
+  departement: string;
+  cycle:string;
+  description: string;
+}

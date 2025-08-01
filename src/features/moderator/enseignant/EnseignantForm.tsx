@@ -147,7 +147,7 @@ export default function EnseignantForm() {
                     {sectionsError && <option value="">{ sectionsError } </option> }
                     {sectionsLoading ? ( <option value=""> en chargement ... </option> ) : (
                     <>
-                        { sections.map((section: any) => (
+                        { sections.map((section) => (
                         <React.Fragment key={section.id_section}>
                             <option value={section.id_section} >{section.section} </option>
                         </React.Fragment>

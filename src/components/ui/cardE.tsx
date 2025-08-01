@@ -1,7 +1,12 @@
 import { cn } from "@/src/lib/utils";
+import { LucideIcon } from "lucide-react";
 
 interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   variant?: "default" | "hover";
+  value?: string;
+  change?: string;
+  icon?: LucideIcon;
+  color?: string;
 }
 
 export function Card({ 
@@ -21,14 +26,14 @@ export function Card({
   );
 }
 
-interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
+// interface CardHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function CardHeader({ className, ...props }: CardHeaderProps) {
-  return <div className={cn("p-6", className)} {...props} />;
-}
+// export function CardHeader({ className, ...props }: any) {
+//   return <div className={cn("p-6", className)} {...props} />;
+// }
 
-interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {}
+// interface CardContentProps extends React.HTMLAttributes<HTMLDivElement> {}
 
-export function CardContent({ className, ...props }: CardContentProps) {
-  return <div className={cn("p-6 pt-0", className)} {...props} />;
-}
+// export function CardContent({ className, ...props }: any) {
+//   return <div className={cn("p-6 pt-0", className)} {...props} />;
+// }

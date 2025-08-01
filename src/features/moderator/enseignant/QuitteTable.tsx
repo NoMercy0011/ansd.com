@@ -39,7 +39,7 @@ export default function QuitteTable() {
               </tr>
             </>) : (
               (<>
-          {quittes.enseignants.map((enseignant : any) => (
+          {quittes.enseignants.map((enseignant) => (
             <tr key={enseignant.id_enseignant} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{ enseignant.photo || null} </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{ enseignant.nom} </td>

@@ -1,6 +1,6 @@
 "use client"
 
-import { CardStat } from "@/src/components/ui/card";
+import { Card } from "@/src/components/ui";
 import { Award, BookOpen, GraduationCap, LucideIcon, Users } from "lucide-react";
 
 type StatsType = {
@@ -23,7 +23,7 @@ const stats : StatsType[] = [
     return(
         <>
         {stats.map((stat, index) => (
-            <CardStat 
+            <Card 
                 key={index}
                 title={stat.title}
                 value={stat.value}

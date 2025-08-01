@@ -2,13 +2,9 @@
 
 import { useEnseignant } from "@/hooks/useModerator";
 import { Button } from "@/src/components/ui";
-import { EnseignantType } from "@/src/types/type";
 import Link from "next/link";
 import { useState } from "react";
 
-interface EnseignantTableProps {
-  data: EnseignantType;
-}
 
 export default function ActiveTable() {
     const { actifs, enseignantsLoading} = useEnseignant();
@@ -47,7 +43,7 @@ export default function ActiveTable() {
               </tr>
             </>) : (
               (<>
-          {actifs.enseignants.map((enseignant : any) => (
+          {actifs.enseignants.map((enseignant) => (
             <tr key={enseignant.id_enseignant} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{ enseignant.photo || null} </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{ enseignant.nom} </td>

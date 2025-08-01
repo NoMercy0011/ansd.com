@@ -1,20 +1,21 @@
 "use client"
 
 import { useClasse } from '@/hooks/useModerator';
+import { classesData } from '@/src/types/type';
 import { Award, BookOpen, ChevronLeft, Loader2, PenSquareIcon, TrendingDown, TrendingUp, Users } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react'
 
 type ClasseCardProps = {
     param : string;
-    classe?: any;
+    classe?: classesData;
     classesLoading?: boolean;
 }
 
 export default function ClasseCardHeader( props : ClasseCardProps) {
     const { classes, classesLoading } = useClasse();
 
-    const classe = classes.find( (classe : any) => classe.id_classe == props.param);
+    const classe = classes.find( (classe) => classe.id_classe == Number(props.param));
     
     
     const [isLoading, setiIsLoading] = useState(false);
@@ -45,7 +46,7 @@ export default function ClasseCardHeader( props : ClasseCardProps) {
             <h2 className=" bg-blue-700 text-white/90 text-xl font-bold rounded-t-2xl ml-5 mt-2 mb-1">
                 { classesLoading ? (< div className ='bg-sky-100 h-7 w-40 rounded-xl animate-pulse' > &nbsp; </div> ) : 
                 ( <> 
-                    {classe.classe}
+                    {classe?.classe}
                 </> ) 
                 }
             </h2>
@@ -61,7 +62,7 @@ export default function ClasseCardHeader( props : ClasseCardProps) {
           <div>
             <div className='flex justify-between items-start'>
                 <p className="text-gray-700"> 
-                  { classe.responsable.sexe == 'M' ? "Mr" : " Mme" }  {classe.responsable.nom} {classe.responsable.prenom} - Responsable </p>
+                  { classe?.responsable?.sexe == 'M' ? "Mr" : " Mme" }  {classe?.responsable?.nom} {classe?.responsable?.prenom} - Responsable </p>
                 <p> <button className=' px-2 cursor-pointer'>
                     <PenSquareIcon className='text-sm text-red-500 w-5 h-5 hover:scale-120'/>
                     </button>

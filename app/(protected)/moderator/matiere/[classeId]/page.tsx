@@ -3,10 +3,16 @@ import EdtGrid from "@/src/features/moderator/matiere/EdtGrid";
 import { ChevronLeft, Printer } from "lucide-react";
 import Link from "next/link";
 
-export default function EdtClassePage({ params }: { params: { classeId: string } }) {
+type PropsEnseingantID = {
+    params : Promise<{
+        classeId: string;
+    }>;
+}
+
+export default async  function EdtClassePage({ params }: PropsEnseingantID) {
   // Ici, vous récupéreriez les données de la classe depuis une API
   const classe = {
-    id: params.classeId,
+    id: (await params).classeId,
     nom: "Terminale A",
     niveau: "Terminale"
   };
@@ -29,7 +35,7 @@ export default function EdtClassePage({ params }: { params: { classeId: string }
 
       <Card>
         <div className="p-4">
-          <EdtGrid classeId={params.classeId} />
+          <EdtGrid classeId={(await params).classeId} />
         </div>
       </Card>
 

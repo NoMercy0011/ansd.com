@@ -1,3 +1,13 @@
+import React from 'react'
+
+export default function page() {
+  return (
+    <div>
+      
+    </div>
+  )
+}
+
 // "use client";
 
 // import { useState, useRef, useEffect } from 'react';

@@ -1,4 +1,17 @@
-export default function StudentCard({ student }: { student: any }) {
+
+type studentData = {
+  nom: string;
+  prenom: string;
+  id:number | string;
+  classe: string;
+  moyenne:number;
+  dateNaissance:string;
+  telephone:string;
+  email:string;
+  tuteur:string;
+}
+
+export default function StudentCard({ student }: { student: studentData }) {
   return (
     <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
       <div className="p-6">
