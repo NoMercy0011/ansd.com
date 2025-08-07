@@ -1,11 +1,12 @@
 "use client"
 import { ReadClasse } from '@/src/actions/moderator/crud.classe.action';
 import { ReadEnseignant } from '@/src/actions/moderator/crud.enseignant.action';
+import { ReadCreneau, ReadEnseignement } from '@/src/actions/moderator/crud.enseignement.action';
 import { ReadEtudiant } from '@/src/actions/moderator/crud.etudiant.action';
 import { ReadMatiere } from '@/src/actions/moderator/crud.matiere.action';
 import { ReadSection } from '@/src/actions/moderator/crud.section.action';
 import { ReadNiveau } from '@/src/actions/moderator/niveau.action';
-import { classesData, EnseignantData, SectionData } from '@/src/types/type';
+import { classesData, CreneauData, EmploiDuTempsData, EnseignantData, MatiereData, SectionData } from '@/src/types/type';
 import useSWR, { mutate } from 'swr';
 
 
@@ -59,12 +60,34 @@ export function useMatiere() {
     const { data, isLoading, error, mutate} = useSWR('get-matieres', ReadMatiere);
 
     return {
-        matieres : data?.data,
-        sectionsLoading: isLoading,
-        sectionsError: error,
+        matieres : data?.data as MatiereData[],
+        matieresLoading: isLoading,
+        matieresError: error,
         mutate
     }
-} 
+}
+
+export function useEmploiDuTemps(){
+    const { data, isLoading, error, mutate} = useSWR('get-emploi-du-temps', ReadEnseignement);
+
+    return {
+        emploiDuTemps : data?.data as EmploiDuTempsData[],
+        emploiDuTempsLoading: isLoading,
+        emploiDuTempsError: error,
+        mutate
+    }
+}
+
+export function useCreneau(){
+    const { data, isLoading, error, mutate} = useSWR('get-classe-enseignement', ReadCreneau);
+
+    return {
+        creneaux : data?.data as CreneauData[],
+        creneauxLoading: isLoading,
+        creneauxError: error,
+        mutate
+    }
+}
 
 export function useEtudiant() {
     // const { data, isLoading, error, mutate} = useSWR('get-etudiants', ReadEtudiant);

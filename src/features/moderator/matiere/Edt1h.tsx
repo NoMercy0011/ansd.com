@@ -1,5 +1,6 @@
 // components/emploi-du-temps/Edt1H.tsx
 "use client"
+
 import { Card } from "@/src/components/ui";
 
 const jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];

@@ -175,37 +175,69 @@ export type classesData = {
 export type MatiereProps = {
   message ?: string | null;
   classeSelected? : string | null;
-  dataEnseignement: EnseignementType[]
+  dataEnseignement: EnseignementData[]
 }
 
-export type EnseignementType = {
-  id_enseignement ?: number | null;
-  classe?: number | null;
-  matiere?: number | null;
-  enseignant?: number | null;
-  coefficient?: number | null;
-  chef_etablissement?: number | null;
-  date_creation?: Date | null;
-  modificateur?: number | null;
-  dernier_modification?: Date | null;
-  annee_scolaire?: number | null;
-  date_suppresseur?: Date | null;
-  suppresseur ?: number | null;
-  status ?: string | null;
-  horaire?: string | null;
+export type EnseignementData = {
+  id_enseignement ?: number;
+  classe_id?: number;
+  matiere_id?: number;
+  enseignant_id?: number;
+  coefficient?: number;
+  horaire?: string;
+  cellule?: number;
+  startTime?: string;
+  endTime?: string;
 }
 
 export type EnseignementProps = {
   dataClasse ?: classeType[];
-  dataEnseignement ?: EnseignementType[];
-  dataMatiere ?: MatiereType[];
+  dataEnseignement ?: EnseignementData[];
+  dataMatiere ?: MatiereData[];
   dataEnseignant ?: EnseignantData[];
   selectedClasse ?: string | null;
 }
 
-export type MatiereType = {
-  id_matiere : number | null;
-  matiere ?: string | null;
+export type EmploiDuTempsData = {
+  id_enseignement: number;
+	classe: {
+		id_classe: number;
+		classe: string;
+	};
+	matiere: {
+		id_matiere: number;
+		matiere: string;
+		code: string;
+	};
+	enseignant: {
+		id_user: number;
+		nom: string;
+		prenom: string;
+		pseudo: string;
+	};
+	cellule: {
+		creneau: number;
+		jour: number;
+	};
+  coordonnee?: number;
+  coefficient: number;
+	horaire: string;
+	startTime: string;
+	endTime: string;
+}
+
+export type CreneauData = {
+  id_classe: number;
+  classe: string;
+	id_niveau: number;
+	id_section: number;
+	enseignements: number;
+}
+
+export type MatiereData = {
+  id_matiere : number;
+  matiere ?: string;
+  code?: string;
 }
 
 export type NiveauType = {
