@@ -1,4 +1,4 @@
-import EdtForm from "@/src/features/moderator/matiere/EdtFrom";
+import EdtForm from "@/src/features/moderator/emploi-du-temps/EdtFrom";
 
 type PropsEnseingantID = {
     params : Promise<{
@@ -7,16 +7,14 @@ type PropsEnseingantID = {
 }
 
 export default async  function EdtClassePage({ params }: PropsEnseingantID) {
-  // Ici, vous récupéreriez les données de la classe depuis une API
+  
   const classe = {
     id: (await params).classeId,
-    nom: "Terminale A",
-    niveau: "Terminale"
   };
 
   return (
     <>
-    <EdtForm params={Number(classe.id)} />
+    <EdtForm params={Number( classe.id)} />
     </>
   );
 }

@@ -161,7 +161,7 @@ export default function EdtForm( props : { params?: number}) {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [creneau, props.params]);
+  }, [/*creneau, props.params*/]);
 
 const renderCellContent = (slotId: number, dayId: number) => {
     if (emploiDuTempsLoading) {

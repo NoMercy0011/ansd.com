@@ -238,6 +238,8 @@ export type MatiereData = {
   id_matiere : number;
   matiere ?: string;
   code?: string;
+  section?: string;
+  section_id?: number;
 }
 
 export type NiveauType = {

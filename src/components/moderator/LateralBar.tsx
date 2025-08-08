@@ -2,7 +2,7 @@
 "use client"
 
 import { usePathname } from "next/navigation";
-import { Award, BarChart3, BookOpen, Calendar, ChevronRight, FileText, GraduationCap, Settings, Users, X } from "lucide-react";
+import { Award, BarChart3, BookCopy, BookOpen, Calendar, ChevronRight, FileText, GraduationCap, Settings, Users, X } from "lucide-react";
 import Link from "next/link";
 
 interface LateralBarProps {
@@ -18,7 +18,8 @@ export default function LateralBar({ isOpen, setIsOpen }: LateralBarProps) {
     { id: 'etudiant', name: 'Étudiants', icon: Users, link: '/moderator/etudiant' },
     { id: 'enseignant', name: 'Enseignants', icon: GraduationCap, link: '/moderator/enseignant' },
     { id: 'classe', name: 'Classes', icon: BookOpen, link: '/moderator/classe' },
-    { id: 'matiere', name: 'Emploi du temps', icon: Calendar, link: '/moderator/matiere' },
+    { id: 'matiere', name: 'Matieres', icon: BookCopy, link: '/moderator/matiere' },
+    { id: 'edt', name: 'Emploi du temps', icon: Calendar, link: '/moderator/emploi-du-temps' },
     { id: 'bulletin', name: 'Bulletins', icon: Award, link: '/moderator/bulletin' },
     { id: 'certificat', name: 'Certificats', icon: FileText, link: '/moderator/certificat' },
     { id: 'parametre', name: 'Paramètres', icon: Settings, link: '/moderator/parametre' }

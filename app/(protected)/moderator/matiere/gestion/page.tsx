@@ -1,11 +1,9 @@
-
-import EdtForm from '@/src/features/moderator/matiere/EdtFrom'
-import React from 'react'
+import MatiereForm from "@/src/features/moderator/matiere/MatiereForm";
 
 export default function page() {
   return (
-    <div>
-      <EdtForm />
-    </div>
+    <>
+      <MatiereForm  isNew={true} />
+    </>
   )
 }
