@@ -2,7 +2,7 @@
 import Loading from '@/app/(protected)/moderator/loading'
 import { useEnseignant } from '@/hooks/useModerator'
 import { Button, Card } from '@/src/components/ui'
-import { AlertTriangle,  GraduationCap, Plus, Search, TrendingUp, UserCircle2 } from 'lucide-react'
+import { AlertTriangle,  GraduationCap, Loader2, Plus, Search, TrendingUp, UserCircle2 } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState } from 'react'
 
@@ -42,7 +42,7 @@ export default function EnseignantStat() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-gray-700">Enseignants en ligne</p>
-              <h3 className="text-3xl font-bold mt-1 ">{ enseignantsLoading ? <Loading /> : onLine.enseignants.length }  </h3>
+              <h3 className="text-3xl font-bold mt-1 ">{ enseignantsLoading ? <Loader2 className='animate-spin'/> : onLine.enseignants.length }  </h3>
               <p className="text-xs text-gray-700 mt-2">en développement ...</p>
             </div>
             <div className="p-2 bg-gray-100 rounded-lg text-orange-600">
@@ -55,7 +55,7 @@ export default function EnseignantStat() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-gray-700">Efféctifs Enseignants</p>
-              <h3 className="text-2xl font-bold mt-1">{enseignantsLoading ? <Loading /> : actifs.enseignants.length } </h3>
+              <h3 className="text-2xl font-bold mt-1">{enseignantsLoading ? <Loader2 className='animate-spin'/> : actifs.enseignants.length } </h3>
             <div className='flex'>
                 <p className="text-xs text-gray-700 mt-2">dernier ajout </p>
                 <p className="text-xs text-gray-700 m-2 text-end">- il y a 1h</p>
@@ -71,7 +71,7 @@ export default function EnseignantStat() {
           <div className="flex items-start justify-between">
             <div>
               <p className="text-sm text-gray-700">Retraites - Démmissions</p>
-              <h3 className="text-2xl font-bold mt-1 text-red-500"> {enseignantsLoading ? <Loading /> : quittes.enseignants.length }</h3>
+              <h3 className="text-2xl font-bold mt-1 text-red-500"> {enseignantsLoading ? <Loader2 className='animate-spin'/> : quittes.enseignants.length }</h3>
               <div className='flex'>
                 <p className="text-xs text-gray-700 mt-2">dernier sortie </p>
                 <p className="text-xs text-gray-700 m-2 text-end">- il y a 1 ans</p>

@@ -1,6 +1,10 @@
 "use client"
 
 import { useEnseignant } from "@/hooks/useModerator";
+import { TableOfContentsIcon } from "lucide-react";
+import DefaultWoman from "@/public/avatarWoman.png"
+import DefaultMan from "@/public/avatarMan.png"
+import Image from "next/image";
 
 
 export default function QuitteTable() {
@@ -35,13 +39,21 @@ export default function QuitteTable() {
           { enseignantsLoading ? (
             <>
               <tr>
-                Chargement...
+                <td className="px-6 py-4 whitespace-nowrap text-sm "> <TableOfContentsIcon className="text-gray-200 animate-pulse w-10"/> </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm"> <TableOfContentsIcon className="text-gray-200 animate-pulse w-10"/> </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm"> <TableOfContentsIcon className="text-gray-200 animate-pulse w-10"/> </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm"> <TableOfContentsIcon className="text-gray-200 animate-pulse w-10"/> </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm"> <TableOfContentsIcon className="text-gray-200 animate-pulse w-10"/> </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm"> <TableOfContentsIcon className="text-gray-200 animate-pulse w-10"/> </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm"> <TableOfContentsIcon className="text-gray-200 animate-pulse w-10"/> </td>
               </tr>
             </>) : (
               (<>
           {quittes.enseignants.map((enseignant) => (
             <tr key={enseignant.id_enseignant} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm">{ enseignant.photo || null} </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm">
+                  <Image src={enseignant.sexe == 'M' ? (enseignant.photo || DefaultMan) : (enseignant.photo || DefaultWoman)}  alt="photo de profile" className="w-8 h-8 rounded-full"/>  
+                </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{ enseignant.nom} </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{ enseignant.prenom} </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm">{ enseignant.pseudo} </td>

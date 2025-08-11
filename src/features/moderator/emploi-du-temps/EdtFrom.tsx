@@ -154,6 +154,7 @@ export default function EdtForm( props : { params?: number}) {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
+        closeContextMenu();
       }
     };
 

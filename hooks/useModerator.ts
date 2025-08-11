@@ -2,7 +2,7 @@
 import { ReadClasse } from '@/src/actions/moderator/crud.classe.action';
 import { ReadEnseignant } from '@/src/actions/moderator/crud.enseignant.action';
 import { ReadCreneau, ReadEnseignement } from '@/src/actions/moderator/crud.enseignement.action';
-import { ReadEtudiant } from '@/src/actions/moderator/crud.etudiant.action';
+import { ReadClasseId, ReadEtudiant, ReadEtudiantsParClasse } from '@/src/actions/moderator/crud.etudiant.action';
 import { ReadMatiere } from '@/src/actions/moderator/crud.matiere.action';
 import { ReadSection } from '@/src/actions/moderator/crud.section.action';
 import { ReadNiveau } from '@/src/actions/moderator/niveau.action';
@@ -90,12 +90,34 @@ export function useCreneau(){
 }
 
 export function useEtudiant() {
-    // const { data, isLoading, error, mutate} = useSWR('get-etudiants', ReadEtudiant);
+    const { data, isLoading, error, mutate} = useSWR('get-etudiants', ReadEtudiant);
 
-    // return {
-    //     etudiants : data?.data,
-    //     etudiantsLoading: isLoading,
-    //     etudiantsError: error,
-    //     mutate
-    // }
+    return {
+        etudiants : data?.data,
+        etudiantsLoading: isLoading,
+        etudiantsError: error,
+        mutate
+    }
+}
+
+export function useEtudiantsParClasse() {
+    const { data, isLoading, error, mutate} = useSWR('get-etudiants-par-classe', ReadEtudiantsParClasse);
+
+    return {
+        etudiantsClasse : data?.data,
+        etudiantsClasseLoading: isLoading,
+        etudiantsClasseError: error,
+        mutate
+    }
+}
+
+export function useClasseId() {
+    const { data, isLoading, error, mutate} = useSWR('get-etudiants-classe-id', ReadClasseId);
+
+    return {
+        etudiantsClasseId : data?.data,
+        etudiantsClasseIdLoading: isLoading,
+        etudiantsClasseIdError: error,
+        mutate
+    }
 }

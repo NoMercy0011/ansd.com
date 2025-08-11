@@ -11,7 +11,6 @@ export default async  function EdtClassePage({ params }: PropsEnseingantID) {
   const classe = {
     id: (await params).classeId,
   };
-
   return (
     <>
     <EdtForm params={Number( classe.id)} />

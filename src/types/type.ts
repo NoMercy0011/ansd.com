@@ -256,3 +256,68 @@ export type SectionData ={
   cycle:string;
   description: string;
 }
+
+export type EtudiantData = {
+  id_inscription: number;
+  matricule: string;
+  inscription: string;
+  nom: string;
+  prenom: string;
+  sexe: string;
+  date_naissance: string;
+  lieu_naissance: string;
+  domicile: string;
+  nom_pere: string;
+  nom_mere: string;
+  telephone_parent: string;
+  nom_tuteur: string;
+  telephone_tuteur: string;
+  status: string;
+}
+
+export type EtudiantClasseData= {
+    id_classe: number;
+		classe: string;
+		section: {
+			id_section: number;
+			section: string;
+		},
+		niveau: {
+			id_niveau: number;
+			niveau: string;
+		};
+		etudiants: {
+			total: number;
+			etudiants: EtudiantData[];
+		};
+			responsable: {
+			id_enseignant_active: number;
+			nom: string;
+			prenom: string;
+			sexe: string;
+		} 
+}
+
+export type InscriptionData = {
+    nom: string;
+    prenom: string;
+    date_naissance: string;
+    lieu_naissance: string;
+    sexe: string;
+    domicile: string;
+    nom_pere: string;
+    nom_mere: string;
+    telephone_parent: string;
+    nom_tuteur: string;
+    telephone_tuteur: string;
+    telephone_urgence: string;
+    matricule: string;
+    classe_id: number;
+    inscription: string;
+    date_entree: string;
+    annee_scolaire_id: string;
+    ecole_precedente: string;
+    sortie_ecole_precedente: string;
+    raison_admission: string;
+    statut: string;
+}

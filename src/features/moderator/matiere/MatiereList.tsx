@@ -137,21 +137,3 @@ export default function MatiereList() {
     </>
   )
 }
-
-{/* <div 
-                      key={matiere.id_matiere} 
-                      className="p-4 hover:bg-gray-50 flex justify-between items-center"
-                    >
-                      <div className='grid grid-cols-2'>
-                        <p className="font-medium">{matiere.matiere}</p>
-                        <p className="text-sm text-gray-500 mt-1 flex items-center"> <span>[ {matiere.code} ] </span> <PenBoxIcon className="h-4 w-4 text-green-600 ml-3" /> </p>
-                      </div>
-                      <Link  href={`/moderator/emploi-du-temps/${matiere.id_matiere}`}>
-                      <Button 
-                        variant="ghost"
-                        className='text-md text-red-500 hover:bg-gray-100 hover:text-red-500' 
-                      >
-                         <Trash2Icon className="h-4 w-4 hover:scale-120" />
-                      </Button>
-                      </Link>
-                    </div> */}
