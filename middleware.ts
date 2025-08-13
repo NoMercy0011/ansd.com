@@ -13,11 +13,11 @@ export async function middleware(req: NextRequest) {
     const pathname = new URL(req.url).pathname;
     console.log(pathname);
     
-    if (pathname.startsWith('/moderator') && role !== 'Admin') {
+    if (pathname.startsWith('/admin') && role !== 'admin') {
       return NextResponse.redirect(new URL('/unauthorized', req.url));
     }
 
-    if (pathname.startsWith('/user') && role !== 'User') {
+    if (pathname.startsWith('/user') && role !== 'user') {
       return NextResponse.redirect(new URL('/unauthorized', req.url));
     }
 
@@ -29,5 +29,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/user/:path*', '/moderator/:path*'],
+  matcher: [/*'/user/:path*', '/admin/:path*'*/],
 };

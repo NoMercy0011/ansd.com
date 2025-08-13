@@ -1,176 +1,136 @@
 "use client"
 
-import Legendes from "@/src/components/Legendes";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { userLoginType } from "@/src/types/type";
-import LovaLogo from "@/src/components/LovaLogo";
-import LovaFooter from "@/src/components/LovaFooter";
-import Link from "next/link";
-import { LoginRequest } from "@/src/actions/auth/auth.action";
+import { Moon, Sun, Eye, EyeOff, LogInIcon } from 'lucide-react';
+import { Button } from '@/sources/components/ui';
+import { useState } from 'react';
+import { useTheme } from 'next-themes';
+import { LoginRequest } from '@/sources/actions/auth/auth.action';
+import { userLoginType } from '@/sources/types/type';
 
 
-export default function Login() {
-  const router = useRouter();
-  const [userLogin, setUserLogin] = useState<userLoginType> ({
-    pseudo: '',
+
+export default function LoginScreen() {
+  const [login, setLogin] = useState<userLoginType>({
     password: '',
-    header:'',
-  })
-  const [error, setError] = useState('');
+    pseudo: '',
+    header: '',
+  });
+
+  const [errorLog, setErrorLog] = useState('');
   const [success, setSuccess] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
 
-  // const getToken = async () => {
+  const handleSubmit = async (e: React.FormEvent) => { 
+    e.preventDefault(); 
+    setIsLoading(true);
+    try{
+        const res = await LoginRequest(login);
+        if(res.status === 401) {
+            setErrorLog(res.message);
+            setSuccess('');
+        } else if (res.status === 201) {
+            setSuccess( res.message);
+            setErrorLog('');
+        }
+    }catch (err) {
+        setErrorLog("Erreur Interne, Réésayez ou contactez le support");
+        console.log(err);
+    }finally{
+    setIsLoading(false);
+    }
+  };
 
-  //   const response = await getCookiesAction() as responseType;
-  //   console.log(response);
-  //   if (response.success) {
-  //     router.push(String(response.redirectTo));
-  //   }
-  // } 
-  
-  useEffect(() => {
-    //getToken();
-  }, []);
+  const toggleTheme = () => {
+    setTheme(resolvedTheme === 'dark' ? 'light' : 'dark');
+  };
 
-  const handleChange = (e : React.ChangeEvent<HTMLInputElement>) => {
-    setUserLogin({...userLogin, 
-      [e.target.name] : e.target.value
+  const handleChange = (e : React.ChangeEvent<HTMLInputElement> ) => {
+    setLogin({ ... login,
+        [e.target.name]: e.target.value,
     })
   }
-  const handleLogin = async (e : React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      try{
-        const response = await LoginRequest({...userLogin});
-        console.log(response);
-        if(response.status === 404 || 401 || 403){
-          setSuccess('');
-          setError(response.message);
-        }
-        if(response.status === 201){
-          setSuccess(response.message);
-          setError('');
 
-          if( response.user.role === 'Admin'){
-            router.push('/moderator');
-          } 
-          else if( response.user.role === 'User') {
-            router.push('/user');
-          }
-        }
-      }catch{
-        setError('Connexion interrompue, réessayez plus tard');
-        }
-      }
   return (
-    <>
-    <div className="m-0 p-0 h-full max-w-120 border border-gray-200 rounded shadow text-center text-md">
-        
-        <LovaLogo position="m-auto" background="bg-white" />
-
-        <div className="mb-3">
-        <Legendes />
+    <div className="min-h-screen flex items-center justify-center bg-background  text-foreground transition-colors duration-300 p-4 font-sans">
+      <div className="absolute top-5 right-5">
+        <Button 
+          onClick={toggleTheme}
+          variant="outline"
+        >
+          {resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        </Button>
+      </div>
+      
+      <div className="w-full max-w-sm mx-auto flex flex-col items-center">
+        {/* Logo et Titre */}
+        <div className="flex items-center justify-center space-x-3 mb-8">
+          <div className="w-14 h-14 bg-card rounded-2xl flex items-center justify-center shadow-lg border">
+            <span className="text-red-600 text-3xl font-bold">ans</span>
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">ORION</h1>
+            <p className="text-sm text-muted-foreground">Portail Employé</p>
+          </div>
         </div>
-        { error && <div className="text-red-700 pb-2">{ error } </div> }
-        { success && <div className="text-green-700 pb-2">{ success } </div> }
-        <div className="">
-        <form onSubmit ={ handleLogin} className="">
-          <div className="relative mb-3 h-[10vh]">
-            <input
-              type="text"
-              required
-              onChange={handleChange}
-              name="pseudo"
-              className="peer m-auto block max-h-[8vh] min-h-[5vh]  md:w-md sm:w-sm rounded border border-solid border-secondary-500 bg-transparent bg-clip-padding px-2 py-3 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-primary focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:shadow-twe-primary focus:outline-none peer-focus:text-primary dark:border-neutral-400 dark:text-gray-700 dark:autofill:shadow-autofill dark:focus:border-primary dark:peer-focus:text-primary [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem] focus:shadow focus:border-blue-600"
-              id="floatingInput"
-              placeholder="name@example.com"
-            />
-            <label
-              htmlFor="floatingInput"
-              className="pointer-events-none absolute left-[4vh] text-sm top-0 origin-[0_0] border border-solid border-transparent px-2 py-3 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none dark:text-neutral-400 dark:peer-focus:text-primary"
-            >
-              Email ou Pseudo
-            </label>
-          </div>
 
-          <div className="relative mb-3 h-[10vh]">
-            <input
-              type="password"
-              required
-              onChange={handleChange}
-              name="password"
-              className="peer m-auto block max-h-[8vh] min-h-[5vh]  md:w-md sm:w-sm rounded border border-solid border-secondary-500 bg-transparent bg-clip-padding px-2 py-3 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-primary focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:shadow-twe-primary focus:outline-none peer-focus:text-primary dark:border-neutral-400 dark:text-gray-700 dark:autofill:shadow-autofill dark:focus:border-primary dark:peer-focus:text-primary [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem] focus:shadow focus:border-blue-600"
-              id="password"
-              placeholder="********"
-            />
-            <label
-              htmlFor="floatingPassword"
-              className=" text-md pointer-events-none absolute left-[4vh] text-sm top-0 origin-[0_0] border border-solid border-transparent px-2 py-3 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none dark:text-neutral-400 dark:peer-focus:text-primary"
-            >
-              Mot de passe
-            </label>
-          </div>
-          <div className="relative mb-3 h-[10vh]">
-            <input
-              type="text"
-              required
-              onChange={handleChange}
-              name="header"
-              className="peer m-auto block max-h-[8vh] min-h-[5vh]  md:w-md sm:w-sm rounded border border-solid border-secondary-500 bg-transparent bg-clip-padding px-2 py-3 text-base font-normal leading-tight text-neutral-700 transition duration-200 ease-linear placeholder:text-transparent focus:border-primary focus:pb-[0.625rem] focus:pt-[1.625rem] focus:text-neutral-700 focus:shadow-twe-primary focus:outline-none peer-focus:text-primary dark:border-neutral-400 dark:text-gray-700 dark:autofill:shadow-autofill dark:focus:border-primary dark:peer-focus:text-primary [&:not(:placeholder-shown)]:pb-[0.625rem] [&:not(:placeholder-shown)]:pt-[1.625rem] focus:shadow focus:border-blue-600"
-              id="floatingInput"
-              placeholder="name@example.com"
-            />
-            <label
-              htmlFor="floatingInput"
-              className="pointer-events-none absolute left-[4vh] text-sm top-0 origin-[0_0] border border-solid border-transparent px-2 py-3 text-neutral-500 transition-[opacity,_transform] duration-200 ease-linear peer-focus:-translate-y-2 peer-focus:translate-x-[0.15rem] peer-focus:scale-[0.85] peer-focus:text-primary peer-[:not(:placeholder-shown)]:-translate-y-2 peer-[:not(:placeholder-shown)]:translate-x-[0.15rem] peer-[:not(:placeholder-shown)]:scale-[0.85] motion-reduce:transition-none dark:text-neutral-400 dark:peer-focus:text-primary"
-            >
-              Nom ou Code d&apos; Etablissement
-            </label>
-          </div>
-          <div> 
-          <button
-            type="submit"
-            className="my-2 h-11 w-md bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-500 hover:cursor-pointer"
-          >
-            Se Connecter
-          </button>
-          </div>
-        </form>
-        </div>
-        <div className="bg-gray-200 font-sans ">
-        <div className="my-3 py-3 border-t-2 ">
-            <div className=" contain-content space-x-2 ">
-              <label htmlFor="checkbox" className="p-5 m-2 ">
-                <input
-                  type="checkbox"
-                  name="se_souvenir_de_moi"
-                  id="checkbox"
-                />
-                <span className="mx-1">Mémoriser mes informations</span>
-              </label>
-              <a href="#forgetPassword" className="p-5 text-blue-700 ">
-                Mot de passe oublié ?
-              </a>
-            </div>
-          </div>
-        <div className="p-1">
-          <div className=" inline-grid grid-cols-2 py-2">
-            <div className="text-sm"> Pas client ?
-            </div>
+        {/* Formulaire */}
+        <div className="bg-card p-8 rounded-2xl shadow-lg border w-full">
+          <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">Connexion</h2>
+          
+          {errorLog && (
+            <p className="bg-destructive/15 text-destructive p-3 rounded-lg text-center text-red-500 text-sm mb-4">
+              {errorLog}
+            </p>
+          )}
+          {success && (
+            <p className="bg-destructive/15 text-destructive p-3 rounded-lg text-center text-green-500 text-sm mb-4">
+              {success}
+            </p>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-            <Link
-              href={"/register"}
-              className="px-2 py-2 m-auto w-3xs border text-sm border-gray-700 bg-gray-100 text-gray-600 font-bold  rounded hover:bg-gray-300 hover:cursor-pointer"
-            >
-              S&apos; inscrire gratuitement
-            </Link>
+              <input 
+                type="text"
+                name='pseudo'
+                value={login.pseudo} 
+                onChange={handleChange} 
+                className="w-full p-3 bg-muted border rounded-lg focus:ring-2 focus:ring-primary" 
+                placeholder="Matricule" 
+                required 
+              />
             </div>
-          </div>
-          <LovaFooter />
+            
+            <div className="relative">
+              <input 
+                type={showPassword ? "text" : "password"} 
+                name='password'
+                value={login.password} 
+                onChange={handleChange} 
+                className="w-full p-3 bg-muted border rounded-lg focus:ring-2 focus:ring-primary pr-10" 
+                placeholder="Mot de passe" 
+                required 
+              />
+              <button 
+                type="button" 
+                onClick={() => setShowPassword(!showPassword)} 
+                className="absolute inset-y-0 right-0 px-3 text-muted-foreground"
+                aria-label={showPassword ? "Cacher le mot de passe" : "Afficher le mot de passe"}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            
+            <Button 
+                isLoading={isLoading}
+                type="submit" className="w-full py-3" icon={<LogInIcon />}>
+              { !isLoading && 'Se connecter'}
+            </Button>
+          </form>
         </div>
-        </div>
+      </div>
     </div>
-    </>
-    
   );
 }

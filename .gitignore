@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+#Personnal Folder
+app/(protected)/admin/bulletin
+app/(protected)/admin/certificat
+app/(protected)/admin/classe
+app/(protected)/admin/emploi-du-temps
+app/(protected)/admin/enseignant
+app/(protected)/admin/etablissement
+app/(protected)/admin/etudiant
+app/(protected)/admin/matiere
+app/(protected)/admin/parametre
+app/test
+sources/features

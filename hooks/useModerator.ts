@@ -1,12 +1,12 @@
 "use client"
-import { ReadClasse } from '@/src/actions/moderator/crud.classe.action';
-import { ReadEnseignant } from '@/src/actions/moderator/crud.enseignant.action';
-import { ReadCreneau, ReadEnseignement } from '@/src/actions/moderator/crud.enseignement.action';
-import { ReadClasseId, ReadEtudiant, ReadEtudiantsParClasse } from '@/src/actions/moderator/crud.etudiant.action';
-import { ReadMatiere } from '@/src/actions/moderator/crud.matiere.action';
-import { ReadSection } from '@/src/actions/moderator/crud.section.action';
-import { ReadNiveau } from '@/src/actions/moderator/niveau.action';
-import { classesData, CreneauData, EmploiDuTempsData, EnseignantData, MatiereData, SectionData } from '@/src/types/type';
+import { ReadClasse } from '@/sources/actions/moderator/crud.classe.action';
+import { ReadEnseignant } from '@/sources/actions/moderator/crud.enseignant.action';
+import { ReadCreneau, ReadEnseignement } from '@/sources/actions/moderator/crud.enseignement.action';
+import { ReadClasseId, ReadEtudiant, ReadEtudiantsParClasse } from '@/sources/actions/moderator/crud.etudiant.action';
+import { ReadMatiere } from '@/sources/actions/moderator/crud.matiere.action';
+import { ReadSection } from '@/sources/actions/moderator/crud.section.action';
+import { ReadNiveau } from '@/sources/actions/moderator/niveau.action';
+import { classesData, CreneauData, EmploiDuTempsData, EnseignantData, MatiereData, SectionData } from '@/sources/types/type';
 import useSWR, { mutate } from 'swr';
 
 
