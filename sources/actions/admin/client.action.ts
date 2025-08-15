@@ -110,7 +110,7 @@ export async function UpdateClient( data : clientType) {
 export async function DeleteClient(id : number) {
     const header = (await cookies()).get('header')?.value;
     const token = (await cookies()).get('token')?.value;
-
+    console.log(id);
     try {
         
         const data = {
@@ -118,7 +118,7 @@ export async function DeleteClient(id : number) {
         }
         const response = await fetch (`${process.env.NEXT_PUBLIC_API_URI}/client?id_client=${id}`, {
             method: "DELETE",
-            headers: { "Content-Type": "application/json" , "client-id" : `${header}`, /*"Authorization" : `Bearer ${token}`*/ },
+            headers: { "Content-Type": "application/json" , "Accept": "application/json" , "client-id" : `${header}`, "Authorization" : `Bearer ${token}` },
             body: JSON.stringify(data),
         });
 
