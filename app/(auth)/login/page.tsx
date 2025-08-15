@@ -28,14 +28,18 @@ export default function LoginScreen() {
     e.preventDefault(); 
     setIsLoading(true);
     try{
+
         const res = await LoginRequest(login);
         if(res.status === 401) {
             setErrorLog(res.message);
             setSuccess('');
+            console.log(res.message);
         } else if (res.status === 201) {
             setSuccess( res.message);
             setErrorLog('');
+            console.log(res.message);
         }
+        console.log(res.message);
     }catch (err) {
         setErrorLog("Erreur Interne, Réésayez ou contactez le support");
         console.log(err);
