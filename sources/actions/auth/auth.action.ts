@@ -7,17 +7,17 @@ import { cookies } from "next/headers";
 export async function LoginRequest(login : userLoginType){
     console.log(login);
     
-        (await cookies()).set('header', 'client_1', {
-              httpOnly: true,
-              secure: process.env.NODE_ENV === 'production',
-              maxAge: 12 * 60 * 60, // 12 hours
-              path: '/',
+    (await cookies()).set('header', `${login.header}`, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 12 * 60 * 60, // 12 hours
+        path: '/',
         });
     
         
     const response = await fetch( `${process.env.NEXT_PUBLIC_API_URI}/login`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" , "client-id" : "client_1"}, // `${login.header}`
+            headers: { "Content-Type": "application/json" , "client-id" : `${login.header}`}, // `${login.header}`
             body: JSON.stringify(login),
         })
         

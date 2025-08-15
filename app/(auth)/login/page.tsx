@@ -15,7 +15,7 @@ export default function LoginScreen() {
   const [login, setLogin] = useState<userLoginType>({
     password: '',
     pseudo: '',
-    header: '',
+    header: 'client_1',
   });
 
   const [errorLog, setErrorLog] = useState('');
