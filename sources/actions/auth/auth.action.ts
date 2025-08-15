@@ -7,7 +7,8 @@ import { cookies } from "next/headers";
 export async function LoginRequest(login : userLoginType){
     console.log(login);
     
-    (await cookies()).set('header', `${login.header}`, {
+    try {
+        (await cookies()).set('header', `${login.header}`, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         maxAge: 12 * 60 * 60, // 12 hours
@@ -17,11 +18,13 @@ export async function LoginRequest(login : userLoginType){
         
     const response = await fetch( `${process.env.NEXT_PUBLIC_API_URI}/login`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" , "client-id" : `${login.header}`}, // `${login.header}`
+            headers: { "Content-Type": "application/json","Accept": "application/json" , "client-id" : `${login.header}`}, // `${login.header}`
             body: JSON.stringify(login),
         })
         
         const data = await response.json();
+        console.log(data.status);
+
         if(data.status === 201) {
             (await cookies()).set('token', data.token, {
               httpOnly: true,
@@ -38,6 +41,11 @@ export async function LoginRequest(login : userLoginType){
         }
         console.log(data);
         return data;
+
+    }catch(error) {
+        console.log(error);
+        throw new Error('Erreur lors de la connexion', error!)
+    }
 
 }
 
