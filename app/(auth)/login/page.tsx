@@ -6,10 +6,12 @@ import { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { LoginRequest } from '@/sources/actions/auth/auth.action';
 import { userLoginType } from '@/sources/types/type';
+import { useRouter } from 'next/navigation';
 
 
 
 export default function LoginScreen() {
+  const router = useRouter();
   const [login, setLogin] = useState<userLoginType>({
     password: '',
     pseudo: '',
@@ -38,7 +40,8 @@ export default function LoginScreen() {
         setErrorLog("Erreur Interne, Réésayez ou contactez le support");
         console.log(err);
     }finally{
-    setIsLoading(false);
+      setIsLoading(false);
+      router.push('/vendeur');
     }
   };
 
@@ -57,7 +60,7 @@ export default function LoginScreen() {
       <div className="absolute top-5 right-5">
         <Button 
           onClick={toggleTheme}
-          variant="outline"
+          variant="ghost"
         >
           {resolvedTheme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
         </Button>

@@ -1,3 +1,4 @@
+import { GetCommerciaux } from '@/sources/actions/admin/commercial.action';
 
 export type userLoginType = {
   pseudo: string;
@@ -103,40 +104,8 @@ export type EnseignantModalProps = {
   onClose ?: () => void;
 }
 
-export type EnseignantListProps = {
-  success ?: boolean;
-  message?: string;
-  isAdd?: boolean;
-  isUpdate?: boolean;
-  data ?: ({
-    user_enseignant_enseignantTouser: {
-        id_user: number;
-        email: string;
-        nom: string;
-        prenom: string;
-        sexe: string | null;
-        date_naissance: Date | null;
-        lieu_naissance: string | null;
-        telephone: string | null;
-    };
-  })[];
-}
 
-export type ClasseProps = {
-  success?: boolean;
-  message?: string;
-  data?: ({
-    id_classe: number;
-    classe: string | null | undefined ;
-    niveau: number | null ;
-    responsable: number | null ;
-    etablissement: number | null ;
-    chef_etablissement: number  | null;
-    date_creation: Date | null ;
-    modificateur: number | null ;
-    dernier_modification: Date | null ;
-  })[]
-}
+
 
 export type classeType = {
     id_classe?: number;
@@ -172,11 +141,7 @@ export type classesData = {
     };
 }
 
-export type MatiereProps = {
-  message ?: string | null;
-  classeSelected? : string | null;
-  dataEnseignement: EnseignementData[]
-}
+
 
 export type EnseignementData = {
   id_enseignement ?: number;
@@ -190,13 +155,7 @@ export type EnseignementData = {
   endTime?: string;
 }
 
-export type EnseignementProps = {
-  dataClasse ?: classeType[];
-  dataEnseignement ?: EnseignementData[];
-  dataMatiere ?: MatiereData[];
-  dataEnseignant ?: EnseignantData[];
-  selectedClasse ?: string | null;
-}
+
 
 export type EmploiDuTempsData = {
   id_enseignement: number;
@@ -226,13 +185,6 @@ export type EmploiDuTempsData = {
 	endTime: string;
 }
 
-export type CreneauData = {
-  id_classe: number;
-  classe: string;
-	id_niveau: number;
-	id_section: number;
-	enseignements: number;
-}
 
 export type MatiereData = {
   id_matiere : number;
@@ -298,26 +250,26 @@ export type EtudiantClasseData= {
 		} 
 }
 
-export type InscriptionData = {
+export type CommercialData = {
+    id_commercial: number;
     nom: string;
     prenom: string;
-    date_naissance: string;
-    lieu_naissance: string;
-    sexe: string;
-    domicile: string;
-    nom_pere: string;
-    nom_mere: string;
-    telephone_parent: string;
-    nom_tuteur: string;
-    telephone_tuteur: string;
-    telephone_urgence: string;
-    matricule: string;
-    classe_id: number;
-    inscription: string;
-    date_entree: string;
-    annee_scolaire_id: string;
-    ecole_precedente: string;
-    sortie_ecole_precedente: string;
-    raison_admission: string;
-    statut: string;
+    contact: string;
+    adresse: string;
+}
+
+export type clientType = {
+  id_client?: number;
+  nom_societe?: string;
+  nom_contact?: string;
+  media_social?: string;
+  commercial_id?: number;
+  email?: string;
+  telephone_1?: string;
+  telephone_2?:string;
+  nif?: string;
+  stat?:string;
+  rue?: string;
+  ville?: string;
+  status?:string;
 }

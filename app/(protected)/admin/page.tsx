@@ -20,9 +20,9 @@ export default function DashboardPage() {
      return (
          <div className="space-y-6">
              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                 <StatCard icon={List} label="Tâches à faire" value={stats.tasksToDo} color={{bg: 'bg-blue-500', text: 'text-blue-100'}} />
-                 <StatCard icon={Clock} label="Tâches en cours" value={stats.tasksInProgress} color={{bg: 'bg-yellow-500', text: 'text-yellow-100'}} />
-                 <StatCard icon={AlertTriangle} label="Tâches en retard" value={stats.lateTasks} color={{bg: 'bg-red-500', text: 'text-red-100'}} />
+                 <StatCard icon={<List/>} label="Tâches à faire" value={stats.tasksToDo} color={{bg: 'bg-blue-500', text: 'text-blue-100'}} />
+                 <StatCard icon={<Clock/>} label="Tâches en cours" value={stats.tasksInProgress} color={{bg: 'bg-yellow-500', text: 'text-yellow-100'}} />
+                 <StatCard icon={<AlertTriangle/>} label="Tâches en retard" value={stats.lateTasks} color={{bg: 'bg-red-500', text: 'text-red-100'}} />
              </div>
  
              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -1,9 +1,7 @@
+import { redirect } from "next/navigation";
+
 
 export default async function Dashboard() {
 
-  return (
-    <div>
-      Tableau de Bord...
-    </div>
-  );
+ redirect("/vendeur/point-de-vente");
 }

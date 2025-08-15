@@ -1,33 +1,53 @@
 "use client"
-
-export function Input({
-  label,
-  value,
-  onChange,
-  disabled = false,
-  required = false,
-  className = ""
-}: {
-  label: string;
-  value: string;
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+type InputProps = {
+  value?: string;
+  type?: string;
+  name?: string;
+  step?: string;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   disabled?: boolean;
   required?: boolean;
   className?: string;
-}) {
+  placeholder?:string;
+}
+
+export function Input({
+  value,
+  type,
+  name,
+  step,
+  placeholder,
+  className,
+  onChange,
+  disabled = false,
+  required = false,
+}: InputProps ) {
   return (
-    <div className={className}>
-      <label className="block text-sm font-medium text-gray-700 mb-1">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+    <>
       <input
-        type="text"
+        type={type}
+        name={name}
         value={value}
         onChange={onChange}
         disabled={disabled}
         required={required}
-        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 disabled:bg-gray-100"
+        placeholder={placeholder}
+        step={step}
+        className= {`w-full p-3 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500 ${className || ''}`}
       />
-    </div>
+    </>
   );
 }
+
+export function Textarea ({ className, placeholder, value, onChange, name } : InputProps) {
+  return(
+  <textarea 
+      value={value}
+      name={name}
+      onChange={onChange}
+      placeholder={placeholder}
+      className={`w-full p-3 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500 ${className || ''}`} />
+
+  );
+} 
+

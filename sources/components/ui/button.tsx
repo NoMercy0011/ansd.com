@@ -1,46 +1,58 @@
-// components/ui/button.tsx
-import { ReactNode } from "react";
+import { cn } from "@/sources/lib/utils";
+import { Loader2 } from "lucide-react";
+import { Url } from "url";
 
-interface ButtonProps {
-  variant?: "primary" | "secondary" | "ghost" | "danger" | "outline";
-  size?: "sm" | "md" | "lg";
-  children: ReactNode;
-  className?: string;
-  onClick?: () => void;
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "ghost" | "danger" | 'success' ;
+  size?: "sm" | "default" | "lg";
+  icon?: React.ReactNode;
+  isLoading?: boolean;
+  isDisabled?:boolean;
+  href?:  Url;
 }
 
 export function Button({
+  className,
   variant = "primary",
-  size = "md",
+  size = "default",
+  icon,
+  isLoading = false,
+  isDisabled = false,
   children,
-  className = "",
   ...props
 }: ButtonProps) {
-  // Styles de base
-  const baseStyles = "inline-flex items-center justify-center rounded-lg text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none";
-
-  // Variants
-  const variantStyles = {
-    primary: "bg-gradient-to-r from-orange-600 to-pink-700 text-white hover:from-orange-700 hover:to-pink-800 shadow-sm",
-    secondary: "bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 shadow-sm",
-    ghost: "hover:bg-gray-100 text-gray-700",
+  const variantClasses = {
+    primary: "bg-red-600 hover:bg-red-700 text-white focus-visible:ring-red-500", 
+    secondary: "bg-white dark:bg-slate-700 hover:bg-slate-50 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 border border-slate-300/70 dark:border-slate-600 focus-visible:ring-red-500", 
+    ghost: "bg-transparent hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 focus:ring-slate-200 dark:focus:ring-slate-600", 
     danger: "bg-red-600 text-white hover:bg-red-700 shadow-sm",
-    outline: "bg-white/70 border border-stone-300 text-gray-700 hover:bg-stone-50 shadow-sm"
-  };
+    success: "bg-emerald-500 hover:bg-emerald-600 text-white focus:ring-emerald-300 dark:focus:ring-emerald-800",
+  };  
 
-  // Tailles
-  const sizeStyles = {
-    sm: "h-9 px-4 py-2",
-    md: "h-10 px-6 py-2",
-    lg: "h-11 px-8 py-2"
+  const sizeClasses = {
+    sm: "h-8 px-3 text-xs",
+    default: "h-10 px-4 py-2",
+    lg: "h-12 px-6 text-lg",
   };
-
-  // Combinaison des classes
-  const combinedClasses = `${baseStyles} ${variantStyles[variant]} ${sizeStyles[size]} ${className}`;
 
   return (
-    <button className={combinedClasses} {...props}>
+    <button
+      className={cn(
+        "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none disabled:opacity-50 cursor-pointer disabled:cursor-text",
+        variantClasses[variant],
+        sizeClasses[size],
+        className
+      )}
+      disabled={isLoading || isDisabled}
+      {...props}
+    >
+      {isLoading ? (
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+      ) : icon ? (
+        <span className="mr-2">{icon}</span>
+      ) : null}
       {children}
     </button>
   );
 }
+

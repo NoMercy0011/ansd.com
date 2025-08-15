@@ -1,7 +1,7 @@
 // components/LateralBar.tsx
 "use client"
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Briefcase, Calendar, LayoutDashboard, LogOut, Moon, Printer, Sun, Users } from "lucide-react";
 import Link from "next/link";
 import logoutAction from "@/sources/actions/auth/auth.action";
@@ -11,7 +11,12 @@ import { useTheme } from "next-themes";
 export default function LateralBarAdmin() {
     const pathname = usePathname();
     const { resolvedTheme, setTheme } = useTheme();
-  
+    const router = useRouter();
+
+    const Logout = async () => {
+        await logoutAction();
+        router.push('/login');
+    }
 
   const modules = [
     { id: 'dashboard', name: 'Tableau de Bord', icon: LayoutDashboard, link: '/admin' },
@@ -57,7 +62,7 @@ export default function LateralBarAdmin() {
                         </button>
                     </div>
                     <div className="flex items-center justify-center lg:justify-start mt-2">
-                        <button onClick={logoutAction} className="flex items-center justify-center gap-2 p-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white text-xs w-full">
+                        <button onClick={Logout} className="flex items-center justify-center gap-2 p-3 rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white text-xs w-full">
                             <LogOut size={20} />
                             <span className="hidden lg:inline">Déconnexion</span>
                         </button>

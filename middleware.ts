@@ -7,7 +7,10 @@ export async function middleware(req: NextRequest) {
   if (!token) {
     return NextResponse.redirect(new URL('/login', req.url));
   }
-  
+    if (!role) {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+
     try{
       
     const pathname = new URL(req.url).pathname;
@@ -17,9 +20,9 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(new URL('/unauthorized', req.url));
     }
 
-    if (pathname.startsWith('/user') && role !== 'user') {
-      return NextResponse.redirect(new URL('/unauthorized', req.url));
-    }
+    /*if (pathname.startsWith('/vendeur') && (role === 'user' || role === 'admin')) {
+      return NextResponse.redirect(new URL(pathname, req.url));
+    }*/
 
     return NextResponse.next();
     }catch (error) {
@@ -29,5 +32,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [/*'/user/:path*', '/admin/:path*'*/],
+  matcher: ['/vendeur/:path*', '/admin/:path*'],
 };

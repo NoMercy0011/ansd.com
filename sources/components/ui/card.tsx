@@ -1,107 +1,92 @@
-// import { ReactNode } from "react";
-// import { LucideIcon } from "lucide-react";
 
-// interface CardProps {
-//   title: string;
-//   children: ReactNode;
-//   className?: string;
-//   action?: ReactNode;
+import { ArrowDown, ArrowUp, LucideIcon } from "lucide-react";
+import { ReactNode } from "react";
+
+// interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
+//   variant?: "default" | "hover";
+//   value?: string;
+//   change?: string;
+//   icon?: LucideIcon;
+//   color?: string;
 // }
 
-// export function Card({ title, children, className = "", action }: CardProps) {
+// export function Card({ 
+//   className, 
+//   variant = "default", 
+//   ...props 
+// }: CardProps) {
 //   return (
-//     <div className={`bg-white rounded-xl border border-gray-200 overflow-hidden ${className}`}>
-//       <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-//         <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-//         {action}
-//       </div>
-//       <div className="p-6">
-//         {children}
-//       </div>
-//     </div>
+//     <div
+//       className={cn(
+//         "rounded-md border-1 border-gray-400 bg-white shadow-sm",
+//         variant === "hover" && "hover:shadow-md transition-shadow",
+//         className
+//       )}
+//       {...props}
+//     />
 //   );
 // }
 
-// interface CardStatProps {
-//   title: string;
-//   value: string;
-//   change: string;
-//   icon: LucideIcon;
-//   color: string;
-// }
+interface CardProps {
+  children ?: ReactNode;
+  className?: string;
+  title?: string;
+  titleIcon?: LucideIcon;
+  icon?: React.ReactNode;
+  actions?: string;
+  label?: string;
+  value?: string | number;
+  color?: {
+    bg?: string;
+    text?: string;
+  }
+  trend?: {
+    direction?: 'up' | 'down';
+    value?: string;
+  }
+}
 
-// export function CardStat({ title, value, change, icon: Icon, color }: CardStatProps) {
-//   const colorClasses = [
-//     {sky: "bg-sky-100 text-sky-600"},
-//     {pink: "bg-pink-100 text-pink-600"},
-//     {orange: "bg-orange-100 text-orange-600"},
-//     {purple: "bg-purple-100 text-purple-600"}
-// ];
+export function Card ({ children, className = '', title, titleIcon: TitleIcon, actions } : CardProps) {
+   return (
+    <div className={`bg-white dark:bg-slate-800/50 rounded-xl shadow-lg shadow-slate-200/40 dark:shadow-black/20 border border-slate-200/50 dark:border-slate-700/50 ${className}`}>
+        {title && (
+            <div className="p-4 flex justify-between items-center border-b border-slate-200/50 dark:border-slate-700/50">
+                <h2 className="text-lg font-bold text-slate-800 dark:text-slate-100 flex items-center gap-3">
+                    {TitleIcon && <TitleIcon className="text-red-500" size={20} />}
+                    {title}
+                </h2>
+                {actions && <div>{actions}</div>}
+            </div>
+        )}
+        <div className="p-4 md:p-6">
+            {children}
+        </div>
+    </div>
+);
+}
 
-//   return (
-//     <div className="bg-white rounded-xl border border-gray-200 p-6">
-//       <div className="flex justify-between">
-//         <div>
-//           <p className="text-sm font-medium text-gray-500">{title}</p>
-//           <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
-//           <p className={`text-sm font-medium ${change.startsWith("+") ? "text-green-600" : "text-red-600"} mt-1`}>
-//             {change}
-//           </p>
-//         </div>
-//         <div className={`h-12 w-12 rounded-lg flex items-center justify-center ${colorClasses[color]}`}>
-//           <Icon className="h-6 w-6" />
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
+export function StatCard({ icon: Icon, label, title, value, color, trend} : CardProps) {
+  return(
+    <div className="bg-white dark:bg-slate-800/50 p-5 rounded-xl shadow-lg shadow-slate-200/40 dark:shadow-black/20 border border-slate-200/50 dark:border-slate-700/50 flex items-center gap-5">
+        <div className={`p-3 rounded-full bg-opacity-10 text-white/80 ${color?.bg} ${color?.text}`}>
+          {Icon ? <span> {Icon} </span> : null}
+        </div>
 
-// interface CardChartProps {
-//   type: "bar" | "pie" | "line";
-//   data: any;
-//   options?: any;
-// }
-
-// export function CardChart({ type, data, options }: CardChartProps) {
-//   // En production, vous utiliseriez react-chartjs-2 ou un autre librairie
-//   // Ceci est une simulation pour le prototype
-//   return (
-//     <div className="h-64">
-//       <div className="w-full h-full flex items-center justify-center bg-gray-50 rounded-lg">
-//         <div className="text-center p-4">
-//           <p className="text-gray-500 mb-2">[Graphique {type} interactif]</p>
-//           <p className="text-xs text-gray-400">En production: données dynamiques avec animations fluides</p>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-// export function CardTable({ columns, data }: { columns: string[]; data: any[] }) {
-//   return (
-//     <div className="overflow-x-auto">
-//       <table className="min-w-full divide-y divide-gray-200">
-//         <thead className="bg-gray-50">
-//           <tr>
-//             {columns.map((column, index) => (
-//               <th key={index} scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-//                 {column}
-//               </th>
-//             ))}
-//           </tr>
-//         </thead>
-//         <tbody className="bg-white divide-y divide-gray-200">
-//           {data.map((row, rowIndex) => (
-//             <tr key={rowIndex}>
-//               {columns.map((column, colIndex) => (
-//                 <td key={colIndex} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-//                   {row[column.toLowerCase().replace(/ /g, '_')]}
-//                 </td>
-//               ))}
-//             </tr>
-//           ))}
-//         </tbody>
-//       </table>
-//     </div>
-//   );
-// }
+        <div>
+          <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{title}</p>
+        <div className="flex items-baseline gap-2">
+          <p className="text-3xl font-bold text-slate-800 dark:text-slate-100">{value}</p>
+          {trend && (
+              <span className={`flex items-center text-sm font-semibold ${trend.direction === 'up' ? 'text-emerald-500' : 'text-red-500'}`}>
+                {trend.direction === 'up' ? <ArrowUp size={14}/> : <ArrowDown size={14}/>}
+                {trend.value}
+              </span>
+            )}
+        </div>
+        </div>
+      <div>
+          <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
+      </div>
+    </div>
+  )
+}
