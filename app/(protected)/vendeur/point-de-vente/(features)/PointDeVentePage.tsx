@@ -48,7 +48,16 @@ export default function PointDeVentePage( { param } : PointDeVenteProps) {
     ];
 
     const reliureType = [ "Plastique", "Métallique", "Piqure à cheval", "Dos carré collé" ]
-    const [ categorieSelected, setCategorieSelected] = useState({
+    const [ papierSelected, setPapierSelected] = useState({
+        categorie: '',
+        accessoire: [{
+        accessoire: '',
+        id_papier: 0,
+        prix: '',
+        }],
+    });
+
+    const [ couvertureSelected, setCouvertureSelected] = useState({
         categorie: '',
         accessoire: [{
         accessoire: '',
@@ -301,8 +310,8 @@ export default function PointDeVentePage( { param } : PointDeVenteProps) {
                                     { livre.papiers.map( papier => (
                                         <React.Fragment key={papier.categorie}>
                                             <button 
-                                                onClick={() => setCategorieSelected(papier)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${categorieSelected.categorie === papier.categorie ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
+                                                onClick={() => setPapierSelected(papier)}
+                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${papierSelected.categorie === papier.categorie ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
                                                 <span>{papier.categorie}</span>
                                             </button>
                                         </React.Fragment>
@@ -319,14 +328,14 @@ export default function PointDeVentePage( { param } : PointDeVenteProps) {
                                     </h4>
                                     </div>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                    { categorieSelected.categorie === '' ? 
+                                    { papierSelected.categorie === '' ? 
                                     ( 
                                         <Button variant='secondary' isDisabled={true} 
                                         >
                                          . . .   
                                         </Button> 
                                     ) :
-                                    (categorieSelected.accessoire.map( accessoire => (
+                                    (papierSelected.accessoire.map( accessoire => (
                                         <React.Fragment key={accessoire.id_papier}>
                                             <button 
                                                 onClick={() => handleSelect(accessoire.id_papier, 'papier_id', accessoire.accessoire)}
@@ -386,8 +395,8 @@ export default function PointDeVentePage( { param } : PointDeVenteProps) {
                                     { livre.papiers.map( papier => (
                                         <React.Fragment key={papier.categorie}>
                                             <button 
-                                                onClick={() => setCategorieSelected(papier)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${categorieSelected.categorie === papier.categorie ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
+                                                onClick={() => setCouvertureSelected(papier)}
+                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${couvertureSelected.categorie === papier.categorie ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
                                                 <span>{papier.categorie}</span>
                                             </button>
                                         </React.Fragment>
@@ -404,18 +413,18 @@ export default function PointDeVentePage( { param } : PointDeVenteProps) {
                                     </h4>
                                     </div>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                    { categorieSelected.categorie === '' ? 
+                                    { couvertureSelected.categorie === '' ? 
                                     ( 
                                         <Button variant='secondary' isDisabled={true} 
                                         >
                                          . . .   
                                         </Button> 
                                     ) :
-                                    (categorieSelected.accessoire.map( accessoire => (
+                                    (couvertureSelected.accessoire.map( accessoire => (
                                         <React.Fragment key={accessoire.id_papier}>
                                             <button 
-                                                onClick={() => handleSelect(accessoire.id_papier, 'papier_id')}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${accessoire.id_papier === devisLivre.papier_id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
+                                                onClick={() => handleSelect(accessoire.id_papier, 'couverture_id')}
+                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${accessoire.id_papier === devisLivre.couverture_id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
                                                 <span>{accessoire.accessoire}</span>
                                             </button>
                                         </React.Fragment>
