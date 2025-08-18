@@ -1,7 +1,8 @@
 "use client"
 import { GetClientID, GetClients } from '@/sources/actions/admin/client.action';
 import { GetCommerciaux } from '@/sources/actions/admin/commercial.action';
-import { clientType, CommercialData } from '@/sources/types/type';
+import { GetLivre } from '@/sources/actions/admin/livre.action';
+import { clientType, CommercialData, LivreType } from '@/sources/types/type';
 import useSWR from 'swr';
 
 
@@ -35,6 +36,17 @@ export function useClientID() {
         client: data?.data as clientType,
         clientLoading: isLoading,
         clientError: error,
+        mutate
+    }
+} 
+
+export function useLivre() {
+    const { data, isLoading, error, mutate} = useSWR('get-livre', GetLivre);
+
+    return {
+        livre: data?.data as LivreType,
+        livreLoading: isLoading,
+        livreError: error,
         mutate
     }
 } 

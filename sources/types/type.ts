@@ -273,3 +273,69 @@ export type clientType = {
   ville?: string;
   status?:string;
 }
+
+export type LivreType = {
+  livres: {
+		id_livre: number;
+		livre: string;
+		img: string;
+	}[];
+  dimensions: {
+    id_dimension: number;
+    dimension: string;
+    unitée: string;
+  }[];
+  papiers:{
+    categorie: string;
+    accessoire: {
+      accessoire: string;      
+      id_papier: number;
+      prix: string;
+    }[];
+  }[];
+  couleurs: {
+    id_couleur: number;
+    couleur: string;
+  }[];
+  recto_verso: {
+    id_recto: number;
+    type: string;
+  }[];
+  reliure:{
+    id_stock_reliure: number;
+    type: string;
+    reference: string;
+    stock: number;
+    seuil: number;
+    reliures: {
+      id_reliure: number;
+      min: number;
+      max: number;
+      papier: string;
+      prix: number;
+    }[];
+  }[];
+  finition: {
+    id_finition: number;
+    finition: string;
+    prix: number;
+  }[];
+}
+
+export type devisLivreData = {
+  livre_id: number;
+  dimension_id: number;
+  papier_id: number;
+  papier?: string;
+  couleur_id: number;
+  recto_verso_id: number;
+  pages: string;
+  couverture_id: number;
+  couverture?: string;
+  reliure_id: number;
+  finition_id: number;
+  quantite: string;
+  montant: string;
+  client_id: number;
+  user_id: number;
+}

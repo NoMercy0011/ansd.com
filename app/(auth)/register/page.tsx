@@ -1,10 +1,11 @@
+// import { Hello } from '@/sources/actions/admin/client.action';
 import { Hello } from '@/sources/actions/admin/client.action';
 import React from 'react'
 
 export default async function register() {
     const message = await Hello();
   return (
-    <div className="absolute position-absolute top-[50%] left-[50%] text-3xl font-bold text-slate-900 bg-red-600 rounded-2xl border border-slate-400">
+    <div className="absolute position-absolute top-[45%] left-[45%] text-3xl font-bold text-slate-900 bg-red-600 rounded-2xl border border-slate-400">
       <div className='p-4 shadow-2xl'>
         { message.data }
       </div>
@@ -800,7 +801,23 @@ export default async function register() {
 
 //     return (
 //         <Accordion title="Ajouter un article d'impression" icon={Wrench} defaultOpen={false}>
-//             <div className="flex flex-col lg:flex-row gap-8"><div className="w-full lg:w-1/2 space-y-4">{product.steps.map(step => (<div key={step.id}><h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 flex items-center">{step.icon || <Layers/>} <span className="ml-2">{step.title}</span></h4>{step.type === 'number' ? <Input type="number" value={configuration.quantite || ''} onChange={e => handleQuantityChange(e.target.value)} placeholder="Ex: 1000" /> : <div className="grid grid-cols-2 md:grid-cols-3 gap-2">{step.options.map(option => (<button key={option.value} onClick={() => handleSelect(step.id, option.value)} className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${configuration[step.id] === option.value ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}><span className="font-semibold block">{option.label}</span></button>))}</div>}</div>))}</div>
+//             <div className="flex flex-col lg:flex-row gap-8">
+//               <div className="w-full lg:w-1/2 space-y-4">
+//               {product.steps.map(step => (
+//                 <div key={step.id}>
+//                   <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 flex items-center">
+//                     {step.icon || <Layers/>} 
+//                     <span className="ml-2">{step.title}</span>
+//                   </h4>
+//                   {step.type === 'number' ? <Input type="number" value={configuration.quantite || ''} onChange={e => handleQuantityChange(e.target.value)} placeholder="Ex: 1000" /> : 
+//                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+//                     {step.options.map(option => (
+//                       <button key={option.value} onClick={() => handleSelect(step.id, option.value)} className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${configuration[step.id] === option.value ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
+//                         <span className="font-semibold block">{option.label}</span>
+//                       </button>))}
+//                   </div>}
+//                 </div>))}
+//                 </div>
 //                 <div className="w-full lg:w-1/2 space-y-4">
 //                     <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
 //                         <h4 className="font-bold text-yellow-800 dark:text-yellow-300 mb-2">Évaluation en temps réel</h4>
