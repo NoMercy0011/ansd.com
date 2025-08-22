@@ -1,4 +1,3 @@
-// import { Hello } from '@/sources/actions/admin/client.action';
 import { Hello } from '@/sources/actions/admin/client.action';
 import React from 'react'
 
@@ -816,8 +815,8 @@ export default async function register() {
 //                         <span className="font-semibold block">{option.label}</span>
 //                       </button>))}
 //                   </div>}
-//                 </div>))}
-//                 </div>
+//               </div>))}
+//               </div>
 //                 <div className="w-full lg:w-1/2 space-y-4">
 //                     <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
 //                         <h4 className="font-bold text-yellow-800 dark:text-yellow-300 mb-2">Évaluation en temps réel</h4>

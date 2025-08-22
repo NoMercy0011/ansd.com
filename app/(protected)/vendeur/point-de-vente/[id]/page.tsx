@@ -1,6 +1,7 @@
 
 import React from 'react'
 import PointDeVentePage from '../(features)/PointDeVentePage';
+import { cookies } from 'next/headers';
 
 type PropsClientID = {
     params : Promise<{
@@ -9,11 +10,12 @@ type PropsClientID = {
 }
 
 export default async function page({ params }: PropsClientID) {
+  const userRole =  (await cookies()).get('role')?.value;
+  const id = (await params).id;
 
- const id = (await params).id;
   return (
     <div>
-      <PointDeVentePage param={id} />
+      <PointDeVentePage param={id} userRole={userRole} />
     </div>
   )
 }

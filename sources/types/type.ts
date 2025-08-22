@@ -284,6 +284,7 @@ export type LivreType = {
     id_dimension: number;
     dimension: string;
     unitée: string;
+    pose: string;
   }[];
   papiers:{
     categorie: string;
@@ -296,10 +297,16 @@ export type LivreType = {
   couleurs: {
     id_couleur: number;
     couleur: string;
+    code: string;
   }[];
   recto_verso: {
     id_recto: number;
     type: string;
+    code: string;
+  }[];
+  imprimante: {
+    id_imprimante: number;
+    imprimante: string;
   }[];
   reliure:{
     id_stock_reliure: number;
@@ -325,17 +332,22 @@ export type LivreType = {
 export type devisLivreData = {
   livre_id: number;
   dimension_id: number;
+  dimension?: string;
   papier_id: number;
   papier?: string;
   couleur_id: number;
+  couleur: string;
   recto_verso_id: number;
-  pages: string;
+  recto:string;
+  pages: number;
   couverture_id: number;
   couverture?: string;
   reliure_id: number;
   finition_id: number;
-  quantite: string;
+  quantite: number;
   montant: string;
   client_id: number;
   user_id: number;
+  imprimante_id: number;
+  imprimante?: string;
 }

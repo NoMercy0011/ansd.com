@@ -45,7 +45,7 @@ export default function StartPage() {
             </div>
                 </div>
                 <Link href={`/vendeur/point-de-vente/${selectedClientId}`} onClick={() => setIsLoading(true)} >
-                <Button isLoading={isLoading} disabled={!selectedClientId} className="w-full mt-6">
+                <Button isLoading={isLoading} disabled={!selectedClientId || isLoading} className="w-full mt-6">
                     Commencer la configuration
                 </Button>
                 </Link>

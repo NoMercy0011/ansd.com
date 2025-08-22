@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes';
 import { LoginRequest } from '@/sources/actions/auth/auth.action';
 import { userLoginType } from '@/sources/types/type';
 import { useRouter } from 'next/navigation';
+import Logo from '@/sources/components/ui/logo';
 
 
 
@@ -73,9 +74,7 @@ export default function LoginScreen() {
       <div className="w-full max-w-sm mx-auto flex flex-col items-center">
         {/* Logo et Titre */}
         <div className="flex items-center justify-center space-x-3 mb-8">
-          <div className="w-14 h-14 bg-card rounded-2xl flex items-center justify-center shadow-lg border">
-            <span className="text-red-600 text-3xl font-bold">ans</span>
-          </div>
+          <Logo />
           <div>
             <h1 className="text-3xl font-bold text-foreground">ORION</h1>
             <p className="text-sm text-muted-foreground">Portail Employé</p>

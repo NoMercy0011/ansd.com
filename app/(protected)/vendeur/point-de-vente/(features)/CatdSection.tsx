@@ -1,7 +1,7 @@
 "use client"
 import { Button, Input } from '@/sources/components/ui';
 import { clientType } from '@/sources/types/type';
-import { FileClock, FileSignature, Save, ShoppingCart, Ticket, Trash2 } from 'lucide-react';
+import { FileClock, FileSignature, Save, ShoppingCart, Trash2 } from 'lucide-react';
 import React, { useState } from 'react'
 
 type CartSectionProps = {
@@ -18,22 +18,11 @@ type cartItemType = {
     remise : string;
 }
 export default function CatdSection({ cartItems, client} : CartSectionProps) {
-    const [promoCodeInput, setPromoCodeInput] = useState('');
-    const [ appliedPromo, setAppliedPromo] = useState({
-        percentage: '20%',
-    });
+
     const [ initialCartData, setInitialCartData] = useState('');
     const tvaAmount = 0.02;
-    const handleApplyPromoCode = () => {
-        setPromoCodeInput('');
-        setAppliedPromo({...appliedPromo});
-        setInitialCartData('');
-    }
-    const handleAddToCart = () => {
-        
-    }
     const handleFinalizeAndReturn = () => {
-
+            setInitialCartData('');
     }
     const onConvertToProforma = () => {
 
@@ -63,19 +52,19 @@ export default function CatdSection({ cartItems, client} : CartSectionProps) {
                                 <label className="text-xs text-slate-500 dark:text-slate-400">
                                     Qté
                                 </label>
-                                <Input type="number" value={item.quantite} /*onChange={e => handleUpdateCartItem(item.id, 'quantite', e.target.value)}*/ className="p-1 text-sm w-full"/>
+                                <Input type="number" /*value={item.quantite} onChange={e => handleUpdateCartItem(item.id, 'quantite', e.target.value)}*/ className="p-1 text-sm w-full"/>
                             </div>
                             <div className="flex-1">
                                 <label className="text-xs text-slate-500 dark:text-slate-400">
                                     P.U. HT
                                 </label>
-                                <Input type="number" step="0.01" value={item.prixUnitaire} /*onChange={e => handleUpdateCartItem(item.id, 'prixUnitaire', e.target.value)}*/ className="p-1 text-sm w-full"/>
+                                <Input type="number" step="0.01" /* value={item.prixUnitaire} onChange={e => handleUpdateCartItem(item.id, 'prixUnitaire', e.target.value)}*/ className="p-1 text-sm w-full"/>
                             </div>
                             <div className="flex-1">
                                 <label className="text-xs text-slate-500 dark:text-slate-400">
                                     Remise %
                                 </label>
-                                <Input type="number" value={item.remise} /*onChange={e => handleUpdateCartItem(item.id, 'remise', e.target.value)}*/ className="p-1 text-sm w-full"/>
+                                <Input type="number" /*value={item.remise} onChange={e => handleUpdateCartItem(item.id, 'remise', e.target.value)}*/ className="p-1 text-sm w-full"/>
                             </div>
                         </div>
                     </div>
@@ -91,16 +80,6 @@ export default function CatdSection({ cartItems, client} : CartSectionProps) {
                         <span className="font-bold text-slate-800 dark:text-slate-200">
                             {/*cartSubTotal.toLocaleString('fr-FR')*/} 1 200 Ar
                         </span>
-                    </div>
-                    <div className="border-t border-slate-200 dark:border-slate-700 pt-2 mt-2">
-                        <div className="flex gap-2">
-                            <Input value={promoCodeInput} /*onChange={(e) => setPromoCodeInput(e.target.value)}*/ placeholder="Code promo" className="p-2 text-sm"/>
-                            <Button onClick={handleApplyPromoCode} className="px-3 py-2 text-sm">Appliquer</Button>
-                        </div>
-                        {appliedPromo && <p className="text-xs text-emerald-600 mt-1">
-                            Remise de {appliedPromo.percentage}% appliquée ! (-{/*discountAmount.toLocaleString('fr-FR')*/} 1 200 Ar)
-                        </p>}
-
                     </div>
                     <div className="flex justify-between text-slate-600 dark:text-slate-300">
                         <span >Total HT après remise :</span>
@@ -124,22 +103,7 @@ export default function CatdSection({ cartItems, client} : CartSectionProps) {
                         </span>
                     </div>
                 </div>
-                <div className="border-t border-slate-200 dark:border-slate-700 pt-4 mt-2">
-                    <h4 className="font-semibold text-sm mb-2 text-slate-700 dark:text-slate-300">Produits Recommandés</h4>
-                    <div className="flex gap-2">
-                        <button 
-                            onClick={() => handleAddToCart()} 
-                            className="text-xs p-2 border dark:border-slate-600 rounded-lg flex-1 text-center hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300"
-                            >
-                                Cartes de Visite
-                        </button>
-                        <button 
-                            onClick={() => handleAddToCart()} 
-                            className="text-xs p-2 border dark:border-slate-600 rounded-lg flex-1 text-center hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300"
-                            >Roll-Up
-                        </button>
-                    </div>
-                </div>
+                
                 </>
             )}
             <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-700">
@@ -154,9 +118,6 @@ export default function CatdSection({ cartItems, client} : CartSectionProps) {
                         <div className="flex gap-2">
                             <Button variant="primary" icon={<FileSignature/>} onClick={onInitiatePayment} disabled={cartItems?.length === 0} className="w-full">
                                 Facturer
-                            </Button>
-                            <Button variant="primary" icon={<Ticket/>} onClick={onInitiatePayment} disabled={cartItems?.length === 0} className="w-full">
-                                Ticket
                             </Button>
                         </div>
                     </>
