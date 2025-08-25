@@ -27,7 +27,7 @@ export default function OptionOverview( { prixTotalReel, prixUnitaireReel}: Opti
     }
   return (
     <>
-    <div className="w-full lg:w-1/2 space-y-4 mt-5">
+    <div className="w-full lg:w-1/2 space-y-4 sticky top-24 mt-5">
         <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
             <h4 className="font-bold text-yellow-800 dark:text-yellow-300 mb-2">
                 Évaluation en temps réel

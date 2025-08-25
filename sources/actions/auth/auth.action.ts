@@ -1,6 +1,6 @@
 "use server"
 
-import { userLoginType, userRegisterType } from "@/sources/types/type";
+import { userLoginType } from "@/sources/types/type";
 import { cookies } from "next/headers";
 
 
@@ -47,19 +47,6 @@ export async function LoginRequest(login : userLoginType){
         throw new Error('Erreur lors de la connexion', error!)
     }
 
-}
-
-
-export async function RegisterRequest(register : userRegisterType){
-    
-    const response = await fetch(process.env.API_URI + 'register', {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(register),
-    });
-    const data = await response.json();
-
-    return data;
 }
 
 

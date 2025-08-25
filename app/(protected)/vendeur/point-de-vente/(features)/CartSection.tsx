@@ -1,26 +1,18 @@
 "use client"
 import { Button, Input } from '@/sources/components/ui';
-import { clientType } from '@/sources/types/type';
+import { CartItemsType, clientType } from '@/sources/types/type';
 import { FileClock, FileSignature, Save, ShoppingCart, Trash2 } from 'lucide-react';
 import React, { useState } from 'react'
 
 type CartSectionProps = {
-    cartItems: cartItemType[];
+    cartItems: CartItemsType[];
     client?: clientType,
 }
 
-type cartItemType = {
-    id: number;
-    designation : string;
-    detailedDescription : string;
-    quantite : string;
-    prixUnitaire : string;
-    remise : string;
-}
-export default function CatdSection({ cartItems, client} : CartSectionProps) {
+export default function CartSection({ cartItems, client} : CartSectionProps) {
 
     const [ initialCartData, setInitialCartData] = useState('');
-    const tvaAmount = 0.02;
+    const tvaAmount = 0.20;
     const handleFinalizeAndReturn = () => {
             setInitialCartData('');
     }
@@ -78,13 +70,13 @@ export default function CatdSection({ cartItems, client} : CartSectionProps) {
                             Sous-total HT :
                         </span>
                         <span className="font-bold text-slate-800 dark:text-slate-200">
-                            {/*cartSubTotal.toLocaleString('fr-FR')*/} 1 200 Ar
+                            {/*cartSubTotal.toLocaleString('fr-FR')*/} 0 Ar
                         </span>
                     </div>
                     <div className="flex justify-between text-slate-600 dark:text-slate-300">
                         <span >Total HT après remise :</span>
                         <span className="font-bold text-slate-800 dark:text-slate-200">
-                            {/*subTotalAfterDiscount.toLocaleString('fr-FR')*/} 1 200 Ar
+                            {/*subTotalAfterDiscount.toLocaleString('fr-FR')*/} 0 Ar
                         </span>
                     </div>
                     <div className="flex justify-between text-slate-600 dark:text-slate-300">
@@ -99,7 +91,7 @@ export default function CatdSection({ cartItems, client} : CartSectionProps) {
                             Total TTC :
                         </span>
                         <span className="font-extrabold text-red-600">
-                            {/*cartTotalTTC.toLocaleString('fr-FR')*/} 12 000 Ar
+                            {/*cartTotalTTC.toLocaleString('fr-FR')*/} 0 Ar
                         </span>
                     </div>
                 </div>

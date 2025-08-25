@@ -1,10 +1,10 @@
 "use client"
 
 import { StatCard } from '@/sources/components/ui';
-import { clientType } from '@/sources/types/type';
+import { CartItemsType, clientType } from '@/sources/types/type';
 import { AlertTriangle, FileClock, Wallet} from 'lucide-react';
 import React, { useEffect, useState } from 'react'
-import CatdSection from './CatdSection';
+import CatdSection from './CartSection';
 import { GetClientID } from '@/sources/actions/admin/client.action';
 import PrintArticle from './PrintArticle';
 import CustomArticle from './CustomArticle';
@@ -17,20 +17,19 @@ type PointDeVenteProps = {
     param ?: string;
 }
 
-const cartItems = [{
-    id: 0,
-    designation : '',
-    detailedDescription : '',
-    quantite : '',
-    prixUnitaire : '',
-    remise : '',
-}]
-
-
 export default function PointDeVentePage( { param, userRole } : PointDeVenteProps) {
     
     const [client, setClient] = useState<clientType>();
+    const [cartItems, setCartItems] = useState<CartItemsType[]>([]);
+    //const [notifications, setNotifications] = useState([]);
 
+    // const addNotification = (message, type = 'success') => { 
+    //     setNotifications(prev => [...prev, { id: Date.now(), message, type }]); 
+    // };
+
+    const handleAddCart = (cartItem : CartItemsType) => {
+        setCartItems([cartItem]);
+    }
 
 
     useEffect(() => {
@@ -68,7 +67,7 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
 
                 <CustomArticle />
 
-                <PrintArticle param={param} userRole={userRole} />
+                <PrintArticle param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem)} />
 
             </div>
                 <CatdSection cartItems={cartItems} client={client}/>

@@ -76,8 +76,8 @@ export default function LoginScreen() {
         <div className="flex items-center justify-center space-x-3 mb-8">
           <Logo />
           <div>
-            <h1 className="text-3xl font-bold text-foreground">ORION</h1>
-            <p className="text-sm text-muted-foreground">Portail Employé</p>
+            <p className="text-2xl text-muted-foreground font-semibold">Portail</p>
+            <p className="text-xl text-muted-foreground font-semibold"> Employé</p>
           </div>
         </div>
 

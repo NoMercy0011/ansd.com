@@ -5,13 +5,14 @@ import OptionOverview from './OptionOverview'
 import { Button, Input } from '@/sources/components/ui'
 import { Book, ChevronsLeftRightEllipsisIcon, Layers, Loader2, Weight, Wrench } from 'lucide-react'
 import Accordion from '@/sources/components/ui/accordion'
-import { clientType, devisLivreData } from '@/sources/types/type'
+import { CartItemsType, clientType, devisLivreData } from '@/sources/types/type'
 import { useLivre } from '@/hooks/useModerator'
 import { GetClientID } from '@/sources/actions/admin/client.action'
 
 type PrintArticleProps = {
     userRole?: string;
     param ?: string;
+    handleAddCart: (cartItem : CartItemsType) => void;
 }
 
 type ReliureOption = {
@@ -228,15 +229,19 @@ export default function PrintArticle( { param, userRole} : PrintArticleProps) {
             
             setFilteredReliures(results);
     
-    }, [devisLivre.papier, devisLivre.pages, selectedReliureType, livre]); // Ce hook se redéclenche si l'une de ces valeurs change
+    }, [devisLivre.papier, devisLivre.pages, selectedReliureType, livre]);
     
+    // const handleAddToCart = () => {
+    //     handleAddCart( );
+    // }
   return (
     <Accordion title="Ajouter un article d'impression" icon={<Wrench />} defaultOpen={false}>
         <div className="flex flex-col lg:flex-row gap-8 ">
-            <div className="w-full lg:w-1/2 space-y-4">
+            <div className="w-full lg:w-2/3 space-y-4">
                 { livreLoading ? (<Loader2 className='animate-spin w-5 h-5 text-red-500'/>) : 
                 (<> 
-                {/* Type d'Impression */}
+                <div className='max-h-[70vh] overflow-y-auto pr-4 space-y-4'>
+                 {/* Type d'Impression */}
                 <div>
                     <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
                         <Layers/>
@@ -529,10 +534,11 @@ export default function PrintArticle( { param, userRole} : PrintArticleProps) {
                         <span className="ml-2"> Quantités </span>
                     </h4>
                     <Input type="number" value={devisLivre.quantite.toString() || ''} onChange={e => handleSelect(Number(e.target.value), 'quantite')} placeholder="Ex: 1000" />
+                </div>   
                 </div>
                 </>)}
             </div>
-            <OptionOverview  userRole={userRole} prixUnitaireReel={prixUnitaireReel} prixTotalReel={prixTotalReel}/>
+            <OptionOverview  userRole={userRole} prixUnitaireReel={prixUnitaireReel} prixTotalReel={prixTotalReel} /*handleAddToCart={handleAddToCart}*/ />
         </div>
     </Accordion>
   )

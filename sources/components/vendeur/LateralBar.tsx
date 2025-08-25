@@ -37,7 +37,7 @@ export default function LateralBarVendeur() {
             <aside className=" w-20 lg:w-64 bg-slate-900 text-white flex-shrink-0 flex flex-col p-4 shadow-2xl transition-all duration-300">
                 <div className="flex items-center justify-center lg:justify-start space-x-3 p-2 mb-2">
                     <Logo />
-                    <h1 className="text-xl font-bold text-white hidden lg:block">ORION</h1>
+                    {/* <h1 className="text-xl font-bold text-white hidden lg:block">ORION</h1> */}
                 </div>
                 <nav className="flex-1 flex-col space-y-2 mt-3">
                     {modules.map(module => {
