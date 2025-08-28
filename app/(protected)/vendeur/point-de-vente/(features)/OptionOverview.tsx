@@ -1,6 +1,7 @@
 "use client"
 
 import { Button, Input } from '@/sources/components/ui'
+import { devisLivreData } from '@/sources/types/type'
 import { DollarSign, ShoppingBasket } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 
@@ -8,8 +9,10 @@ type OptionOverviewProps = {
     userRole?: string;
     prixUnitaireReel: number;
     prixTotalReel: number;
+    devisLivre?: devisLivreData;
+    handleAddToCart?: () => void;
 }
-export default function OptionOverview( { prixTotalReel, prixUnitaireReel}: OptionOverviewProps) {
+export default function OptionOverview( { prixTotalReel, prixUnitaireReel,devisLivre, handleAddToCart}: OptionOverviewProps) {
 
     //const [nombreFeuillesPapier, setNombreFeuillesPapier] = useState(0.00);
     //const [prixUnitairePapierManuel, setPrixUnitairePapierManuel] = useState(0.00);
@@ -22,12 +25,85 @@ export default function OptionOverview( { prixTotalReel, prixUnitaireReel}: Opti
         setPrixUnitaireForceHT(prixUnitaireReel);
     }, [prixTotalReel , prixUnitaireReel]);
 
-    const handleAddToCart = () => {
-
-    }
   return (
     <>
     <div className="w-full lg:w-1/2 space-y-4 sticky top-24 mt-5">
+        <div className="bg-fuchsia-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-lg">
+            <h4 className="font-bold text-red-800 dark:text-red-400 mb-2">
+                Aperçu du devis
+            </h4>
+            <div className="text-sm space-y-1.5 text-slate-700 dark:text-slate-300">
+                <div className="flex justify-between">
+                    <span>Type :</span>
+                    <span className="font-semibold">
+                        {devisLivre?.type}
+                    </span>
+                </div>
+                <div className="flex justify-between">
+                    <span>Dimension :</span>
+                    <span className="font-semibold">
+                        {devisLivre?.dimension}
+                    </span>
+                </div>
+
+                <div className="flex justify-between">
+                    <span>Couleur :</span>
+                    <span className="font-semibold">
+                        {devisLivre?.couleur === 'false' ? "N & B" : "Couleur"}
+                    </span>
+                </div>
+                <div className="flex justify-between">
+                    <span>Papier :</span>
+                    <span className="font-semibold">
+                        {devisLivre?.papier}
+                    </span>
+                </div>
+                <div className="flex justify-between">
+                    <span>Pages :</span>
+                    <span className="font-semibold">
+                        {devisLivre?.pages}
+                    </span>
+                </div>
+
+                <div className="flex justify-between">
+                    <span>Recto/Verso :</span>
+                    <span className="font-semibold">
+                        {devisLivre?.recto === "1" ? "Recto" : "Recto/Verso"}
+                    </span>
+                </div>
+                <div className="flex justify-between">
+                    <span>Couverture :</span>
+                    <span className="font-semibold">
+                        {devisLivre?.couverture}
+                    </span>
+                </div>
+                <div className="flex justify-between">
+                    <span>Imprimante :</span>
+                    <span className="font-semibold">
+                        {devisLivre?.imprimante}
+                    </span>
+                </div>
+
+                <div className="flex justify-between">
+                    <span>Reliure :</span>
+                    <span className="font-semibold">
+                        {devisLivre?.reliure}
+                    </span>
+                </div>
+                <div className="flex justify-between">
+                    <span>Finition :</span>
+                    <span className="font-semibold">
+                        {devisLivre?.finition}
+                    </span>
+                </div>
+                <div className="flex justify-between">
+                    <span>Quantités :</span>
+                    <span className="font-semibold">
+                        {devisLivre?.quantite}
+                    </span>
+                </div>
+            </div>
+        </div>
         <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
             <h4 className="font-bold text-yellow-800 dark:text-yellow-300 mb-2">
                 Évaluation en temps réel
@@ -172,7 +248,7 @@ export default function OptionOverview( { prixTotalReel, prixUnitaireReel}: Opti
     </Accordion>
     )} */}
     <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-        <h3 className="font-bold text-lg text-blue-800 dark:text-blue-300 border-b border-blue-200 dark:border-blue-800 pb-2 mb-3 flex items-center">
+        <h3 className="font-bold text-blue-800 dark:text-blue-300 border-b border-blue-200 dark:border-blue-800 pb-2 mb-3 flex items-center">
             <DollarSign size={20} className="mr-2"/>Prix de Vente de l&apos;Article
         </h3>
         <div className="space-y-3 text-sm">

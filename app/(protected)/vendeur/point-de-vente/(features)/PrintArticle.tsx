@@ -12,7 +12,8 @@ import { GetClientID } from '@/sources/actions/admin/client.action'
 type PrintArticleProps = {
     userRole?: string;
     param ?: string;
-    handleAddCart: (cartItem : CartItemsType) => void;
+    handleGetDevisLivre: (devis : devisLivreData[]) => void;
+    handleAddCart: (cartItem : CartItemsType, devis: devisLivreData) => void;
 }
 
 type ReliureOption = {
@@ -30,158 +31,101 @@ type ReliureOption = {
     }[];
 };
 
-export default function PrintArticle( { param, userRole} : PrintArticleProps) {
+export default function PrintArticle( { param, userRole, handleAddCart } : PrintArticleProps) {
     const { livre, livreLoading } = useLivre();
 
-    const [reliureFiltre, setReliureFiltre] = useState<string[]>();
-    const reliureType = [ "Plastique", "Métallique", "Piqure à cheval", "Dos carré collé" ];
-    
-    const [ papierSelected, setPapierSelected] = useState({
-            categorie: '',
-            accessoire: [{
-            accessoire: '',
-            id_papier: 0,
-            prix: '',
-            }],
-        });
-    
-    const [ couvertureSelected, setCouvertureSelected] = useState({
-            categorie: '',
-            accessoire: [{
-            accessoire: '',
-            id_papier: 0,
-            prix: '',
-            }],
-        });
-
+    const reliureType = ["Plastique", "Métallique", "Piqure à cheval", "Dos carré collé"];
+    const [reliureFiltre, setReliureFiltre] = useState<string[]>(reliureType);
     const [client, setClient] = useState<clientType>();
-    const [pose, setPose] = useState({ });
+    const [isOpen, setIsOpen] = useState(false);
     const [selectedReliureType, setSelectedReliureType] = useState<string>('');
     const [prixUnitaireReel, setPrixUnitaireReel] = useState<number>(0.00);
     const [prixTotalReel, setprixTotalReel] = useState<number>(0.00);
     const [filteredReliures, setFilteredReliures] = useState<ReliureOption[]>([]);
+
+    const [ papierSelected, setPapierSelected] = useState({
+            categorie: '', accessoire: [{ accessoire: '', id_papier: 0, prix: '', categorie: ''}],
+        });
     
-    const [devisLivre, setDevisLivre] = useState<devisLivreData>({
-        client_id: Number(client?.id_client), couleur_id: 0, couleur: '',  couverture_id: 0, couverture: '', dimension_id: 0, dimension:'' , finition_id: 0, livre_id: 0,
-        montant: '', pages: 1, papier_id: 0, papier: '', quantite: 1, recto_verso_id: 0, recto:'', reliure_id: 0, user_id: 0, imprimante_id: 0, imprimante: ''
+    const [ couvertureSelected, setCouvertureSelected] = useState({
+            categorie: '', accessoire: [{ accessoire: '', id_papier: 0, prix: '', categorie: ''}],
     });
 
-    const handleSelect = (value : number | string , name : string, option?: string, optionValue?: string) => {
-    setDevisLivre(prevState => ({
-        ...prevState,
-        [name]: value,
-        ...(option !== undefined && { [option]: optionValue }),
-    }));
+    const [devisLivre, setDevisLivre] = useState<devisLivreData>({
+        client_id: Number(client?.id_client), type: '', couleur_id: 0, couleur: '', couverture_id: 0, couverture: '', dimension_id: 0, dimension: '', finition_id: 0, livre_id: 0,
+        montant: '', pages: 1, papier_id: 0, papier: '', quantite: 1, recto_verso_id: 0, recto: '', reliure_id: 0, imprimante_id: 0, imprimante: '', finition: '',
+        reliure: '', finitionPrix: 0,
+    });
+
+    const handleSelect = (value: number | string, name: string, option?: string, optionValue?: string) => {
+        setDevisLivre(prevState => ({
+            ...prevState,
+            [name]: value,
+            ...(option !== undefined && { [option]: optionValue }),
+        }));
     };
-
-    const toFloat = (value : string) => {
-        if(value.includes("/")){
-            const [num, den] = value.split("/").map(Number);
-
-            return num/den;
-        }
-        return parseFloat(value);
-    }
     
-    const CalculCoutPapierInterne = ( {accessoire,printer,couleur } :
-            { 
-                accessoire?: {
-                    accessoire: string,
-                    id_papier: number,
-                    prix: string,
-                },
-                printer?: string,
-                couleur?: string, 
-            }) => {
-            setPose({ ...pose, accessoire,printer,couleur});
+    const getUnitPriceWithInk = (
+            accessoire: { prix: string, accessoire: string } | undefined,
+            printer: string | undefined,
+            couleur: string | undefined
+        ): number => {
+            if (!accessoire) return 0;
 
-            let prix = 0;
-            if( couleur === 'true' &&  accessoire?.accessoire === '80G'){
-                if( printer === 'Laser'){
-                    prix = Number(accessoire?.prix) + 400;
+        let prix = Number(accessoire.prix) || 0;
+            if (couleur === 'true' && accessoire.accessoire === '80G') {
+                if (printer === 'Laser') {
+                    prix += 400;
                 } else {
-                    prix = Number(accessoire?.prix) + 200;
+                    prix += 200;
                 }
-            } else {
-                prix = Number(accessoire?.prix);
             }
             return prix;
-    }
-    useEffect(() => {
-        if( devisLivre.pages % 4  !== 0 ){
-            const filteredReliureType = reliureType.filter( r => r!== "Piqure à cheval");
-            setReliureFiltre(filteredReliureType);  
-        }else {
-            setReliureFiltre(reliureType); 
         }
-    }, [devisLivre.pages]);
+
+    useEffect(() => {
+        if (devisLivre.pages % 4 !== 0) {
+            setReliureFiltre(reliureType.filter(r => r !== "Piqure à cheval"));
+            // Si la reliure invalide était sélectionnée, on la désélectionne
+            if (selectedReliureType === "Piqure à cheval") {
+                setSelectedReliureType('');
+            }
+        } else {
+            setReliureFiltre(reliureType);
+        }
+    }, [devisLivre.pages, selectedReliureType]);
     
     useEffect(() => {
-        // S'assurer que les données de l'API sont chargées
         if (!livre || livreLoading) return;
 
-        // --- Récupération des objets sélectionnés ---
         const selectedDimension = livre.dimensions.find(d => d.id_dimension === devisLivre.dimension_id);
-        const selectedPapier = livre.papiers
-            .flatMap(p => p.accessoire)
-            .find(acc => acc.id_papier === devisLivre.papier_id);
-        
-            // La couverture utilise la même structure de données que le papier
-            const selectedCouverture = livre.papiers
-            .flatMap(p => p.accessoire)
-            .find(acc => acc.id_papier === devisLivre.couverture_id);
-            
-            const selectedReliure = filteredReliures
-            .flatMap(r => r.reliures)
-            .find(rel => rel.id_reliure === devisLivre.reliure_id);
-            
-            const selectedFinition = livre.finition.find(f => f.id_finition === devisLivre.finition_id);
-            
-            // --- Calcul des coûts individuels ---
-            const nbrPages = Number(devisLivre.pages) || 0;
-            const quantite = Number(devisLivre.quantite) || 1; // On part sur une quantité de 1 si non définie
-            
-            // Le nombre de poses est crucial
-            const nbrPoses =  toFloat(String(selectedDimension?.pose)) || 1; 
-            
-        const selectedPrinter = devisLivre.imprimante || '';
-        const selectedRecto =  devisLivre.recto || '';
-        const selectedCouleur = devisLivre.couleur || '';
+        const selectedPapier = livre.papiers.flatMap(p => p.accessoire).find(acc => acc.id_papier === devisLivre.papier_id);
+        const selectedCouverture = livre.papiers.flatMap(p => p.accessoire).find(acc => acc.id_papier === devisLivre.couverture_id);
+        const selectedReliure = filteredReliures.flatMap(r => r.reliures).find(rel => rel.id_reliure === devisLivre.reliure_id);
+        //const selectedFinition = livre.finition.find(f => f.id_finition === devisLivre.finition_id);
 
-        const unitPrice = CalculCoutPapierInterne( { accessoire: selectedPapier!,printer: selectedPrinter, couleur: selectedCouleur});
+        const nbrPages = Number(devisLivre.pages) || 0;
+        const quantite = Number(devisLivre.quantite) || 1;
+        const nbrPoses = selectedDimension?.pose ? parseFloat(String(selectedDimension.pose).replace(',', '.')) : 1;
+        const rectoVersoMultiplier = devisLivre.recto === "1" ? 1 : 2; // 1 pour R/V, 2 pour Recto simple
 
-        const coutPapier = unitPrice ? (Number(unitPrice) * nbrPages * nbrPoses * Number(selectedRecto)) : 0;
-        // Coût du papier pour les pages intérieures
-        //const coutPapierInterne = selectedPapier ? (Number(selectedPapier.prix) * nbrPages * nbrPoses) : 0;
-        
-        // Coût du papier pour la couverture
-        const coutCouverture = selectedCouverture ? (Number(selectedCouverture.prix) * nbrPoses) : 0;
+        // Calcul du coût du papier interne (papier + encre)
+        const unitPriceWithInk = getUnitPriceWithInk(selectedPapier, devisLivre.imprimante, devisLivre.couleur);
+        const coutPapierInterne = (unitPriceWithInk / nbrPoses) * nbrPages / rectoVersoMultiplier;
 
-        // Coût de la reliure et de la finition
+        const coutCouverture = selectedCouverture ? (Number(selectedCouverture.prix) / nbrPoses) : 0;
         const coutReliure = selectedReliure ? Number(selectedReliure.prix) : 0;
-        const coutFinition = selectedFinition ? Number(selectedFinition.prix) : 0;
+        //const coutFinition = selectedFinition ? Number(selectedFinition.prix) : Number(devisLivre.finitionPrix);
+        const coutFinition = devisLivre.finition === 'aucune' ? 0 : Number(devisLivre.finitionPrix);
 
-        // --- Calcul du Total ---
-        const totalUnitaire = coutPapier + coutCouverture + coutReliure + coutFinition;
+        const totalUnitaire = coutPapierInterne + coutCouverture + coutReliure + coutFinition ;
         const totalFinal = totalUnitaire * quantite;
-        setPrixUnitaireReel(totalUnitaire)
+        
+        setPrixUnitaireReel(totalUnitaire);
         setprixTotalReel(totalFinal);
-                
-    }, [
-        devisLivre.dimension_id, 
-        devisLivre.papier_id,
-        devisLivre.couverture_id, 
-        devisLivre.reliure_id, 
-        devisLivre.finition_id,
-        devisLivre.pages,
-        devisLivre.quantite,
-        devisLivre.recto,
-        devisLivre.couleur,
-        devisLivre.imprimante,
-        livre,
-        livreLoading,
-        filteredReliures
-    ]);
+
+    }, [devisLivre, livre, livreLoading, filteredReliures]); 
+
         
         
     useEffect(() => {
@@ -196,46 +140,63 @@ export default function PrintArticle( { param, userRole} : PrintArticleProps) {
     }, [param]);
     
     useEffect(() => {
-            // Condition 1: S'assurer que les données et les sélections nécessaires existent
-            if (!livre?.reliure || !selectedReliureType || !devisLivre.papier || !devisLivre.pages) {
-                setFilteredReliures([]); // Vider les résultats si les infos sont incomplètes
-                return;
-            }
-    
-            const pageCount = Number(devisLivre.pages);
-            // Condition 2: S'assurer que le nombre de pages est un chiffre valide
-            if (isNaN(pageCount) || pageCount <= 0) {
-                setFilteredReliures([]);
-                return;
-            }
-    
-            // --- Début du processus de filtrage en chaîne ---
-            const results = livre.reliure
-                // Étape 1: Filtrer par le TYPE de reliure sélectionné (ex: "Plastique")
-                .filter(option => option.type === selectedReliureType)
-                .map(option => {
-                    // Étape 2: Pour chaque option, filtrer ses sous-éléments (reliures)
-                    const validNestedReliures = option.reliures.filter(nested =>
-                        // Condition A: Le PAPIER doit correspondre
-                        nested.papier === devisLivre.papier &&
-                        // Condition B: Le NOMBRE DE PAGES doit être dans la fourchette [min, max]
-                        pageCount >= nested.min && pageCount <= nested.max
-                    );
-                    // Retourner l'option parente avec seulement ses enfants valides
-                    return { ...option, reliures: validNestedReliures };
-                })
-                // Étape 3: Éliminer les options dont la liste d'enfants est devenue vide
-                .filter(option => option.reliures.length > 0);
-            
-            setFilteredReliures(results);
-    
+        if (!livre?.reliure || !selectedReliureType || !devisLivre.papier || !devisLivre.pages) {
+            setFilteredReliures([]);
+            return;
+        }
+
+        const pageCount = Number(devisLivre.pages);
+        if (isNaN(pageCount) || pageCount <= 0) {
+            setFilteredReliures([]);
+            return;
+        }
+        const [accessoire] = devisLivre.papier.split("-").map(String);
+        
+        const results = livre.reliure
+            .filter(option => option.type === selectedReliureType)
+            .map(option => {
+                const validNestedReliures = option.reliures.filter(nested =>
+                    nested.papier === accessoire && (pageCount >= nested.min && pageCount <= nested.max)
+                );
+                return { ...option, reliures: validNestedReliures };
+            })
+            .filter(option => option.reliures.length > 0);
+        
+        setFilteredReliures(results);
+
     }, [devisLivre.papier, devisLivre.pages, selectedReliureType, livre]);
-    
-    // const handleAddToCart = () => {
-    //     handleAddCart( );
-    // }
+
+    const initializeDevisLivre = () => {
+        setDevisLivre({
+        client_id: Number(client?.id_client), type: '', couleur_id: 0, couleur: '', couverture_id: 0, couverture: '', dimension_id: 0, dimension: '', finition_id: 0, livre_id: 0,
+        montant: '', pages: 1, papier_id: 0, papier: '', quantite: 1, recto_verso_id: 0, recto: '', reliure_id: 0, imprimante_id: 0, imprimante: '', finition: '',
+        reliure: '', finitionPrix: 0,
+        });
+        setIsOpen(false);
+    }
+    const handleAddToCart = () => {
+        const detailsDevis = `
+            Type: ${devisLivre.type}/Dimension: ${devisLivre.dimension}/Couleur: ${devisLivre.couleur ==  'false' ? 'Noir et Blanc' : 'Couleur'}
+            /Papier: ${devisLivre.papier}/Pages: ${devisLivre.pages}/Recto: ${devisLivre.recto == 'false' ? 'recto' : 'recto-veso'}
+            /Couverture: ${devisLivre.couverture}/Imprimante: ${devisLivre.imprimante}/Reliure: ${devisLivre.reliure}
+            /Finition: ${devisLivre.finition}`;
+
+        const printArticleItem : CartItemsType = {
+            id: Date.now(),
+            designation: "Service d'impression : Livre",
+            detail_description: detailsDevis,
+            prix_unitaire_ht: prixUnitaireReel,
+            quantite: devisLivre.quantite,
+            remise: 0.00,
+            service:'Impression',
+        }
+        setDevisLivre({ ...devisLivre,  montant:prixTotalReel.toString() });
+        handleAddCart(printArticleItem, devisLivre);
+        initializeDevisLivre();
+    }
+
   return (
-    <Accordion title="Ajouter un article d'impression" icon={<Wrench />} defaultOpen={false}>
+    <Accordion title="Ajouter un article d'impression" icon={<Wrench />} defaultOpen={isOpen}>
         <div className="flex flex-col lg:flex-row gap-8 ">
             <div className="w-full lg:w-2/3 space-y-4">
                 { livreLoading ? (<Loader2 className='animate-spin w-5 h-5 text-red-500'/>) : 
@@ -251,7 +212,7 @@ export default function PrintArticle( { param, userRole} : PrintArticleProps) {
                         { livre.livres.map( livre => (
                             <React.Fragment key={livre.id_livre}>
                                 <button 
-                                    onClick={() => handleSelect(livre.id_livre, 'livre_id')}
+                                    onClick={() => handleSelect(livre.id_livre, 'livre_id', 'type', livre.livre)}
                                     className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisLivre.livre_id === livre.id_livre ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
                                     <span>{livre.livre}</span>
                                 </button>
@@ -341,7 +302,7 @@ export default function PrintArticle( { param, userRole} : PrintArticleProps) {
                         (papierSelected.accessoire.map( accessoire => (
                             <React.Fragment key={accessoire.id_papier}>
                                 <button 
-                                    onClick={() => handleSelect(accessoire.id_papier, 'papier_id', 'papier' , accessoire.accessoire)}
+                                    onClick={() => handleSelect(accessoire.id_papier, 'papier_id', 'papier' , `${accessoire.accessoire}-${accessoire.categorie}`)}
                                     className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${accessoire.id_papier === devisLivre.papier_id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
                                     <span>{accessoire.accessoire}</span>
                                 </button>
@@ -423,7 +384,7 @@ export default function PrintArticle( { param, userRole} : PrintArticleProps) {
                         (couvertureSelected.accessoire.map( accessoire => (
                             <React.Fragment key={accessoire.id_papier}>
                                 <button 
-                                    onClick={() => handleSelect(accessoire.id_papier, 'couverture_id' , 'couverture',accessoire.accessoire )}
+                                    onClick={() => handleSelect(accessoire.id_papier, 'couverture_id' , 'couverture', `${accessoire.accessoire}-${accessoire.categorie}` )}
                                     className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${accessoire.id_papier === devisLivre.couverture_id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
                                     <span>{accessoire.accessoire}</span>
                                 </button>
@@ -467,15 +428,16 @@ export default function PrintArticle( { param, userRole} : PrintArticleProps) {
                         </div>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                         {reliureFiltre?.map(reliure => (
-                            <>
                             <button
                                 key={reliure}
-                                onClick={() => setSelectedReliureType(reliure)}
+                                onClick={() => {
+                                    setSelectedReliureType(reliure);
+                                    handleSelect(0, 'reliure_id', 'reliure', reliure);
+                                } }
                                 className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${selectedReliureType === reliure ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                             >
                                 <span>{reliure}</span>
                             </button>
-                            </>
                         ))}
                         </div>
                         </div>
@@ -518,13 +480,15 @@ export default function PrintArticle( { param, userRole} : PrintArticleProps) {
                         { livre.finition.map( finition => (
                             <React.Fragment key={finition.id_finition}>
                                 <button 
-                                    onClick={() => handleSelect(finition.id_finition, 'finition_id')}
+                                    onClick={() => handleSelect(finition.id_finition, 'finition_id', 'finition', finition.finition)}
                                     className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisLivre.finition_id === finition.id_finition ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
                                     <span>{finition.finition}</span>
                                 </button>
                             </React.Fragment>
                         ))}
+
                     </div>
+                    <Input type="text" value={devisLivre.finitionPrix?.toString() || ''} onChange={e => handleSelect(Number(e.target.value), 'finitionPrix')} className='mt-3 '/>
                 </div>
                 
                 {/* quantité */}
@@ -533,12 +497,12 @@ export default function PrintArticle( { param, userRole} : PrintArticleProps) {
                         <Layers/>
                         <span className="ml-2"> Quantités </span>
                     </h4>
-                    <Input type="number" value={devisLivre.quantite.toString() || ''} onChange={e => handleSelect(Number(e.target.value), 'quantite')} placeholder="Ex: 1000" />
+                    <Input type="number" value={devisLivre.quantite.toLocaleString('fr-FR') || ''} onChange={e => handleSelect(Number(e.target.value), 'quantite')} placeholder="Ex: 1000" />
                 </div>   
                 </div>
                 </>)}
             </div>
-            <OptionOverview  userRole={userRole} prixUnitaireReel={prixUnitaireReel} prixTotalReel={prixTotalReel} /*handleAddToCart={handleAddToCart}*/ />
+            <OptionOverview  userRole={userRole} prixUnitaireReel={prixUnitaireReel} prixTotalReel={prixTotalReel} handleAddToCart={handleAddToCart} devisLivre={devisLivre} />
         </div>
     </Accordion>
   )

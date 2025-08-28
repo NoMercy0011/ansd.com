@@ -1,8 +1,10 @@
 "use client"
+
 import { GetClientID, GetClients } from '@/sources/actions/admin/client.action';
 import { GetCommerciaux } from '@/sources/actions/admin/commercial.action';
+import { GetDocument } from '@/sources/actions/admin/document.action';
 import { GetLivre } from '@/sources/actions/admin/livre.action';
-import { clientType, CommercialData, LivreType } from '@/sources/types/type';
+import { clientType, CommercialData, DocumentType, LivreType } from '@/sources/types/type';
 import useSWR from 'swr';
 
 
@@ -50,3 +52,15 @@ export function useLivre() {
         mutate
     }
 } 
+
+export function useDocument() {
+    const { data, isLoading, error, mutate} = useSWR('get-document', GetDocument);
+
+    return {
+        proformas: data?.proformas as DocumentType[],
+        factures: data?.factures as DocumentType[],
+        documentLoading: isLoading,
+        documentError: error,
+        mutate
+    }
+}

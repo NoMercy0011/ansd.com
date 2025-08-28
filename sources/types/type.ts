@@ -47,6 +47,7 @@ export type LivreType = {
       accessoire: string;      
       id_papier: number;
       prix: string;
+      categorie: string;
     }[];
   }[];
   couleurs: {
@@ -86,6 +87,7 @@ export type LivreType = {
 
 export type devisLivreData = {
   livre_id: number;
+  type?: string;
   dimension_id: number;
   dimension?: string;
   papier_id: number;
@@ -98,11 +100,14 @@ export type devisLivreData = {
   couverture_id: number;
   couverture?: string;
   reliure_id: number;
+  reliure?: string;
   finition_id: number;
+  finition?: string;
+  finitionPrix?: number;
   quantite: number;
   montant: string;
   client_id: number;
-  user_id: number;
+  user_id?: number;
   imprimante_id: number;
   imprimante?: string;
 }
@@ -111,8 +116,40 @@ export type CartItemsType = {
     id: number;
     designation : string;
     quantite : number;
-    prixUnitaire : number;
+    prix_unitaire_ht : number;
+    prixTotal?: string;
     remise : number;
-    typeDeVente: string;
-    detailedDescription : string;
+    service: string;
+    detail_description : string;
+}
+
+export type DocumentType = {
+  document?: DocumentData;
+  ligne_document?: CartItemsType[];
+  devis_livre?: devisLivreData[];
+  client?: clientType;
+}
+
+export type DocumentData = {
+  id_document?: number;
+  client_id: number;
+  numero_document?: string;
+  type_document: string;
+  date_emission?: string | Date;
+  date_echeance?: string | Date;
+  sous_total_ht: number;
+  remise: number;
+  montant_tax: number;
+  total_ttc: number;
+  status: string;
+}
+
+export type LigneDocument = {
+  id_ligne_document: number;
+  document_id: number;
+  service: string;
+  designantion: string;
+  detail_description: string;
+  quantite: number;
+  prix_unitaire_ht: number;
 }

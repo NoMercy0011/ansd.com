@@ -1,7 +1,7 @@
 "use client"
 
 import { StatCard } from '@/sources/components/ui';
-import { CartItemsType, clientType } from '@/sources/types/type';
+import { CartItemsType, clientType, devisLivreData } from '@/sources/types/type';
 import { AlertTriangle, FileClock, Wallet} from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import CatdSection from './CartSection';
@@ -21,16 +21,29 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
     
     const [client, setClient] = useState<clientType>();
     const [cartItems, setCartItems] = useState<CartItemsType[]>([]);
+    const [devisLivre, setDevisLivre] = useState<devisLivreData[]>([])
     //const [notifications, setNotifications] = useState([]);
 
     // const addNotification = (message, type = 'success') => { 
     //     setNotifications(prev => [...prev, { id: Date.now(), message, type }]); 
     // };
-
-    const handleAddCart = (cartItem : CartItemsType) => {
-        setCartItems([cartItem]);
+    const handleGetDevisLivre = (devisLivre : devisLivreData[]) => {
+        setDevisLivre(devisLivre);
     }
 
+    const handleAddCart = (cartItem : CartItemsType, devis : devisLivreData) => {
+        const itemsCopy = [...cartItems];
+        itemsCopy.push(cartItem);
+        setCartItems(itemsCopy);
+        const devisCopy = [...devisLivre];
+        devisCopy.push(devis);
+        setDevisLivre(devisCopy);
+    }
+
+    const RemoveFromCart = (id : number) => {
+        const filterCartItems = cartItems.filter(item => item.id !== id);
+        setCartItems(filterCartItems);
+    }
 
     useEffect(() => {
         if (param) {
@@ -67,10 +80,10 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
 
                 <CustomArticle />
 
-                <PrintArticle param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem)} />
+                <PrintArticle param={param} userRole={userRole} handleAddCart={(cartItem, devisLivre) => handleAddCart(cartItem, devisLivre)} handleGetDevisLivre={ (devisLivre) => handleGetDevisLivre(devisLivre)} />
 
             </div>
-                <CatdSection cartItems={cartItems} client={client}/>
+                <CatdSection cartItems={cartItems} client={client} RemoveFromCart={(id) =>  RemoveFromCart(id) } devisLivre={devisLivre!}/>
         </div>
     </div>
     );

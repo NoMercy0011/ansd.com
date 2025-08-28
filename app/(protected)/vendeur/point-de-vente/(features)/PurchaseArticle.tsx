@@ -12,9 +12,10 @@ export default function PurchaseArticle() {
         { id: 104, name: "Carnet de notes", price: 6600, stock: 150, seuilAlerte: 40, type: "vente-directe" },
     ];
   return (
-    <Accordion title="Ajouter un article en stock (Vente Directe)" icon={<Tag />} defaultOpen={true} >
+    <Accordion title="Ajouter un article en stock (Vente Directe)" icon={<Tag />} defaultOpen={false} >
                         
-        <div className="relative mb-4"><Input type="text" placeholder="Rechercher un article en stock..." className="pl-10"/><Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20}/>
+    <div className="relative mt-4 mb-4"><Input type="text" placeholder="Rechercher un article en stock..." className="pl-10"/>
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={20}/>
     </div>
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-60 overflow-y-auto pr-2">
         {stockItems.map(item => (

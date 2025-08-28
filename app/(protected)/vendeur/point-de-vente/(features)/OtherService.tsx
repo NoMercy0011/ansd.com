@@ -20,7 +20,9 @@ export default function OtherService() {
 
   return (
     <Accordion title="Ajouter un autre service" icon={<BrainCircuit />} defaultOpen={false}>
-        {Object.entries(otherServices).map(([category, serviceList]) => (
+        <div className='mt-4'>
+        </div>
+            {Object.entries(otherServices).map(([category, serviceList]) => (
         <Accordion key={category} title={category} defaultOpen={false}>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {serviceList.map(service => (
