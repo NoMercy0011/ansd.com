@@ -5,111 +5,30 @@ import { Button, Input } from '@/sources/components/ui';
 import SectionTitle from '@/sources/components/ui/sectionTitle';
 import { Copy, Edit, Eye, Search } from 'lucide-react';
 import React, {  useState } from 'react'
+import PrintableDocumentModal from '../../(features)/PrintableDocumentModal';
+import { DocumentType } from '@/sources/types/type';
 
 export default function Proforma() {
-    const { proformas, documentLoading } = useDocument();
-    //const [proforma, setProforma] = useState(null);
-    const [searchTerm, setSearchTerm] = useState('');
-
-    /*useEffect(() => {
-        if(documentLoading) {
-            const filter =  proformas.filter(p => 
-            (p.document?.numero_document && p.document?.numero_document.toLowerCase().includes(searchTerm.toLowerCase())) ||
-            (p.client && p.client.nom_societe && p.client.nom_societe.toLowerCase().includes(searchTerm.toLowerCase())));
-            setData(filter);
+        const { proformas, documentLoading } = useDocument();
+        const [searchTerm, setSearchTerm] = useState('');
+        const [printableDoc, setPrintableDoc] = useState<DocumentType> ();
+        const [openModal, setOpenModale] = useState(false);
+    
+        const handlePrepareAndPrintDocument = (doc ?: DocumentType) => {
+            if (!doc) return;
+            setPrintableDoc(doc);
+            setOpenModale(true);
+        };
+    
+        const onClose = () => {
+            setOpenModale(false);
         }
-    }, [proformas, searchTerm, documentLoading]);*/
-
-    // const handleItemChange = () => {
         
-    // };
-    // const updateProformaItems = () => {
-        
-    // };
-    // const handleFieldChange = () => { };
-
-    // const proformaEditor = (
-    //     <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-8 border border-slate-200 dark:border-slate-700">
-    //         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-    //             <div>
-    //                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Client
-    //                 </label>
-    //                 <Select value={proforma?.clientId || ''} onChange={e => handleFieldChange('clientId', e.target.value)} disabled>
-    //                     <option value="">-- Client --</option>
-    //                     {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-    //                 </Select>
-    //             </div>
-    //             <div>
-    //                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Délai d'exécution (jours)
-    //                 </label>
-    //                 <Input type="number" value={proforma?.delai || 7} onChange={e => handleFieldChange('delai', parseInt(e.target.value))}/>
-    //             </div>
-    //             <div>
-    //                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">N° Proforma
-    //                 </label>
-    //                 <Input value={proforma?.proformaNumber || ''} disabled />
-    //             </div>
-    //         </div>
-    //         <div className="overflow-x-auto mb-4 -mx-4 px-4">
-    //             <table className="w-full">
-    //                 <thead>
-    //                     <tr>
-    //                         <th className="p-2 text-left text-sm font-semibold text-slate-600 dark:text-slate-300 w-2/5">Désignation</th>
-    //                         <th className="p-2 text-left text-sm font-semibold text-slate-600 dark:text-slate-300">Qté</th>
-    //                         <th className="p-2 text-left text-sm font-semibold text-slate-600 dark:text-slate-300">P.U. (Ar)</th>
-    //                         <th className="p-2 text-left text-sm font-semibold text-slate-600 dark:text-slate-300">Remise (%)</th>
-    //                         <th className="p-2 text-left text-sm font-semibold text-slate-600 dark:text-slate-300">Total (Ar)</th>
-    //                     </tr>
-    //                 </thead>
-    //                 <tbody>
-    //                     {proforma?.items.map(item => (
-    //                         <tr key={item.id} className="border-b border-slate-200 dark:border-slate-700">
-    //                             <td className="p-2"><Input value={item.designation} onChange={e => handleItemChange(item.id, 'designation', e.target.value)} /></td>
-    //                             <td className="p-2"><Input type="number" value={item.quantite} onChange={e => handleItemChange(item.id, 'quantite', e.target.value)} className="w-20" /></td>
-    //                             <td className="p-2"><Input type="number" step="0.01" value={item.prixUnitaire} onChange={e => handleItemChange(item.id, 'prixUnitaire', e.target.value)} className="w-28" /></td>
-    //                             <td className="p-2"><Input type="number" value={item.remise || 0} onChange={e => handleItemChange(item.id, 'remise', e.target.value)} className="w-20" /></td>
-    //                             <td className="p-2 text-slate-800 dark:text-slate-200 font-medium">{(item.quantite * item.prixUnitaire * (1 - (item.remise || 0)/100)).toLocaleString('fr-FR')}</td>
-    //                         </tr>
-    //                     ))}
-    //                 </tbody>
-    //             </table>
-    //         </div>
-    //         <Button variant="ghost" icon={<PlusCircle/>} onClick={() => onAddItemToProforma(proforma)} className="text-sm">Ajouter un nouvel article</Button>
-    //         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-4">
-    //             <div>
-    //                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">
-    //                     Remarques
-    //                 </label>
-    //                 <Textarea value={proforma?.remarques || ''} onChange={e => handleFieldChange('remarques', e.target.value)} />
-    //             </div>
-    //             <div className="space-y-2 text-right bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
-    //                 <div className="flex justify-between items-center">
-    //                     <span className="text-slate-600 dark:text-slate-300">Total HT :</span>
-    //                     <span className="font-bold text-slate-800 dark:text-slate-200">{proforma?.subTotal.toLocaleString('fr-FR') || '0'} Ar</span>
-    //                 </div>
-    //             <div className="flex justify-between items-center"><span className="text-slate-600 dark:text-slate-300">TVA (20%) :</span>
-    //             <span className="font-bold text-slate-800 dark:text-slate-200">{(proforma?.totalPrice - proforma?.subTotal).toLocaleString('fr-FR') || '0'} Ar</span>
-    //         </div>
-    //         <hr className="my-2 border-slate-200 dark:border-slate-700"/>
-    //         <div className="flex justify-between items-center text-xl">
-    //             <span className="font-bold text-slate-800 dark:text-slate-100">Total TTC :</span>
-    //             <span className="font-extrabold text-red-600">{proforma?.totalPrice.toLocaleString('fr-FR') || '0'} Ar</span>
-    //         </div>
-    //     </div>
-    // </div>
-    // <div className="flex justify-between items-center mt-8 pt-6 border-t border-slate-200 dark:border-slate-700">
-    //     <Button variant="secondary" onClick={onBack}>Retourner au Point de Vente</Button>
-    //     <div className="flex gap-3">
-    //         <Button variant="success" icon={Save} onClick={() => onSaveProforma(proforma)} disabled={!proforma}>Enregistrer</Button>
-    //         <Button variant="primary" icon={FileSignature} onClick={() => onInitiatePayment('facture', proforma)} disabled={!proforma || !proforma.id}>Facturer</Button>
-    //         <Button variant="primary" icon={Ticket} onClick={() => onInitiatePayment('ticket', proforma)} disabled={!proforma || !proforma.id}>Créer un Ticket</Button>
-    //     </div>
-    // </div>
-    // </div>
-    // );
-  
+    
     return (
-        <div className="animate-fade-in space-y-8">
+    <>
+    { openModal && <PrintableDocumentModal onClose={onClose} doc={printableDoc}/> }
+    <div className="animate-fade-in space-y-8">
             <SectionTitle title="Factures Proforma" subtitle="Créez, sauvegardez et gérez vos propositions commerciales." />
             <div className="text-center p-12 bg-white dark:bg-slate-800 rounded-xl shadow-sm border dark:border-slate-700"><p className="text-slate-500 dark:text-slate-400">Convertissez une commande ou sélectionnez une proforma enregistrée pour commencer.</p></div>
             <div>
@@ -149,7 +68,7 @@ export default function Proforma() {
                             </td>
                             <td className="p-4 flex items-center gap-1"><Button variant="ghost" icon={<Copy/>} className="p-2 h-auto" title="Dupliquer" />
                                 <Button variant="ghost" icon={<Edit/>}  className="p-2 h-auto" title="Modifier" />
-                                <Button variant="ghost" icon={<Eye/>} className="p-2 h-auto" title="Visualiser" />
+                                <Button variant="ghost" icon={<Eye/>} onClick={() => handlePrepareAndPrintDocument(p)} className="p-2 h-auto" title="Visualiser" />
                             </td>
                         </tr>
                     )}) : 
@@ -161,5 +80,6 @@ export default function Proforma() {
             </div>
         </div>
     </div>
+    </>
     );
 }

@@ -1125,7 +1125,9 @@ export default async function register() {
 //                         </td>
 //                         <td className="p-4 flex items-center gap-1 relative">{inv.resteAPayer > 0 && ( 
 //                             <Button variant="success" onClick={() => onFinalizeInvoice(inv)} className="py-1 px-2 text-xs">Finaliser</Button> )}
-//                             <Button variant="ghost" icon={Copy} onClick={() => onDuplicateDocument(inv)} className="p-2 h-auto" title="Dupliquer" /><Button variant="ghost" icon={Eye} onClick={() => onPrepareAndPrint(inv)} className="p-2 h-auto" title="Visualiser" /><Button variant="ghost" icon={MoreVertical} onClick={() => setMenuOpen(menuOpen === inv.id ? null : inv.id)} className="p-2 h-auto" />
+//                             <Button variant="ghost" icon={Copy} onClick={() => onDuplicateDocument(inv)} className="p-2 h-auto" title="Dupliquer" />
+//                               <Button variant="ghost" icon={Eye} onClick={() => onPrepareAndPrint(inv)} className="p-2 h-auto" title="Visualiser" />
+//                                 <Button variant="ghost" icon={MoreVertical} onClick={() => setMenuOpen(menuOpen === inv.id ? null : inv.id)} className="p-2 h-auto" />
 //                     {menuOpen === inv.id && (
 //                         <div className="absolute right-0 top-10 mt-2 w-48 bg-white dark:bg-slate-900 rounded-md shadow-lg z-10 border dark:border-slate-700">
 //                             <button onClick={() => { onUpdateInvoiceStatus(inv.id, 'En Recouvrement'); setMenuOpen(null); }} className="block w-full text-left px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">Marquer "En Recouvrement"</button>

@@ -70,6 +70,7 @@ export default function CartSection({ cartItems, client, devisLivre, RemoveFromC
             console.log("erreur inattendu lors de la creation du proforma");
         }finally{
             setIsLoading(false)
+            setCartData([]);
         }
     }
     const submitToInvoice = async() => {
@@ -91,9 +92,10 @@ export default function CartSection({ cartItems, client, devisLivre, RemoveFromC
 
             await CreateFacture(data);
         }catch {
-            console.log("erreur inattendu lors de la creation du facture")
+            console.log("erreur inattendu lors de la creation du facture");
         }finally{
-            setIsLoading(false)
+            setIsLoading(false);
+            setCartData([]);
         }
     }
     const handleRemoveFromCart = (id: number) => {
