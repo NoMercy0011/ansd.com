@@ -28,7 +28,7 @@ export default function OptionOverview( { prixTotalReel, prixUnitaireReel,devisL
   return (
     <>
     <div className="w-full lg:w-1/2 space-y-4 sticky top-24 mt-5">
-        <div className="bg-fuchsia-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-lg">
+        <div className="bg-red-100 dark:bg-red-900/20 border border-red-200 dark:border-red-800 p-4 rounded-lg">
             <h4 className="font-bold text-red-800 dark:text-red-400 mb-2">
                 Aperçu du devis
             </h4>
@@ -49,7 +49,8 @@ export default function OptionOverview( { prixTotalReel, prixUnitaireReel,devisL
                 <div className="flex justify-between">
                     <span>Couleur :</span>
                     <span className="font-semibold">
-                        {devisLivre?.couleur === 'false' ? "N & B" : "Couleur"}
+                        {devisLivre?.couleur === 'false' && "N & B"}
+                        {devisLivre?.couleur === 'true' && "Couleur"}
                     </span>
                 </div>
                 <div className="flex justify-between">
@@ -61,14 +62,15 @@ export default function OptionOverview( { prixTotalReel, prixUnitaireReel,devisL
                 <div className="flex justify-between">
                     <span>Pages :</span>
                     <span className="font-semibold">
-                        {devisLivre?.pages}
+                        {devisLivre?.pages || ''}
                     </span>
                 </div>
 
                 <div className="flex justify-between">
                     <span>Recto/Verso :</span>
                     <span className="font-semibold">
-                        {devisLivre?.recto === "1" ? "Recto" : "Recto/Verso"}
+                        {devisLivre?.recto === "1" && "Recto" }
+                        {devisLivre?.recto === "2" && "Recto/Verso"}
                     </span>
                 </div>
                 <div className="flex justify-between">
@@ -99,12 +101,12 @@ export default function OptionOverview( { prixTotalReel, prixUnitaireReel,devisL
                 <div className="flex justify-between">
                     <span>Quantités :</span>
                     <span className="font-semibold">
-                        {devisLivre?.quantite}
+                        {devisLivre?.quantite || ''}
                     </span>
                 </div>
             </div>
         </div>
-        <div className="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
+        <div className="bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
             <h4 className="font-bold text-yellow-800 dark:text-yellow-300 mb-2">
                 Évaluation en temps réel
             </h4>
@@ -247,7 +249,7 @@ export default function OptionOverview( { prixTotalReel, prixUnitaireReel,devisL
             </div>
     </Accordion>
     )} */}
-    <div className="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+    <div className="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
         <h3 className="font-bold text-blue-800 dark:text-blue-300 border-b border-blue-200 dark:border-blue-800 pb-2 mb-3 flex items-center">
             <DollarSign size={20} className="mr-2"/>Prix de Vente de l&apos;Article
         </h3>

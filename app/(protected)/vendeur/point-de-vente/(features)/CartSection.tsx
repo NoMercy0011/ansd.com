@@ -10,9 +10,10 @@ type CartSectionProps = {
     client?: clientType;
     devisLivre: devisLivreData[];
     RemoveFromCart: (id : number) => void;
+    cartItemsInit: () => void;
 }
 
-export default function CartSection({ cartItems, client, devisLivre, RemoveFromCart} : CartSectionProps) {
+export default function CartSection({ cartItems, client, devisLivre, RemoveFromCart, cartItemsInit} : CartSectionProps) {
 
     const [ initialCartData, setInitialCartData] = useState('');
     const [ isLoading, setIsLoading] = useState(false);
@@ -71,6 +72,7 @@ export default function CartSection({ cartItems, client, devisLivre, RemoveFromC
         }finally{
             setIsLoading(false)
             setCartData([]);
+            cartItemsInit();
         }
     }
     const submitToInvoice = async() => {
@@ -96,6 +98,7 @@ export default function CartSection({ cartItems, client, devisLivre, RemoveFromC
         }finally{
             setIsLoading(false);
             setCartData([]);
+            cartItemsInit();
         }
     }
     const handleRemoveFromCart = (id: number) => {
@@ -185,7 +188,6 @@ export default function CartSection({ cartItems, client, devisLivre, RemoveFromC
                         </span>
                     </div>
                 </div>
-                
                 </>
             )}
             <div className="space-y-3 pt-4 border-t border-slate-200 dark:border-slate-700">
@@ -194,11 +196,11 @@ export default function CartSection({ cartItems, client, devisLivre, RemoveFromC
                         Mettre à jour la Proforma
                     </Button> ) : 
                     ( <>
-                        <Button variant="secondary" isLoading={isLoading} icon={<FileClock/>} onClick={submitToProforma} disabled={cartItems?.length === 0 || isLoading} className="w-full">
+                        <Button variant="secondary" isLoading={isLoading} icon={<FileClock/>} onClick={submitToProforma} disabled={cartData?.length === 0 || isLoading } className="w-full">
                             Créer la Proforma
                         </Button>
                         <div className="flex gap-2">
-                            <Button variant="primary" isLoading={isLoading} icon={<FileSignature/>} onClick={submitToInvoice} disabled={cartItems?.length === 0 || isLoading} className="w-full">
+                            <Button variant="primary" isLoading={isLoading} icon={<FileSignature/>} onClick={submitToInvoice} disabled={cartData?.length === 0 || isLoading } className="w-full">
                                 Facturer
                             </Button>
                         </div>

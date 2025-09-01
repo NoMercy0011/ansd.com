@@ -4,13 +4,13 @@ import { StatCard } from '@/sources/components/ui';
 import { CartItemsType, clientType, devisLivreData } from '@/sources/types/type';
 import { AlertTriangle, FileClock, Wallet} from 'lucide-react';
 import React, { useEffect, useState } from 'react'
-import CatdSection from './CartSection';
 import { GetClientID } from '@/sources/actions/admin/client.action';
 import PrintArticle from './PrintArticle';
 import CustomArticle from './CustomArticle';
 import LivraisonService from './LivraisonService';
 import OtherService from './OtherService';
 import PurchaseArticle from './PurchaseArticle';
+import CartSection from './CartSection';
 
 type PointDeVenteProps = {
     userRole?: string;
@@ -43,6 +43,10 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
     const RemoveFromCart = (id : number) => {
         const filterCartItems = cartItems.filter(item => item.id !== id);
         setCartItems(filterCartItems);
+    }
+
+    const cartItemsInit = () => {
+        setCartItems([]);
     }
 
     useEffect(() => {
@@ -83,7 +87,7 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
                 <PrintArticle param={param} userRole={userRole} handleAddCart={(cartItem, devisLivre) => handleAddCart(cartItem, devisLivre)} handleGetDevisLivre={ (devisLivre) => handleGetDevisLivre(devisLivre)} />
 
             </div>
-                <CatdSection cartItems={cartItems} client={client} RemoveFromCart={(id) =>  RemoveFromCart(id) } devisLivre={devisLivre!}/>
+                <CartSection cartItems={cartItems} client={client} RemoveFromCart={(id) =>  RemoveFromCart(id) } devisLivre={devisLivre!} cartItemsInit={ () => cartItemsInit()} />
         </div>
     </div>
     );

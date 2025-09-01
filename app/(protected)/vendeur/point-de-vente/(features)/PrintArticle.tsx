@@ -31,6 +31,11 @@ type ReliureOption = {
     }[];
 };
 
+type CustomeSizeType = {
+    longueur: number;
+    largeur: number;
+}
+
 export default function PrintArticle( { param, userRole, handleAddCart } : PrintArticleProps) {
     const { livre, livreLoading } = useLivre();
 
@@ -42,6 +47,56 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
     const [prixUnitaireReel, setPrixUnitaireReel] = useState<number>(0.00);
     const [prixTotalReel, setprixTotalReel] = useState<number>(0.00);
     const [filteredReliures, setFilteredReliures] = useState<ReliureOption[]>([]);
+    const [ customSize, setCustomSize] = useState<CustomeSizeType> ({
+        longueur: 0,
+        largeur: 0,
+    });
+
+    const MAX_LARGEUR_A3 = 297;
+    const MAX_LONGUEUR_A3 = 420;
+
+    const customeSizeChange = (field : "longueur" | "largeur" , value: string) => {
+        let numValue = parseInt(value, 10) || 0;
+        if( field === 'largeur' && numValue > MAX_LARGEUR_A3) {
+            numValue = MAX_LARGEUR_A3;
+        } 
+         if( field === 'longueur' && numValue > MAX_LONGUEUR_A3) {
+            numValue = MAX_LONGUEUR_A3;
+        }
+        setCustomSize( {...customSize, [field]: numValue});
+    }
+
+    const getEffectiveDimension = (custom: CustomeSizeType, standardDimensions: typeof livre.dimensions) => {
+        if(!livre || custom.largeur ===0 || custom.longueur===0) {
+            return standardDimensions.find(d => d.dimension === 'A6');
+        }
+        const customL = Math.max(custom.longueur, custom.largeur);
+        const customW = Math.min(custom.longueur, custom.largeur);
+
+        const dimensionsWithValues = standardDimensions.map( dim => {
+            const partiels = dim.unitée.split('x');
+            const longueur = parseInt(partiels[0].trim(), 10);
+            const largeur = parseInt(partiels[1].trim(), 10);
+
+            return {
+                ...dim, 
+                numericValues: partiels ? {
+                    longueur: longueur, largeur: largeur, 
+                    max: Math.max(longueur, largeur), min: Math.min(longueur, largeur),
+                } : null
+            };
+        }).filter(dim => dim.numericValues !== null);
+
+        dimensionsWithValues.sort( (a, b) => ( a.numericValues!.max * a.numericValues!.min) - (b.numericValues!.max * b.numericValues!.min));
+
+        for (const dim of dimensionsWithValues) {
+            if( customL <= dim.numericValues!.max && customW <= dim.numericValues!.min) {
+                return dim;
+            }
+        }
+       
+        return standardDimensions.find(d => d.dimension === "A3");
+    }
 
     const [ papierSelected, setPapierSelected] = useState({
             categorie: '', accessoire: [{ accessoire: '', id_papier: 0, prix: '', categorie: ''}],
@@ -52,12 +107,12 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
     });
 
     const [devisLivre, setDevisLivre] = useState<devisLivreData>({
-        client_id: Number(client?.id_client), type: '', couleur_id: 0, couleur: '', couverture_id: 0, couverture: '', dimension_id: 0, dimension: '', finition_id: 0, livre_id: 0,
-        montant: '', pages: 1, papier_id: 0, papier: '', quantite: 1, recto_verso_id: 0, recto: '', reliure_id: 0, imprimante_id: 0, imprimante: '', finition: '',
-        reliure: '', finitionPrix: 0,
+        client_id: Number(client?.id_client), type: '', couleur_id: '', couleur: '', couverture_id: 0, couverture: '', dimension_id: 0, dimension: '', finition_id: 0, livre_id: 0,
+        montant: '', pages: 0, papier_id: 0, papier: '', quantite: 0, recto_verso_id: 0, recto: '', reliure_id: '', imprimante_id: 0, imprimante: '', finition: '',
+        reliure: '', reliurePrix: '', finitionPrix: 0,
     });
 
-    const handleSelect = (value: number | string, name: string, option?: string, optionValue?: string) => {
+    const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
         setDevisLivre(prevState => ({
             ...prevState,
             [name]: value,
@@ -94,27 +149,48 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
             setReliureFiltre(reliureType);
         }
     }, [devisLivre.pages, selectedReliureType]);
+
+    const convertPose = (value: string) => {
+        if( !value) return 1;
+
+        const str = String(value).replace(',', '.');
+
+        if( value.includes('/')) {
+            const str = value.split('/');
+            const num = parseFloat(str[0]);
+            const den = parseFloat(str[1]);
+
+            if(den === 0) return NaN;
+            return num/den;
+        }
+
+        return Number(str);
+    }
     
     useEffect(() => {
         if (!livre || livreLoading) return;
 
         const selectedDimension = livre.dimensions.find(d => d.id_dimension === devisLivre.dimension_id);
+
+        const effectiveDimension = devisLivre.dimension_id === null ? getEffectiveDimension(customSize, livre.dimensions) : selectedDimension;
+
+        if(!effectiveDimension) return ;
         const selectedPapier = livre.papiers.flatMap(p => p.accessoire).find(acc => acc.id_papier === devisLivre.papier_id);
         const selectedCouverture = livre.papiers.flatMap(p => p.accessoire).find(acc => acc.id_papier === devisLivre.couverture_id);
-        const selectedReliure = filteredReliures.flatMap(r => r.reliures).find(rel => rel.id_reliure === devisLivre.reliure_id);
+        const selectedReliure = devisLivre.reliurePrix ? Number(devisLivre?.reliurePrix) : Number(filteredReliures.flatMap(r => r.reliures).find(rel => rel.id_reliure === devisLivre.reliure_id)?.prix);
         //const selectedFinition = livre.finition.find(f => f.id_finition === devisLivre.finition_id);
 
         const nbrPages = Number(devisLivre.pages) || 0;
         const quantite = Number(devisLivre.quantite) || 1;
-        const nbrPoses = selectedDimension?.pose ? parseFloat(String(selectedDimension.pose).replace(',', '.')) : 1;
+        const nbrPoses = effectiveDimension?.pose ? convertPose(effectiveDimension?.pose) : 1;
         const rectoVersoMultiplier = devisLivre.recto === "1" ? 1 : 2; // 1 pour R/V, 2 pour Recto simple
 
         // Calcul du coût du papier interne (papier + encre)
         const unitPriceWithInk = getUnitPriceWithInk(selectedPapier, devisLivre.imprimante, devisLivre.couleur);
-        const coutPapierInterne = (unitPriceWithInk / nbrPoses) * nbrPages / rectoVersoMultiplier;
+        const coutPapierInterne = (unitPriceWithInk * nbrPoses) * nbrPages / rectoVersoMultiplier;
 
-        const coutCouverture = selectedCouverture ? (Number(selectedCouverture.prix) / nbrPoses) : 0;
-        const coutReliure = selectedReliure ? Number(selectedReliure.prix) : 0;
+        const coutCouverture = selectedCouverture ? (Number(selectedCouverture.prix) * nbrPoses) : 0;
+        const coutReliure = selectedReliure ? Number(selectedReliure) : 0;
         //const coutFinition = selectedFinition ? Number(selectedFinition.prix) : Number(devisLivre.finitionPrix);
         const coutFinition = devisLivre.finition === 'aucune' ? 0 : Number(devisLivre.finitionPrix);
 
@@ -124,7 +200,7 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
         setPrixUnitaireReel(totalUnitaire);
         setprixTotalReel(totalFinal);
 
-    }, [devisLivre, livre, livreLoading, filteredReliures]); 
+    }, [devisLivre, livre, livreLoading, filteredReliures, customSize]); 
 
         
         
@@ -168,9 +244,9 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
 
     const initializeDevisLivre = () => {
         setDevisLivre({
-        client_id: Number(client?.id_client), type: '', couleur_id: 0, couleur: '', couverture_id: 0, couverture: '', dimension_id: 0, dimension: '', finition_id: 0, livre_id: 0,
-        montant: '', pages: 1, papier_id: 0, papier: '', quantite: 1, recto_verso_id: 0, recto: '', reliure_id: 0, imprimante_id: 0, imprimante: '', finition: '',
-        reliure: '', finitionPrix: 0,
+        client_id: Number(client?.id_client), type: '', couleur_id: '', couleur: '', couverture_id: 0, couverture: '', dimension_id: 0, dimension: '', finition_id: 0, livre_id: 0,
+        montant: '', pages: 0, papier_id: 0, papier: '', quantite: 0, recto_verso_id: 0, recto: '', reliure_id: '', imprimante_id: 0, imprimante: '', finition: '',
+        reliure: '', reliurePrix: '' , finitionPrix: 0,
         });
         setIsOpen(false);
     }
@@ -190,7 +266,7 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
             remise: 0.00,
             service:'Impression',
         }
-        setDevisLivre({ ...devisLivre,  montant:prixTotalReel.toString() });
+        setDevisLivre({ ...devisLivre,  montant:String(prixTotalReel) });
         handleAddCart(printArticleItem, devisLivre);
         initializeDevisLivre();
     }
@@ -201,7 +277,7 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
             <div className="w-full lg:w-2/3 space-y-4">
                 { livreLoading ? (<Loader2 className='animate-spin w-5 h-5 text-red-500'/>) : 
                 (<> 
-                <div className='max-h-[70vh] overflow-y-auto pr-4 space-y-4'>
+                <div className='max-h-[80vh] overflow-y-auto pr-4 space-y-4'>
                  {/* Type d'Impression */}
                 <div>
                     <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
@@ -216,8 +292,17 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
                                     className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisLivre.livre_id === livre.id_livre ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
                                     <span>{livre.livre}</span>
                                 </button>
+                    
                             </React.Fragment>
                         ))}
+                    </div>
+                    <div className='mt-3'>
+                        { devisLivre.livre_id == 6 ? 
+                        (<div className='relative'>
+                            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold"> Type : </div>
+                            <Input className='pl-15' type="text" value={devisLivre.type} onChange={e => handleSelect(0, '', 'type', e.target.value)} placeholder="Ex: type personnalisé" /> 
+                         </div>): null
+                        }
                     </div>
                 </div>
                 {/* Dimension */}
@@ -236,6 +321,25 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
                                 </button>
                             </React.Fragment>
                         ))}
+                        <button 
+                            onClick={() => handleSelect(null, 'dimension_id', 'dimension', 'autre')}
+                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisLivre.dimension === 'autre' ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
+                            <span>autre</span>
+                        </button>
+                    {   devisLivre.dimension === 'autre' && 
+                        <div className='mt-2 border'>
+                            <div className='relative w-50'>
+                                <Input  className=" pl-22" type="number" min="1" max="120" value={customSize.longueur.toString()} onChange={e => customeSizeChange("longueur", e.target.value)} placeholder="Ex: type de reliure" />
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold" > Longueur : </div>
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold" > | mm </div>
+                            </div>
+                            <div className='relative mt-2 w-50'>
+                                <Input  className=" pl-18 overscroll-none" type="number" min="1" max="120" value={customSize.largeur.toString()} onChange={e => customeSizeChange('largeur', e.target.value)} placeholder="Ex: type de reliure" />
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold" > Largeur : </div>
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold" > | mm </div>
+                            </div>
+                        </div>
+                        }
                     </div>
                 </div>
                 {/* couleur */}
@@ -273,11 +377,12 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                         { livre.papiers.map( papier => (
                             <React.Fragment key={papier.categorie}>
-                                <button 
+                                {devisLivre.dimension === "A3" && papier.categorie == "Toile fin" ? null : 
+                                (<button 
                                     onClick={() => setPapierSelected(papier)}
                                     className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${papierSelected.categorie === papier.categorie ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
-                                    <span>{papier.categorie}</span>
-                                </button>
+                                    <span>{papier.categorie }</span>
+                                </button>)}
                             </React.Fragment>
                         ))}
                         </div>
@@ -318,7 +423,7 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
                         <Layers/>
                         <span className="ml-2"> Nombre de pages </span>
                     </h4>
-                    <Input type="number" value={devisLivre.pages.toString() || ''} onChange={e => handleSelect(e.target.value, 'pages')} placeholder="Ex: 1000" />
+                    <Input type="number" value={devisLivre.pages.toString()} onChange={e => handleSelect(e.target.value, 'pages')} placeholder="Ex: 1000" />
                 </div>
                 {/* recto-verso */}
                 <div>
@@ -355,11 +460,12 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                         { livre.papiers.map( papier => (
                             <React.Fragment key={papier.categorie}>
-                                <button 
+                                {devisLivre.dimension === "A3" && papier.categorie == "Toile fin" ? null : 
+                                (<button 
                                     onClick={() => setCouvertureSelected(papier)}
                                     className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${couvertureSelected.categorie === papier.categorie ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}>
                                     <span>{papier.categorie}</span>
-                                </button>
+                                </button>)}
                             </React.Fragment>
                         ))}
                         </div>
@@ -431,14 +537,24 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
                             <button
                                 key={reliure}
                                 onClick={() => {
+                                    setDevisLivre({...devisLivre, reliurePrix: '0'});
                                     setSelectedReliureType(reliure);
-                                    handleSelect(0, 'reliure_id', 'reliure', reliure);
+                                    handleSelect('', 'reliure_id', 'reliure', reliure);
                                 } }
                                 className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${selectedReliureType === reliure ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                             >
                                 <span>{reliure}</span>
                             </button>
                         ))}
+                            <button
+                                onClick={() => {
+                                    setSelectedReliureType('autre');
+                                    handleSelect('', 'reliure_id', 'reliure', 'Autre');
+                                } }
+                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${selectedReliureType === 'autre' ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                >
+                                <span> autre </span>
+                            </button>
                         </div>
                         </div>
                     </div>
@@ -448,7 +564,20 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
                             <ChevronsLeftRightEllipsisIcon />
                             <span className="ml-2"> Référence disponible </span>
                         </h4>
+                        { selectedReliureType === 'autre' ? 
+                        ( <div className='gap-4 space-y-3'> 
+                            <div className='relative'>
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold"> Reliure : </div>
+                                <Input className="pl-18" type="text" value={devisLivre.reliure?.toString()} onChange={e => handleSelect(e.target.value, 'reliure')} placeholder="Ex: type de reliure" />
+                            </div>
+                            <div className='relative'>
+                                <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold"> Prix : </div>
+                                <div className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold"> | Ar</div>
+                                <Input className="pl-14" type="text" value={devisLivre.reliurePrix?.toString()} onChange={e => handleSelect(e.target.value, 'reliurePrix')} placeholder="Ex: 1200 Ar" />
+                            </div>
+                            </div>) : (<> 
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                        
                         {!filteredReliures.length ? (
                                 <div className="col-span-full text-center text-slate-500 text-sm p-3 bg-slate-50 dark:bg-slate-800 rounded-md">
                                     Veuillez choisir un papier, un nombre de pages et un type de reliure.
@@ -468,6 +597,7 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
                                 )
                             )}
                         </div>
+                        </>)}
                     </div>
                     </div>
                 {/* finition */}
@@ -476,7 +606,7 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
                         <Layers/>
                         <span className="ml-2"> Finition </span>
                     </h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
                         { livre.finition.map( finition => (
                             <React.Fragment key={finition.id_finition}>
                                 <button 
@@ -488,12 +618,17 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
                         ))}
 
                     </div>
-                    <Input type="text" value={devisLivre.finitionPrix?.toString() || ''} onChange={e => handleSelect(Number(e.target.value), 'finitionPrix')} className='mt-3 '/>
+                    {( !devisLivre.finition || devisLivre.finition !== "aucune" ) &&
+                    <div className='relative'>
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold"> Prix : </div>
+                        <div className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold"> | Ar</div>
+                        <Input className='pl-15' type="text" value={devisLivre.finitionPrix?.toString() || ''} onChange={e => handleSelect(Number(e.target.value), 'finitionPrix')}/>
+                    </div>}
                 </div>
                 
                 {/* quantité */}
                 <div>
-                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
+                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mt-3 mb-3 flex items-center ">
                         <Layers/>
                         <span className="ml-2"> Quantités </span>
                     </h4>

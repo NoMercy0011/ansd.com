@@ -88,27 +88,28 @@ export type LivreType = {
 export type devisLivreData = {
   livre_id: number;
   type?: string;
-  dimension_id: number;
+  dimension_id: number | null;
   dimension?: string;
-  papier_id: number;
+  papier_id: number | null;
   papier?: string;
-  couleur_id: number;
+  couleur_id: number | string;
   couleur: string;
   recto_verso_id: number;
   recto:string;
   pages: number;
-  couverture_id: number;
+  couverture_id: number | null;
   couverture?: string;
-  reliure_id: number;
+  reliure_id: number | string;
   reliure?: string;
-  finition_id: number;
+  reliurePrix?:string;
+  finition_id: number | null;
   finition?: string;
   finitionPrix?: number;
   quantite: number;
   montant: string;
-  client_id: number;
-  user_id?: number;
-  imprimante_id: number;
+  client_id: number | null;
+  user_id?: number | null;
+  imprimante_id: number | null;
   imprimante?: string;
 }
 
