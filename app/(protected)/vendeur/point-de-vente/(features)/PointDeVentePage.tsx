@@ -6,11 +6,20 @@ import { AlertTriangle, FileClock, Wallet} from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 import { GetClientID } from '@/sources/actions/admin/client.action';
 import PrintArticle from './PrintArticle';
-import CustomArticle from './CustomArticle';
-import LivraisonService from './LivraisonService';
-import OtherService from './OtherService';
-import PurchaseArticle from './PurchaseArticle';
+import Packaging from './Packaging/Packaging';
+import Chevalet from './Chevalet';
+import Calendar from './Calendar/Calendar';
+import Cartetie from './Cartetie';
 import CartSection from './CartSection';
+import Flyers from './Flyers';
+import Finition from './Finition';
+import GrandFormat from './GrandFormat';
+import Textile from './Textile';
+import Goodies from './Goodies';
+import Evenement from './Evenement';
+import Photo from './Photo';
+import Administratif from './Administratif';
+import Impression from './Impression';
 
 type PointDeVenteProps = {
     userRole?: string;
@@ -31,12 +40,12 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
         setDevisLivre(devisLivre);
     }
 
-    const handleAddCart = (cartItem : CartItemsType, devis : devisLivreData) => {
+    const handleAddCart = (cartItem : CartItemsType, devis ?: devisLivreData) => {
         const itemsCopy = [...cartItems];
         itemsCopy.push(cartItem);
         setCartItems(itemsCopy);
         const devisCopy = [...devisLivre];
-        devisCopy.push(devis);
+        devisCopy.push(devis!);
         setDevisLivre(devisCopy);
     }
 
@@ -75,18 +84,36 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
               </div>
               <div className="flex flex-col lg:flex-row gap-8">
                 <div className="w-full lg:w-2/3 space-y-6"> 
-
-                <PurchaseArticle />
-
-                <OtherService />
-
-                <LivraisonService />
-
-                <CustomArticle />
-
+                <div className='max-h-[60vh] overflow-y-auto pr-4 space-y-4'>
+                <Packaging param={param} handleAddCart={(cartItem) => handleAddCart(cartItem)}/>
+                
+                <Calendar param={param} handleAddCart={(cartItem) => handleAddCart(cartItem)}/>
+                
+                <Chevalet />
+                
                 <PrintArticle param={param} userRole={userRole} handleAddCart={(cartItem, devisLivre) => handleAddCart(cartItem, devisLivre)} handleGetDevisLivre={ (devisLivre) => handleGetDevisLivre(devisLivre)} />
+                
+                <Cartetie />
 
-            </div>
+                <Flyers />
+
+                <Finition />
+
+                <GrandFormat />
+
+                <Textile />
+
+                <Goodies />
+
+                <Evenement />
+
+                <Photo />
+
+                <Administratif />
+
+                <Impression />
+                </div>
+                </div>
                 <CartSection cartItems={cartItems} client={client} RemoveFromCart={(id) =>  RemoveFromCart(id) } devisLivre={devisLivre!} cartItemsInit={ () => cartItemsInit()} />
         </div>
     </div>

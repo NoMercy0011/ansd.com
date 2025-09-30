@@ -142,7 +142,8 @@ export type DocumentData = {
   remise: number;
   montant_tax: number;
   total_ttc: number;
-  status: string;
+  status?: string;
+  remarque?: string;
 }
 
 export type LigneDocument = {
@@ -154,3 +155,50 @@ export type LigneDocument = {
   quantite: number;
   prix_unitaire_ht: number;
 }
+
+export type devisPackagingData = {
+  client_id: number;
+  type: string;
+  couleur_id: number;
+  couleur: string;
+  materiau_id: number;
+  materiau: string;
+  dimension_id: number;
+  dimension: string;
+  finition_id: number;
+  packaging_id: number;
+  montant: string;
+  quantite: number;
+  recto_verso_id: number;
+  recto: string;
+  option_id: string;
+  imprimante_id: number;
+  imprimante: string;
+  finition: string;
+  option: string;
+  optionPrix: string;
+  finitionPrix: number;
+  decoupe: string;
+  particularite: string;
+  emplacement_id?: number;
+  emplacement: string;
+};
+
+export type devisCalendarData = {
+  client_id: number;
+  type: string;
+  materiau_id: number;
+  materiau: string;
+  dimension_id: number;
+  dimension: string;
+  socle_id: number;
+  socle: string;
+  calendar_id: number;
+  montant: string;
+  quantite: number;
+  recto_verso_id: number;
+  recto: string;
+  imprimante_id: number;
+  imprimante: string;
+  particularite: string;
+};

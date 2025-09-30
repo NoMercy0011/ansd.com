@@ -1,9 +1,9 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import OptionOverview from './OptionOverview'
+import OptionOverview from './OptionOverview/OptionOverview'
 import { Button, Input } from '@/sources/components/ui'
-import { Book, ChevronsLeftRightEllipsisIcon, Layers, Loader2, Weight, Wrench } from 'lucide-react'
+import { Book, BookOpen, ChevronsLeftRightEllipsisIcon, Layers, Loader2, Weight } from 'lucide-react'
 import Accordion from '@/sources/components/ui/accordion'
 import { CartItemsType, clientType, devisLivreData } from '@/sources/types/type'
 import { useLivre } from '@/hooks/useModerator'
@@ -187,7 +187,7 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
 
         // Calcul du coût du papier interne (papier + encre)
         const unitPriceWithInk = getUnitPriceWithInk(selectedPapier, devisLivre.imprimante, devisLivre.couleur);
-        const coutPapierInterne = (unitPriceWithInk * nbrPoses) * nbrPages / rectoVersoMultiplier;
+        const coutPapierInterne =  (unitPriceWithInk * nbrPoses) * nbrPages * rectoVersoMultiplier;
 
         const coutCouverture = selectedCouverture ? (Number(selectedCouverture.prix) * nbrPoses) : 0;
         const coutReliure = selectedReliure ? Number(selectedReliure) : 0;
@@ -272,7 +272,7 @@ export default function PrintArticle( { param, userRole, handleAddCart } : Print
     }
 
   return (
-    <Accordion title="Ajouter un article d'impression" icon={<Wrench />} defaultOpen={isOpen}>
+    <Accordion title="Livres, Booklets, Mémoires" icon={<BookOpen />} defaultOpen={isOpen}>
         <div className="flex flex-col lg:flex-row gap-8 ">
             <div className="w-full lg:w-2/3 space-y-4">
                 { livreLoading ? (<Loader2 className='animate-spin w-5 h-5 text-red-500'/>) : 
