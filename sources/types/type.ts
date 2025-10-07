@@ -225,3 +225,23 @@ export type devisChevaletData = {
   quantite: number;
   optionPrix?: string;
 };
+
+export type devisFlyersData = {
+  client_id: number;
+  dimension_id: number;
+  dimension: string;
+  volet_id: number;
+  volet: string;
+  face_id: number;
+  face: string;
+  support_id: number;
+  support: string;
+  grammage_id: number;
+  grammage: string;
+  imprimante_id: number;
+  imprimante: string;
+  montant: string;
+  quantite: number;
+  finitionPrix?: number;
+  optionPrix: string;
+};

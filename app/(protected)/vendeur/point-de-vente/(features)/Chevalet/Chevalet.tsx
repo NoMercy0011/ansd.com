@@ -784,7 +784,7 @@ const initializeDevisChevalet = () => {
                                     <div>
                                         <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
                                             <Layers />
-                                            <span className="ml-2"> Face d&apos;impression </span>
+                                            <span className="ml-2"> Face d&aposimpression </span>
                                         </h4>
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                             {getCurrentFaces().map(face => (

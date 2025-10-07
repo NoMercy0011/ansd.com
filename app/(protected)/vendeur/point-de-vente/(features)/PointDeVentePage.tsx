@@ -95,7 +95,7 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
                 
                 <Cartetie />
 
-                <Flyers />
+                <Flyers param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem) } />
 
                 <Finition />
 
