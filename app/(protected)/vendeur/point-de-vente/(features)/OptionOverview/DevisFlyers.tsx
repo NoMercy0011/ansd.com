@@ -27,7 +27,7 @@ export default function DevisFlyers( { devis } : DevisProps) {
                 <div className="flex justify-between">
                     <span>Papier :</span>
                     <span className="font-semibold">
-                        `${devis?.support}-{devis?.grammage}`
+                        `{devis?.support}-{devis?.grammage}`
                     </span>
                 </div>
 
