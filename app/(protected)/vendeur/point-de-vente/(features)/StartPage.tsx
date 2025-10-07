@@ -35,9 +35,9 @@ export default function StartPage() {
             <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Source de la commande</label>
                 <Select value={orderSource} onChange={e => setOrderSource(e.target.value)}>
+                    <option>Appel Direct</option>
                     <option>Facebook</option>
                     <option>WhatsApp</option>
-                    <option>Appel Direct</option>
                     <option>Email</option>
                     <option>Visite</option>
                     <option>Salon</option>

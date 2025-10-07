@@ -420,16 +420,16 @@ export default function Packaging({ param, userRole, handleAddCart }: PrintArtic
         const packagingType = PackagingData.types.find(t => t.id === devisPackaging.packaging_id);
         
         const detailsDevis = `
-Type: ${packagingType?.nom}
-Dimension: ${devisPackaging.dimension || 'Non spécifié'}
-Couleur: ${devisPackaging.couleur || 'Non spécifié'}
-Matériau: ${devisPackaging.materiau || 'Non spécifié'}
-Face: ${devisPackaging.recto === 'recto' ? 'Recto seulement' : 'Recto-Verso'}
-Imprimante: ${devisPackaging.imprimante || 'Non spécifié'}
-Finition: ${devisPackaging.finition || 'Aucune'}
-Découpe: ${devisPackaging.decoupe || 'Standard'}
-Emplacement: ${devisPackaging.emplacement || 'Standard'}
-Particularité: ${devisPackaging.particularite || 'Aucune'}`;
+                Type: ${packagingType?.nom}
+                Dimension: ${devisPackaging.dimension || 'Non spécifié'}
+                Couleur: ${devisPackaging.couleur || 'Non spécifié'}
+                Matériau: ${devisPackaging.materiau || 'Non spécifié'}
+                Face: ${devisPackaging.recto === 'recto' ? 'Recto seulement' : 'Recto-Verso'}
+                Imprimante: ${devisPackaging.imprimante || 'Non spécifié'}
+                Finition: ${devisPackaging.finition || 'Aucune'}
+                Découpe: ${devisPackaging.decoupe || 'Standard'}
+                Emplacement: ${devisPackaging.emplacement || 'Standard'}
+                Particularité: ${devisPackaging.particularite || 'Aucune'}`;
 
         const packagingItem: CartItemsType = {
             id: Date.now(),

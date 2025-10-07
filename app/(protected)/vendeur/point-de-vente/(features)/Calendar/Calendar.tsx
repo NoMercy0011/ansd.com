@@ -13,7 +13,7 @@ type PrintArticleProps = {
 }
 
 
-export default function Items({ param, userRole, handleAddCart }: PrintArticleProps) {
+export default function Calendar({ param, userRole, handleAddCart }: PrintArticleProps) {
     
     // Données mock complètes pour le items
     const itemsData = {

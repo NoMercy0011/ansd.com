@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { GetClientID } from '@/sources/actions/admin/client.action';
 import PrintArticle from './PrintArticle';
 import Packaging from './Packaging/Packaging';
-import Chevalet from './Chevalet';
+import Chevalet from './Chevalet/Chevalet';
 import Calendar from './Calendar/Calendar';
 import Cartetie from './Cartetie';
 import CartSection from './CartSection';
@@ -89,7 +89,7 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
                 
                 <Calendar param={param} handleAddCart={(cartItem) => handleAddCart(cartItem)}/>
                 
-                <Chevalet />
+                <Chevalet param={param} handleAddCart={(cartItem) => handleAddCart(cartItem)} />
                 
                 <PrintArticle param={param} userRole={userRole} handleAddCart={(cartItem, devisLivre) => handleAddCart(cartItem, devisLivre)} handleGetDevisLivre={ (devisLivre) => handleGetDevisLivre(devisLivre)} />
                 

@@ -1,12 +1,13 @@
 "use client"
 
 import { Button, Input } from '@/sources/components/ui'
-import { devisCalendarData, devisLivreData, devisPackagingData } from '@/sources/types/type'
+import { devisCalendarData, devisChevaletData, devisLivreData, devisPackagingData } from '@/sources/types/type'
 import { DollarSign, ShoppingBasket } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import DevisLivreOverview from './DevisLivreOverview'
 import DevisPackaging from './DevisPackaging'
 import DevisCalendar from './DevisCalendar'
+import DevisChevalet from './DevisChevalet'
 
 type OptionOverviewProps = {
     userRole?: string;
@@ -15,9 +16,10 @@ type OptionOverviewProps = {
     devisLivre?: devisLivreData;
     devisPackaging?: devisPackagingData;
     devisCalendar?: devisCalendarData;
+    devisChevalet?: devisChevaletData;
     handleAddToCart?: () => void;
 }
-export default function OptionOverview( { prixTotalReel, prixUnitaireReel,devisLivre, devisPackaging,devisCalendar, handleAddToCart}: OptionOverviewProps) {
+export default function OptionOverview( { prixTotalReel, prixUnitaireReel,devisLivre, devisPackaging,devisCalendar, devisChevalet, handleAddToCart}: OptionOverviewProps) {
 
     //const [nombreFeuillesPapier, setNombreFeuillesPapier] = useState(0.00);
     //const [prixUnitairePapierManuel, setPrixUnitairePapierManuel] = useState(0.00);
@@ -36,6 +38,7 @@ export default function OptionOverview( { prixTotalReel, prixUnitaireReel,devisL
         {devisLivre && <DevisLivreOverview devisLivre={devisLivre} /> }
         {devisPackaging && <DevisPackaging  devisPackaging={devisPackaging}/> }
         {devisCalendar && <DevisCalendar  devisCalendar={devisCalendar}/> }
+        {devisChevalet && <DevisChevalet  devis={devisChevalet}/> }
 
         <div className="bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
             <h4 className="font-bold text-yellow-800 dark:text-yellow-300 mb-2">

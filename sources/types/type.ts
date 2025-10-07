@@ -202,3 +202,26 @@ export type devisCalendarData = {
   imprimante: string;
   particularite: string;
 };
+
+export type devisChevaletData = {
+  client_id: number;
+  type: string;
+  dimension_id: number;
+  dimension: string;
+  support_id: number;
+  support: string;
+  papier_id?: number;
+  papier?: string;
+  orientation_id?: number;
+  orientation?: string;
+  face_id: number;
+  face: string;
+  forme_couture_id?: number;
+  forme_couture?: string;
+  particularite_id?: number;
+  particularite?: string;
+  chevalet_id: number;
+  montant: string;
+  quantite: number;
+  optionPrix?: string;
+};
