@@ -132,7 +132,7 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
     };
 
     // Fonction utilitaire pour convertir en nombre sécurisé
-    const safeNumber = (value: any): number => {
+    const safeNumber = (value: string): number => {
         const num = Number(value);
         return isNaN(num) ? 0 : num;
     };
@@ -144,7 +144,7 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
         // Prix de base selon la dimension
         const dimension = FlyersData.dimensions.find(d => d.id === devisFlyers.dimension_id);
         if (dimension) {
-            prixTotal += safeNumber(dimension.prix_base);
+            prixTotal += safeNumber(dimension.prix_base.toString() );
         }
 
         // Prix du volet
@@ -153,14 +153,14 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
             if (volet.volet === 'autres') {
                 prixTotal += safeNumber(autreVolet.prix);
             } else {
-                prixTotal += safeNumber(volet.prix);
+                prixTotal += safeNumber(volet.prix.toString() );
             }
         }
 
         // Prix de la face
         const face = FlyersData.faces.find(f => f.id === devisFlyers.face_id);
         if (face) {
-            prixTotal += safeNumber(face.prix);
+            prixTotal += safeNumber(face.prix.toString() );
         }
 
         // Prix du support
@@ -169,7 +169,7 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
             if (support.type === 'autres') {
                 prixTotal += safeNumber(autreSupport.prix);
             } else {
-                prixTotal += safeNumber(support.prix);
+                prixTotal += safeNumber(support.prix.toString() );
             }
         }
 
@@ -179,14 +179,14 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
             if (grammage.grammage === 'personnalisé') {
                 prixTotal += safeNumber(autrePapier.prix);
             } else {
-                prixTotal += safeNumber(grammage.prix);
+                prixTotal += safeNumber(grammage.prix.toString());
             }
         }
 
         // Prix de l'imprimante
         const imprimante = FlyersData.imprimantes.find(i => i.id === devisFlyers.imprimante_id);
         if (imprimante) {
-            prixTotal += safeNumber(imprimante.prix);
+            prixTotal += safeNumber(imprimante.prix.toString() );
         }
 
         // Ajouter les options personnalisées
@@ -194,7 +194,7 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
         prixTotal += safeNumber(devisFlyers.optionPrix);
 
         // Calcul du total avec quantité (prix unitaire pour 100 flyers)
-        const quantite = safeNumber(devisFlyers.quantite);
+        const quantite = safeNumber(devisFlyers.quantite.toString() );
         const prixUnitaire = Math.max(0, prixTotal);
         const prixTotalAvecQuantite = prixUnitaire * (quantite / 1); // Prix pour la quantité demandée
 
@@ -250,7 +250,7 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
             designation: 'Flyers',
             detail_description: detailsDevis,
             prix_unitaire_ht: prixUnitaireReel,
-            quantite: safeNumber(devisFlyers.quantite),
+            quantite: safeNumber(devisFlyers.quantite.toString()),
             remise: 0.00,
             service: 'Flyers',
         };
@@ -440,7 +440,7 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
                         <div>
                             <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
                                 <Layers />
-                                <span className="ml-2"> Face d'impression </span>
+                                <span className="ml-2"> Face d&apos;impression </span>
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                 {FlyersData.faces.map(face => (
@@ -463,7 +463,7 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
                         <div>
                             <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
                                 <Layers />
-                                <span className="ml-2"> Technologie d'impression </span>
+                                <span className="ml-2"> Technologie d&apos;impression </span>
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                 {FlyersData.imprimantes.map(imprimante => (

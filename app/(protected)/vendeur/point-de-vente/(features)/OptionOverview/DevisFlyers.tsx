@@ -1,4 +1,4 @@
-import { devisFlyersData, devisPackagingData } from '@/sources/types/type';
+import { devisFlyersData } from '@/sources/types/type';
 import React from 'react'
 
 type DevisProps = {
@@ -27,7 +27,7 @@ export default function DevisFlyers( { devis } : DevisProps) {
                 <div className="flex justify-between">
                     <span>Papier :</span>
                     <span className="font-semibold">
-                        {devis?.papier}
+                        `${devis?.support}-{devis?.grammage}`
                     </span>
                 </div>
 
