@@ -36,7 +36,7 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
 
         faces: [
             { id: 1, face: 'Recto', prix: 0 },
-            { id: 2, face: 'Recto/Verso', prix: 100 }
+            { id: 2, face: 'Recto-Verso', prix: 100 }
         ],
 
         supports: [

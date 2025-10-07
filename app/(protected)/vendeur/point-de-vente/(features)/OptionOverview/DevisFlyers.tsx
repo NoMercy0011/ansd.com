@@ -24,12 +24,13 @@ export default function DevisFlyers( { devis } : DevisProps) {
                     </span>
                 </div>
                 
-                <div className="flex justify-between">
+                {   devis?.support &&
+                    <div className="flex justify-between">
                     <span>Papier :</span>
                     <span className="font-semibold">
-                        `{devis?.support}-{devis?.grammage}`
+                        `{devis?.support} {devis?.grammage}`
                     </span>
-                </div>
+                </div>}
 
                 <div className="flex justify-between">
                     <span>Face :</span>
