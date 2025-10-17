@@ -117,7 +117,7 @@ export default function CartSection({ cartItems, client, devisLivre, RemoveFromC
   return (
       <div className="w-full lg:w-1/3">
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-200 dark:border-slate-700 sticky top-8 space-y-4">
-            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-3 mb-4 flex items-center"><ShoppingCart size={20} className="mr-2"/> Panier pour {client?.nom_societe}</h3>
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-3 mb-4 flex items-center"><ShoppingCart size={50} className="mr-2"/> Panier pour {client?.nom_societe}</h3>
             <div className="space-y-3 max-h-[30rem] overflow-y-auto pr-2 -mr-2">
                 {cartData.length! > 0 ? cartData.map((item, index) => (
                     <div key={`${item.id}-${index}`} className="text-sm p-3 bg-slate-50 dark:bg-slate-700/50 rounded-lg border border-slate-200 dark:border-slate-700">

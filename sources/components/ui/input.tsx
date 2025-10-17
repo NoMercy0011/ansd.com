@@ -39,7 +39,10 @@ export function Input({
         min={min}
         max={max}
         step={step}
-        className= {`w-full p-3 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500 ${className || ''}`}
+        className= {`w-full p-3 bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg 
+          text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 
+          transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500 ${className || ''} 
+          ${type === 'number' ? '[-moz-appearance:_textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none' : ''}`}
       />
     </>
   );

@@ -1,7 +1,7 @@
 "use client"
 
 import { Button, Input } from '@/sources/components/ui'
-import { devisCalendarData, devisChevaletData, devisFlyersData, devisLivreData, devisPackagingData } from '@/sources/types/type'
+import { devisCalendarData, devisCarterieData, devisChevaletData, devisFlyersData, devisGoodiesData, devisGrandFormatData, devisLivreData, devisPackagingData, devisTextileData } from '@/sources/types/type'
 import { DollarSign, ShoppingBasket } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import DevisLivreOverview from './DevisLivreOverview'
@@ -9,6 +9,10 @@ import DevisPackaging from './DevisPackaging'
 import DevisCalendar from './DevisCalendar'
 import DevisChevalet from './DevisChevalet'
 import DevisFlyers from './DevisFlyers'
+import DevisCarterie from './DevisCarterie'
+import DevisGrandFormat from './DevisGrandFormat'
+import DevisTextile from './DevisTextile'
+import DevisGoodies from './DevisGoodies'
 
 type OptionOverviewProps = {
     userRole?: string;
@@ -19,29 +23,37 @@ type OptionOverviewProps = {
     devisCalendar?: devisCalendarData;
     devisChevalet?: devisChevaletData;
     devisFlyers?: devisFlyersData;
+    devisCarterie?: devisCarterieData;
+    devisGrandFormat?: devisGrandFormatData;
+    devisTextile?: devisTextileData;
+    devisGoodies?: devisGoodiesData;
     handleAddToCart?: () => void;
 }
-export default function OptionOverview( { prixTotalReel, prixUnitaireReel,devisLivre, devisPackaging,devisCalendar, devisChevalet ,devisFlyers, handleAddToCart}: OptionOverviewProps) {
+export default function OptionOverview( OptionProps : OptionOverviewProps) {
 
     //const [nombreFeuillesPapier, setNombreFeuillesPapier] = useState(0.00);
     //const [prixUnitairePapierManuel, setPrixUnitairePapierManuel] = useState(0.00);
     
-    const [prixTotalForceHT ,setPrixTotalForceHT] = useState(prixTotalReel);
-    const [prixUnitaireForceHT, setPrixUnitaireForceHT] = useState(prixUnitaireReel);
+    const [prixTotalForceHT ,setPrixTotalForceHT] = useState(OptionProps.prixTotalReel);
+    const [prixUnitaireForceHT, setPrixUnitaireForceHT] = useState(OptionProps.prixUnitaireReel);
 
     useEffect(() => {
-        setPrixTotalForceHT(prixTotalReel);
-        setPrixUnitaireForceHT(prixUnitaireReel);
-    }, [prixTotalReel , prixUnitaireReel]);
+        setPrixTotalForceHT(OptionProps.prixTotalReel);
+        setPrixUnitaireForceHT(OptionProps.prixUnitaireReel);
+    }, [OptionProps.prixTotalReel , OptionProps.prixUnitaireReel]);
 
   return (
     <>
     <div className="w-full lg:w-1/2 space-y-4 sticky top-24 mt-5">
-        {devisLivre && <DevisLivreOverview devisLivre={devisLivre} /> }
-        {devisPackaging && <DevisPackaging  devisPackaging={devisPackaging}/> }
-        {devisCalendar && <DevisCalendar  devisCalendar={devisCalendar}/> }
-        {devisChevalet && <DevisChevalet  devis={devisChevalet}/> }
-        {devisFlyers && <DevisFlyers devis={devisFlyers}/> }
+        {OptionProps.devisLivre && <DevisLivreOverview devisLivre={OptionProps.devisLivre} /> }
+        {OptionProps.devisPackaging && <DevisPackaging  devisPackaging={OptionProps.devisPackaging}/> }
+        {OptionProps.devisCalendar && <DevisCalendar  devisCalendar={OptionProps.devisCalendar}/> }
+        {OptionProps.devisChevalet && <DevisChevalet  devis={OptionProps.devisChevalet}/> }
+        {OptionProps.devisFlyers && <DevisFlyers devis={OptionProps.devisFlyers}/> }
+        {OptionProps.devisCarterie && <DevisCarterie devis={OptionProps.devisCarterie} /> }
+        {OptionProps.devisGrandFormat &&  <DevisGrandFormat devis={OptionProps.devisGrandFormat} /> }
+        {OptionProps.devisTextile &&  <DevisTextile devis={OptionProps.devisTextile} /> }
+        {OptionProps.devisGoodies && <DevisGoodies  devis={OptionProps.devisGoodies} />}
 
         <div className="bg-yellow-100 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800 p-4 rounded-lg">
             <h4 className="font-bold text-yellow-800 dark:text-yellow-300 mb-2">
@@ -51,13 +63,13 @@ export default function OptionOverview( { prixTotalReel, prixUnitaireReel,devisL
                 <div className="flex justify-between">
                     <span>Prix Unitaire HT:</span>
                     <span className="font-semibold">
-                        {prixUnitaireReel?.toLocaleString('fr-FR')} Ar
+                        {OptionProps.prixUnitaireReel?.toLocaleString('fr-FR')} Ar
                     </span>
                 </div>
                 <div className="flex justify-between font-bold">
                     <span>Total Article HT:</span>
                     <span className="font-semibold">
-                        {prixTotalReel?.toLocaleString('fr-FR')} Ar
+                        {OptionProps.prixTotalReel?.toLocaleString('fr-FR')} Ar
                     </span>
                 </div>
             </div>
@@ -223,7 +235,7 @@ export default function OptionOverview( { prixTotalReel, prixUnitaireReel,devisL
         </>)} */}
      </div>
     </div>
-        <Button variant="success" icon={<ShoppingBasket/>} onClick={handleAddToCart} disabled={prixTotalForceHT <= 0} className="w-full">Ajouter au Panier</Button>
+        <Button variant="success" icon={<ShoppingBasket/>} onClick={OptionProps.handleAddToCart} disabled={prixTotalForceHT <= 0} className="w-full">Ajouter au Panier</Button>
     </div>
     </>
   )

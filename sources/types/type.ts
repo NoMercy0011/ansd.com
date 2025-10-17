@@ -245,3 +245,85 @@ export type devisFlyersData = {
   finitionPrix?: number;
   optionPrix: string;
 };
+
+export type devisCarterieData = {
+  client_id: number;
+  type: string;
+  dimension_id: number;
+  dimension: string;
+  forme_id: number;
+  forme: string;
+  support_id: number;
+  support: string;
+  face_id: number;
+  face: string;
+  imprimante_id: number;
+  imprimante: string;
+  carterie_id: number;
+  montant: string;
+  quantite: number;
+  finitionPrix: number;
+  optionPrix: string;
+};
+
+export type devisGrandFormatData = {
+  client_id: number;
+  type: string;
+  laize_id: number;
+  laize: string;
+  face_id: number;
+  face: string;
+  finition_id: number;
+  finition: string;
+  particularite_id: number;
+  particularite: string;
+  epaisseur_id: number;
+  epaisseur: string;
+  couleur_id: number;
+  couleur: string;
+  grand_format_id: number;
+  montant: string;
+  quantite: number;
+  finitionPrix: number;
+  optionPrix: string;
+};
+
+export type devisTextileData = {
+  client_id: number;
+  type: string;
+  taille_id: number;
+  taille: string;
+  grammage_id: number;
+  grammage: string;
+  dimension_id: number;
+  dimension: string;
+  emplacement_id: number;
+  emplacement: string;
+  technologie_id: number;
+  technologie: string;
+  couleur_id: number;
+  couleur: string;
+  textile_id: number;
+  montant: string;
+  quantite: number;
+  finitionPrix: number;
+  optionPrix: string;
+};
+
+export type devisGoodiesData = {
+  client_id: number;
+  type: string;
+  type_specifique_id: number;
+  type_specifique: string;
+  capacite_id: number;
+  capacite: string;
+  emplacement_id: number;
+  emplacement: string;
+  technologie_id: number;
+  technologie: string;
+  goodies_id: number;
+  montant: string;
+  quantite: number;
+  finitionPrix: number;
+  optionPrix: string;
+};

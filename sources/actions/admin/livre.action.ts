@@ -17,12 +17,12 @@ export async function GetLivre() {
             const livre = await response.json();
             //console.log(livre);
             return {
-                message : 'Liste des commerciaux',
+                message : 'Les données sur le devis-livre',
                 data: livre.livre as LivreType,
             }
     
         }catch(error) {
             console.error('Erreur : ' , error);
-            throw new Error ("Erreur lors de la reccuperation des agents commerciaux :" , error!);
+            throw new Error ("Erreur lors de données :" , error!);
         }
 }

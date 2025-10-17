@@ -93,17 +93,17 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
                 
                 <PrintArticle param={param} userRole={userRole} handleAddCart={(cartItem, devisLivre) => handleAddCart(cartItem, devisLivre)} handleGetDevisLivre={ (devisLivre) => handleGetDevisLivre(devisLivre)} />
                 
-                <Cartetie />
-
                 <Flyers param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem) } />
+
+                <Cartetie param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem) } />
 
                 <Finition />
 
-                <GrandFormat />
+                <GrandFormat param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem) }/>
 
-                <Textile />
+                <Textile param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem) }/>
 
-                <Goodies />
+                <Goodies  param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem) }/>
 
                 <Evenement />
 
