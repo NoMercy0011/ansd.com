@@ -17,7 +17,7 @@ export default function RootLayout({
   return (
     <html lang="fr" suppressHydrationWarning>
       <body
-        className="p-2 items-center justify-items-center"
+        className="m-0"
       >
       <Providers>
         <main>

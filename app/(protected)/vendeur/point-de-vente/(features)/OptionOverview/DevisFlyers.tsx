@@ -1,8 +1,8 @@
-import { devisFlyersData } from '@/sources/types/type';
+import { devisData } from '@/sources/types/type';
 import React from 'react'
 
 type DevisProps = {
-    devis?: devisFlyersData;
+    devis?: devisData;
 }
 export default function DevisFlyers( { devis } : DevisProps) {
   return (

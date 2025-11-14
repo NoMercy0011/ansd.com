@@ -1,8 +1,8 @@
-import { devisCalendarData } from '@/sources/types/type';
+import { devisData } from '@/sources/types/type';
 import React from 'react'
 
 type DevisPackagingProps = {
-    devisCalendar?: devisCalendarData;
+    devisCalendar?: devisData;
 }
 export default function DevisCalendar( { devisCalendar } : DevisPackagingProps) {
   return (

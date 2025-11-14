@@ -1,10 +1,11 @@
 import { GetClientID } from '@/sources/actions/admin/client.action'
-import { Input } from '@/sources/components/ui'
-import Accordion from '@/sources/components/ui/accordion'
 import { CartItemsType, clientType, devisFlyersData } from '@/sources/types/type'
 import { Layers, FileText } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import OptionOverview from './OptionOverview/OptionOverview'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Input } from '@/components/ui/input'
 
 type PrintArticleProps = {
     userRole?: string;
@@ -13,10 +14,19 @@ type PrintArticleProps = {
 }
 
 export default function Flyers({ param, userRole, handleAddCart }: PrintArticleProps) {
-
-   const [selectedSupport, setSelectedSupport] = useState<string>('');
-   const [autreSupport, setAutreSupport] = useState({ nom: '', prix: '' });
+    const [selectedSupport, setSelectedSupport] = useState<string>('');
+    const [autreSupport, setAutreSupport] = useState({ nom: '', prix: '' });
+    const [activeTab, setActiveTab] = useState('dimension');
     
+    // Références pour le scroll
+    const dimensionRef = useRef<HTMLDivElement>(null);
+    const voletsRef = useRef<HTMLDivElement>(null);
+    const supportRef = useRef<HTMLDivElement>(null);
+    const faceRef = useRef<HTMLDivElement>(null);
+    const imprimanteRef = useRef<HTMLDivElement>(null);
+    const optionsRef = useRef<HTMLDivElement>(null);
+    const quantiteRef = useRef<HTMLDivElement>(null);
+
     // Données mock pour les flyers basées sur le CSV
     const FlyersData = {
         dimensions: [
@@ -103,7 +113,7 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
         imprimante_id: 0,
         imprimante: '',
         montant: '',
-        quantite: 1, // Quantité de base pour les flyers
+        quantite: 1,
         optionPrix: ''
     });
 
@@ -137,14 +147,35 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
         return isNaN(num) ? 0 : num;
     };
 
-    // Calcul du prix
+    // Fonction de scroll vers une section
+    const scrollToSection = (section: string) => {
+        setActiveTab(section);
+        const refs: { [key: string]: React.RefObject<HTMLDivElement | null> } = {
+            dimension: dimensionRef,
+            volets: voletsRef,
+            support: supportRef,
+            face: faceRef,
+            imprimante: imprimanteRef,
+            options: optionsRef,
+            quantite: quantiteRef
+        };
+
+        if (refs[section]?.current) {
+            refs[section].current?.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    };
+
+    // Calcul du prix (identique à votre code original)
     useEffect(() => {
         let prixTotal = 0;
 
         // Prix de base selon la dimension
         const dimension = FlyersData.dimensions.find(d => d.id === devisFlyers.dimension_id);
         if (dimension) {
-            prixTotal += safeNumber(dimension.prix_base.toString() );
+            prixTotal += safeNumber(dimension.prix_base.toString());
         }
 
         // Prix du volet
@@ -153,14 +184,14 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
             if (volet.volet === 'autres') {
                 prixTotal += safeNumber(autreVolet.prix);
             } else {
-                prixTotal += safeNumber(volet.prix.toString() );
+                prixTotal += safeNumber(volet.prix.toString());
             }
         }
 
         // Prix de la face
         const face = FlyersData.faces.find(f => f.id === devisFlyers.face_id);
         if (face) {
-            prixTotal += safeNumber(face.prix.toString() );
+            prixTotal += safeNumber(face.prix.toString());
         }
 
         // Prix du support
@@ -169,7 +200,7 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
             if (support.type === 'autres') {
                 prixTotal += safeNumber(autreSupport.prix);
             } else {
-                prixTotal += safeNumber(support.prix.toString() );
+                prixTotal += safeNumber(support.prix.toString());
             }
         }
 
@@ -186,17 +217,16 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
         // Prix de l'imprimante
         const imprimante = FlyersData.imprimantes.find(i => i.id === devisFlyers.imprimante_id);
         if (imprimante) {
-            prixTotal += safeNumber(imprimante.prix.toString() );
+            prixTotal += safeNumber(imprimante.prix.toString());
         }
 
         // Ajouter les options personnalisées
-        //prixTotal += safeNumber(devisFlyers.finitionPrix);
         prixTotal += safeNumber(devisFlyers.optionPrix);
 
-        // Calcul du total avec quantité (prix unitaire pour 100 flyers)
-        const quantite = safeNumber(devisFlyers.quantite.toString() );
+        // Calcul du total avec quantité
+        const quantite = safeNumber(devisFlyers.quantite.toString());
         const prixUnitaire = Math.max(0, prixTotal);
-        const prixTotalAvecQuantite = prixUnitaire * (quantite / 1); // Prix pour la quantité demandée
+        const prixTotalAvecQuantite = prixUnitaire * (quantite / 1);
 
         setPrixUnitaireReel(prixUnitaire);
         setPrixTotalReel(prixTotalAvecQuantite);
@@ -261,282 +291,300 @@ export default function Flyers({ param, userRole, handleAddCart }: PrintArticleP
     };
 
     return (
-        <Accordion title="Flyers" icon={<FileText />} defaultOpen={false}>
-            <div className="flex flex-col lg:flex-row gap-8">
-                <div className="w-full lg:w-2/3 space-y-4">
-                    <div className='max-h-[80vh] overflow-y-auto pr-4 space-y-4'>
-                        
-                        {/* Dimension */}
-                        <div>
-                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                <Layers />
-                                <span className="ml-2"> Dimension </span>
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {FlyersData.dimensions.map(dimension => (
-                                    <button
-                                        key={dimension.id}
-                                        onClick={() => handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension)}
-                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisFlyers.dimension_id === dimension.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                    >
-                                        <div className="font-semibold">{dimension.dimension}</div>
-                                        <div className="text-xs text-slate-500">{dimension.unitee}</div>
-                                        <div className="text-xs font-semibold text-green-600">{dimension.prix_base} Ar/100</div>
-                                    </button>
-                                ))}
-                            </div>
+        <Card>
+            <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 font-semibold">
+                    <FileText className="h-6 w-6 text-red-500 " />
+                    Flyers
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col lg:flex-row gap-3">
+                    <div className="w-full lg:w-4/5 space-y-1 ">
+                        {/* Navigation Tabs - Accès rapide */}
+                        <div className="sticky gap-5 space-x-2 top-0 bg-white dark:bg-slate-900 z-10 pb-0 pt-2 border-b border-slate-200 dark:border-slate-700">
+                            <Tabs value={activeTab} onValueChange={scrollToSection} className="w-full">
+                                <TabsList className="flex-wrap h-auto p-1 bg-white dark:bg-slate-900">
+                                    <TabsTrigger value="dimension" className="flex items-center gap-1 text-xs ">
+                                        <Layers className="h-3 w-3" />
+                                        Dimension
+                                    </TabsTrigger>
+                                    <TabsTrigger value="volets" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Volets
+                                    </TabsTrigger>
+                                    <TabsTrigger value="support" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Support
+                                    </TabsTrigger>
+                                    <TabsTrigger value="face" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Face
+                                    </TabsTrigger>
+                                    <TabsTrigger value="imprimante" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Impression
+                                    </TabsTrigger>
+                                    <TabsTrigger value="options" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Options
+                                    </TabsTrigger>
+                                    <TabsTrigger value="quantite" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Quantité
+                                    </TabsTrigger>
+                                </TabsList>
+                            </Tabs>
                         </div>
 
-                        {/* Nombre de volets/pli */}
-                        <div>
-                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                <Layers />
-                                <span className="ml-2"> Nombre de volets/pli </span>
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {FlyersData.volets.map(volet => (
-                                    <button
-                                        key={volet.id}
-                                        onClick={() => handleSelect(volet.id, 'volet_id', 'volet', volet.volet)}
-                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisFlyers.volet_id === volet.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                    >
-                                        <div className="font-semibold">{volet.volet}</div>
-                                        {volet.prix > 0 && volet.volet !== 'autres' && (
-                                            <div className="text-xs text-green-600">+{volet.prix} Ar</div>
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-
-                            {/* Input pour volet "autres" */}
-                            {devisFlyers.volet === 'autres' && (
-                                <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
-                                    <h5 className="font-semibold mb-3">Volet personnalisé</h5>
-                                    <div className="space-y-3">
-                                        <div className="relative">
-                                            <Input
-                                                type="text"
-                                                value={autreVolet.nom}
-                                                onChange={(e) => setAutreVolet(prev => ({ ...prev, nom: e.target.value }))}
-                                                placeholder="Description du volet personnalisé"
-                                            />
-                                        </div>
-                                        <div className="relative">
-                                            <Input
-                                                type="number"
-                                                value={autreVolet.prix}
-                                                onChange={(e) => setAutreVolet(prev => ({ ...prev, prix: e.target.value }))}
-                                                placeholder="Prix supplémentaire"
-                                                min="0"
-                                            />
-                                            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Type de support */}
-                        <div>
-                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                <Layers />
-                                <span className="ml-2"> Type de support </span>
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {FlyersData.supports.map(support => (
-                                    <button
-                                        key={support.id}
-                                        onClick={() => handleSupportSelect(support.id, support.type)}
-                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisFlyers.support_id === support.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                    >
-                                        <div className="font-semibold">{support.type}</div>
-                                        {support.prix > 0 && support.type !== 'autres' && (
-                                            <div className="text-xs text-green-600">+{support.prix} Ar</div>
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-                            
-                            {/* Input pour support "autres" */}
-                            {devisFlyers.support === 'autres' && (
-                                <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
-                                    <h5 className="font-semibold mb-3">Support personnalisé</h5>
-                                    <div className="space-y-3">
-                                        <div className="relative">
-                                            <Input
-                                                type="text"
-                                                value={autreSupport.nom}
-                                                onChange={(e) => setAutreSupport(prev => ({ ...prev, nom: e.target.value }))}
-                                                placeholder="Nom du support personnalisé"
-                                            />
-                                        </div>
-                                        <div className="relative">
-                                            <Input
-                                                type="number"
-                                                value={autreSupport.prix}
-                                                onChange={(e) => setAutreSupport(prev => ({ ...prev, prix: e.target.value }))}
-                                                placeholder="Prix du support"
-                                                min="0"
-                                            />
-                                            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        {/* Grammage (apparaît seulement si un support est sélectionné) */}
-                        {selectedSupport && (
-                            <div>
-                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                    <Layers />
-                                    <span className="ml-2"> Grammage - {selectedSupport} </span>
+                        {/* Contenu complet avec toutes les sections */}
+                        <div className="space-y-8 max-h-[70vh] overflow-y-auto mt-1 pr-2">
+                            {/* Section Dimension */}
+                            <div className='flex'>
+                                <div ref={dimensionRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                    <Layers className="mr-2" />
+                                    Dimension
                                 </h4>
                                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                    {getCurrentGrammages().map(grammage => (
+                                    {FlyersData.dimensions.map(dimension => (
                                         <button
-                                            key={grammage.id}
-                                            onClick={() => handleSelect(grammage.id, 'grammage_id', 'grammage', grammage.grammage)}
-                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisFlyers.grammage_id === grammage.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                            key={dimension.id}
+                                            onClick={() => handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension)}
+                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisFlyers.dimension_id === dimension.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                                         >
-                                            <div className="font-semibold">{grammage.grammage}</div>
-                                            {grammage.grammage !== 'personnalisé' && (
-                                                <div className="text-xs text-green-600">+{grammage.prix} Ar</div>
-                                            )}
+                                            <div className="font-semibold">{dimension.dimension}</div>
+                                            <div className="text-xs ">{dimension.unitee}</div>
                                         </button>
                                     ))}
                                 </div>
-                                
-                                {/* Input pour grammage "personnalisé" */}
-                                {devisFlyers.grammage === 'personnalisé' && (
-                                    <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
-                                        <h5 className="font-semibold mb-3">Grammage personnalisé</h5>
+                            </div>
+                            <div>
+
+                            </div>
+                            </div>
+
+                            {/* Section Volets */}
+                            <div className='flex'>
+                            <div ref={voletsRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                    <Layers className="mr-2" />
+                                    Nombre de volets/pli
+                                </h4>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    {FlyersData.volets.map(volet => (
+                                        <button
+                                            key={volet.id}
+                                            onClick={() => handleSelect(volet.id, 'volet_id', 'volet', volet.volet)}
+                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisFlyers.volet_id === volet.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                        >
+                                            <div className="font-semibold">{volet.volet}</div>
+                                            {volet.prix > 0 && volet.volet !== 'autres' }
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="w-full lg:w-1/2 scroll-mt-20">
+                                    {/* Input pour volet "autres" */}
+                                {devisFlyers.volet === 'autres' && (
+                                    <div className="mt-2 px-2">
                                         <div className="space-y-3">
+                                            <h1 className='text-sm font-bold ml-2'> Volet personnalisé</h1>
                                             <div className="relative">
                                                 <Input
                                                     type="text"
-                                                    value={autrePapier.nom}
-                                                    onChange={(e) => setAutrePapier(prev => ({ ...prev, nom: e.target.value }))}
-                                                    placeholder="Description du grammage personnalisé"
+                                                    value={autreVolet.nom}
+                                                    onChange={(e) => setAutreVolet(prev => ({ ...prev, nom: e.target.value }))}
+                                                    placeholder="Description du volet personnalisé"
                                                 />
                                             </div>
                                             <div className="relative">
                                                 <Input
                                                     type="number"
-                                                    value={autrePapier.prix}
-                                                    onChange={(e) => setAutrePapier(prev => ({ ...prev, prix: e.target.value }))}
+                                                    value={autreVolet.prix}
+                                                    onChange={(e) => setAutreVolet(prev => ({ ...prev, prix: e.target.value }))}
                                                     placeholder="Prix supplémentaire"
                                                     min="0"
                                                 />
-                                                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
                                             </div>
                                         </div>
                                     </div>
                                 )}
                             </div>
-                        )}
-
-                        {/* Face */}
-                        <div>
-                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                <Layers />
-                                <span className="ml-2"> Face d&apos;impression </span>
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {FlyersData.faces.map(face => (
-                                    <button
-                                        key={face.id}
-                                        onClick={() => handleSelect(face.id, 'face_id', 'face', face.face)}
-                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisFlyers.face_id === face.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                    >
-                                        <div className="font-semibold">{face.face}</div>
-                                        {face.prix > 0 && (
-                                            <div className="text-xs text-green-600">+{face.prix} Ar</div>
-                                        )}
-                                    </button>
-                                ))}
                             </div>
-                        </div>
 
-
-                        {/* Technologie d'impression */}
-                        <div>
-                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                <Layers />
-                                <span className="ml-2"> Technologie d&apos;impression </span>
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {FlyersData.imprimantes.map(imprimante => (
-                                    <button
-                                        key={imprimante.id}
-                                        onClick={() => handleSelect(imprimante.id, 'imprimante_id', 'imprimante', imprimante.imprimante)}
-                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisFlyers.imprimante_id === imprimante.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                    >
-                                        <div className="font-semibold">{imprimante.imprimante}</div>
-                                        <div className="text-xs text-green-600">+{imprimante.prix} Ar</div>
-                                    </button>
-                                ))}
+                            {/* Section Support */}
+                            <div className='flex gap-4 items-center'>
+                            <div ref={supportRef} className="w-full lg:w-1/2 scroll-mt-20 truncate">
+                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                    <Layers className="mr-2" />
+                                    Type de support
+                                </h4>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    {FlyersData.supports.map(support => (
+                                        <button
+                                            key={support.id}
+                                            onClick={() => handleSupportSelect(support.id, support.type)}
+                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisFlyers.support_id === support.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                        >
+                                            <div className="font-semibold">{support.type}</div>
+                                            {support.prix > 0 && support.type !== 'autres'}
+                                        </button>
+                                    ))}
+                                </div>
+                                
                             </div>
-                        </div>
+                            <div className="w-full lg:w-1/2">
+                                {/* Input pour support "autres" */}
+                                {devisFlyers.support === 'autres' && (
+                                    <div className="mt-1.5 px-2">
+                                        <h5 className="text-sm font-semibold mr-4 mb-3">Support personnalisé</h5>
+                                        <div className="space-y-3">
+                                            <div className="relative">
+                                                <Input
+                                                    type="text"
+                                                    value={autreSupport.nom}
+                                                    onChange={(e) => setAutreSupport(prev => ({ ...prev, nom: e.target.value }))}
+                                                    placeholder="Nom du support personnalisé"
+                                                />
+                                            </div>
+                                            <div className="relative">
+                                                <Input
+                                                    type="number"
+                                                    value={autreSupport.prix}
+                                                    onChange={(e) => setAutreSupport(prev => ({ ...prev, prix: e.target.value }))}
+                                                    placeholder="Prix du support"
+                                                    min="0"
+                                                />
+                                                <span className="absolute right-5 top-1/2 transform -translate-y-1/2 text-slate-500">| Ar</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                            </div>
 
-                        {/* Options supplémentaires */}
-                        <div>
-                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                <Layers />
-                                <span className="ml-2"> Options supplémentaires </span>
-                            </h4>
-                            <div className="space-y-3">
-                                {/* <div className="relative">
-                                    <Input
-                                        type="number"
-                                        value={devisFlyers.finitionPrix}
-                                        onChange={(e) => handleSelect(safeNumber(e.target.value), 'finitionPrix')}
-                                        placeholder="Prix finition supplémentaire"
-                                        min="0"
-                                    />
-                                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
-                                </div> */}
-                                <div className="relative">
-                                    <Input
-                                        type="number"
-                                        value={devisFlyers.optionPrix}
-                                        onChange={(e) => handleSelect(safeNumber(e.target.value), 'optionPrix')}
-                                        placeholder="Prix option supplémentaire"
-                                        min="0"
-                                    />
-                                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                            {/* Section Grammage */}
+                            {selectedSupport && (
+                                <div className='flex '>
+                                    <div className="w-full lg:w-2/3 scroll-mt-20">
+                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                        <Layers className="mr-2" />
+                                        Grammage - {selectedSupport}
+                                    </h4>
+                                    <div className="flex flex-1 gap-2 p-1">
+                                        {getCurrentGrammages().map(grammage => (
+                                            <button
+                                                key={grammage.id}
+                                                onClick={() => handleSelect(grammage.id, 'grammage_id', 'grammage', grammage.grammage)}
+                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisFlyers.grammage_id === grammage.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                            >
+                                                <div className="font-semibold">{grammage.grammage}</div>
+                                                {grammage.grammage !== 'personnalisé'}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    
+                                </div>
+                                <div className='w-full lg:2/3'>
+                                    {/* Input pour grammage "personnalisé" */}
+                                    {devisFlyers.grammage === 'personnalisé' && (
+                                        <div className="mt-2 px-2 ">
+                                            <h5 className="text-sm font-semibold ml-2 mb-3">Grammage personnalisé</h5>
+                                            <div className="space-y-3">
+                                                <div className="relative">
+                                                    <Input
+                                                        type="text"
+                                                        value={autrePapier.nom}
+                                                        onChange={(e) => setAutrePapier(prev => ({ ...prev, nom: e.target.value }))}
+                                                        placeholder="Description du grammage personnalisé"
+                                                    />
+                                                </div>
+                                                <div className="relative">
+                                                    <Input
+                                                        type="number"
+                                                        value={autrePapier.prix}
+                                                        onChange={(e) => setAutrePapier(prev => ({ ...prev, prix: e.target.value }))}
+                                                        placeholder="Prix supplémentaire"
+                                                        min="0"
+                                                    />
+                                                    <span className="absolute right-5 top-1/2 transform -translate-y-1/2 text-slate-500">| Ar</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                                </div>
+                            )}
+
+                            {/* Section Face */}
+                            <div ref={faceRef} className="w-full lg:w-3/4 scroll-mt-20">
+                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                    <Layers className="mr-2" />
+                                    Face d&apos;impression
+                                </h4>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    {FlyersData.faces.map(face => (
+                                        <button
+                                            key={face.id}
+                                            onClick={() => handleSelect(face.id, 'face_id', 'face', face.face)}
+                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisFlyers.face_id === face.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                        >
+                                            <div className="font-semibold">{face.face}</div>
+                                        </button>
+                                    ))}
                                 </div>
                             </div>
-                        </div>
 
-                        {/* Quantité */}
-                        <div>
-                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mt-3 mb-3 flex items-center ">
-                                <Layers />
-                                <span className="ml-2"> Quantité (flyers) </span>
-                            </h4>
-                            <Input 
-                                type="number" 
-                                value={devisFlyers.quantite.toString()} 
-                                onChange={e => handleSelect(Math.max(1, safeNumber(e.target.value)), 'quantite')} 
-                                placeholder="Ex: 1000" 
-                                min="1"
-                                step="1"
-                            />
-                            <p className="text-xs text-slate-500 mt-1">Quantité minimum: 100 flyers</p>
+                            {/* Section Impression */}
+                            <div ref={imprimanteRef} className="w-ful lg:w-3/4 scroll-mt-20">
+                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                    <Layers className="mr-2" />
+                                    Technologie d&apos;impression
+                                </h4>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    {FlyersData.imprimantes.map(imprimante => (
+                                        <button
+                                            key={imprimante.id}
+                                            onClick={() => handleSelect(imprimante.id, 'imprimante_id', 'imprimante', imprimante.imprimante)}
+                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisFlyers.imprimante_id === imprimante.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                        >
+                                            <div className="font-semibold">{imprimante.imprimante}</div>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Section Quantité */}
+                            <div ref={quantiteRef} className="scroll-mt-20">
+                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                    <Layers className="mr-2" />
+                                    Quantité (flyers)
+                                </h4>
+                                <Input 
+                                    type="number" 
+                                    value={devisFlyers.quantite.toString()} 
+                                    onChange={e => handleSelect(Math.max(1, safeNumber(e.target.value)), 'quantite')} 
+                                    placeholder="Ex: 1000" 
+                                    min="1"
+                                    step="1"
+                                />
+                                {/* <p className="text-xs text-slate-500 mt-1">Quantité minimum: 100 flyers</p> */}
+                            </div>
                         </div>
                     </div>
+                    
+                    {/* Overview et calcul des prix */}
+                        <OptionOverview 
+                            userRole={userRole} 
+                            prixUnitaireReel={prixUnitaireReel} 
+                            prixTotalReel={prixTotalReel} 
+                            handleAddToCart={handleAddToCart} 
+                            devisFlyers={devisFlyers} 
+                        />
                 </div>
-                
-                {/* Overview et calcul des prix */}
-                <OptionOverview 
-                    userRole={userRole} 
-                    prixUnitaireReel={prixUnitaireReel} 
-                    prixTotalReel={prixTotalReel} 
-                    handleAddToCart={handleAddToCart} 
-                    devisFlyers={devisFlyers} 
-                />
-            </div>
-        </Accordion>
+            </CardContent>
+        </Card>
     );
 }

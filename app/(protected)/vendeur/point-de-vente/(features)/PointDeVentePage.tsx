@@ -1,8 +1,6 @@
 "use client"
 
-import { StatCard } from '@/sources/components/ui';
-import { CartItemsType, clientType, devisLivreData } from '@/sources/types/type';
-import { AlertTriangle, FileClock, Wallet} from 'lucide-react';
+import { CartItemsType, clientType, devisData } from '@/sources/types/type';
 import React, { useEffect, useState } from 'react'
 import { GetClientID } from '@/sources/actions/admin/client.action';
 import PrintArticle from './PrintArticle';
@@ -20,6 +18,10 @@ import Evenement from './Evenement';
 import Photo from './Photo';
 import Administratif from './Administratif';
 import Impression from './Impression';
+import { Card, CardContent } from '@/components/ui/card';
+import { BookOpen, CalendarCheck, CalendarDays, Camera, FileText, FileTextIcon, Gift, LucideBlocks, Map, Maximize2, Monitor, PackageOpenIcon, Printer, Shirt, ShoppingCart } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 
 type PointDeVenteProps = {
     userRole?: string;
@@ -30,17 +32,30 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
     
     const [client, setClient] = useState<clientType>();
     const [cartItems, setCartItems] = useState<CartItemsType[]>([]);
-    const [devisLivre, setDevisLivre] = useState<devisLivreData[]>([])
-    //const [notifications, setNotifications] = useState([]);
+    const [devisLivre, setDevisLivre] = useState<devisData[]>([]);
+    const [selectedArticle, setSelectedArticle] = useState<number | null>(null);
 
-    // const addNotification = (message, type = 'success') => { 
-    //     setNotifications(prev => [...prev, { id: Date.now(), message, type }]); 
-    // };
-    const handleGetDevisLivre = (devisLivre : devisLivreData[]) => {
-        setDevisLivre(devisLivre);
-    }
+    const itemsList = [
+        { id: 1, icon: PackageOpenIcon, name: 'Packaging & Boites', component: Packaging },
+        { id: 2, icon: CalendarDays, name: 'Calendriers', component: Calendar },
+        { id: 3, icon: Monitor, name: 'Chevalets', component: Chevalet },
+        { id: 4, icon: BookOpen, name: 'Livres, Booklets, Mémoires', component: PrintArticle },
+        { id: 5, icon: FileText, name: 'Flyers', component: Flyers },
+        { id: 6, icon: Map, name: 'Cartetie', component: Cartetie },
+        { id: 7, icon: LucideBlocks, name: 'Finitions', component: Finition },
+        { id: 8, icon: Maximize2, name: 'Grand Format', component: GrandFormat },
+        { id: 9, icon: Shirt, name: 'Textile', component: Textile },
+        { id: 10, icon: Gift, name: 'Goodies', component: Goodies },
+        { id: 11, icon: CalendarCheck, name: 'Événementiel', component: Evenement },
+        { id: 12, icon: Camera, name: 'Photo', component: Photo },
+        { id: 13, icon: FileTextIcon, name: 'Documents Administratifs', component: Administratif },
+        { id: 14, icon: Printer, name: 'Impression sans finition', component: Impression },
+    ]
+    // const handleGetDevisLivre = (devisLivre : devisLivreData[]) => {
+    //     setDevisLivre(devisLivre);
+    // }
 
-    const handleAddCart = (cartItem : CartItemsType, devis ?: devisLivreData) => {
+    const handleAddCart = (cartItem : CartItemsType, devis ?: devisData) => {
         const itemsCopy = [...cartItems];
         itemsCopy.push(cartItem);
         setCartItems(itemsCopy);
@@ -58,6 +73,26 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
         setCartItems([]);
     }
 
+    const handleArticleSelect = (articleId: number) => {
+        setSelectedArticle(articleId === selectedArticle ? null : articleId);
+    }
+
+    const renderSelectedComponent = () => {
+        if (!selectedArticle) return null;
+        
+        const selectedItem = itemsList.find(item => item.id === selectedArticle);
+        if (!selectedItem || !selectedItem.component) return null;
+
+        const Component = selectedItem.component;
+        const props = {
+            param,
+            userRole,
+            handleAddCart,
+        };
+
+        return <Component {...props} />;
+    }
+
     useEffect(() => {
         if (param) {
             GetClientID(Number(param))
@@ -68,54 +103,102 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
         }
     }, [param]);
 
-    const commercialKpis = {
-        proformasEnAttente: 0,
-        facturesARecouvrer: 0,
-        totalResteAPayer: 0.00,
-    }
 
 
       return (
-          <div className="animate-fade-in space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <StatCard title="Proformas en attente" value={commercialKpis.proformasEnAttente} icon={<FileClock size={24} className="text-white"/>} color={{bg: "bg-yellow-500"}} trend={{direction: 'up', value: '+2'}}/>
-                  <StatCard title="Factures à recouvrer" value={commercialKpis.facturesARecouvrer} icon={<AlertTriangle size={24} className="text-white"/>} color={{bg:"bg-orange-500"}} />
-                  <StatCard title="Total Reste à Payer" value={`${commercialKpis.totalResteAPayer.toLocaleString('fr-FR')} Ar`} icon={<Wallet size={24} className="text-white"/>} color={{bg: "bg-red-500"}} />
-              </div>
-              <div className="flex flex-col lg:flex-row gap-8">
-                <div className="w-full lg:w-2/3 space-y-6"> 
-                <div className='max-h-[60vh] overflow-y-auto pr-4 space-y-4'>
-                <Packaging param={param} handleAddCart={(cartItem) => handleAddCart(cartItem)}/>
-                
-                <Calendar param={param} handleAddCart={(cartItem) => handleAddCart(cartItem)}/>
-                
-                <Chevalet param={param} handleAddCart={(cartItem) => handleAddCart(cartItem)} />
-                
-                <PrintArticle param={param} userRole={userRole} handleAddCart={(cartItem, devisLivre) => handleAddCart(cartItem, devisLivre)} handleGetDevisLivre={ (devisLivre) => handleGetDevisLivre(devisLivre)} />
-                
-                <Flyers param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem) } />
+          <div className="animate-fade-in space-y-4">
+            <Sheet >
+			    <SheetTrigger asChild>
+				<div className="absolute top-3 right-40 p-2 hover:bg-gray-100 hover:rounded-lg cursor-pointer z-50">
+                   <ShoppingCart className="h-5 w-5 text-gray-400" />
+                  <span className="absolute -top-1 -right-2 bg-red-600 text-white text-xs rounded-full px-1.5">
+                      {cartItems.length}
+                  </span>
+                 </div>
+			    </SheetTrigger>
+			    <SheetContent side="right" className="w-full max-w-sm px-4">
+				    <SheetHeader className="pb-2">
+				    	<SheetTitle className="flex items-start">
+				    		<ShoppingCart className="w-6 h-6 text-gray-500" />
+				    		<span className="ml-2 text-lg font-medium">{cartItems.length} commandes</span>
+				    	</SheetTitle>
+				    	<SheetDescription></SheetDescription>
+				    </SheetHeader>
+				    {/* list cart stores */}
+				    <div className="h-full overflow-y-auto ">
+				    	<CartSection 
+                            cartItems={cartItems} 
+                            client={client} 
+                            RemoveFromCart={RemoveFromCart} 
+                            devisLivre={devisLivre} 
+                            cartItemsInit={cartItemsInit} 
+                        />
+				    </div>
+				    <SheetFooter>
+					    <div className="flex justify-between space-x-4 mb-12 mt-5 ">
+					    	<SheetClose asChild>
+					    		<Button variant="outline" className="btn-outline">
+					    			Explorer encore
+					    		</Button>
+					    	</SheetClose>
+					    	{/* {cartItems.length > 0 && (
+					    		<Button
+					    			variant="secondary"
+					    			className="btn-primary"
+					    			onClick={handleConfirmReservation}
+					    			disabled={isSubmitting}>
+					    			{isSubmitting ? 'Preparation...' : 'Confirmer'}
+					    		</Button>
+					    	)} */}
+					    </div>
+				        </SheetFooter>
+			        </SheetContent>
+		    </Sheet>
+            <Card>
+                <CardContent className="grid grid-cols-7 items-center gap-3 mt-3 p-5">
+                    {itemsList.map((item) => (
+                        <Button 
+                            key={item.id} 
+                            title={item.name} 
+                            variant={selectedArticle === item.id ? "default" : "ghost"}
+                            onClick={() => handleArticleSelect(item.id)}
+                            className={`flex cursor-pointer justify-start items-center gap-2 mx-0.5 p-2 border rounded-lg transition-colors duration-200 w-full ${
+                                selectedArticle === item.id 
+                                    ? 'bg-red-600 text-white border-red-600' 
+                                    : 'bg-gray-100 dark:bg-gray-800 hover:border-red-500 dark:hover:bg-gray-700'
+                            }`}
+                        >                    
+                            <item.icon size={24} className={selectedArticle === item.id ? "text-white" : "text-gray-600 dark:text-gray-300"} />
+                            <span className={`text-sm font-medium truncate ${
+                                selectedArticle === item.id ? "text-white" : "text-gray-800 dark:text-gray-200"
+                            }`}>
+                                {item.name}
+                            </span>
+                        </Button>
+                    ))}
+                </CardContent>
+            </Card>
 
-                <Cartetie param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem) } />
-
-                <Finition />
-
-                <GrandFormat param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem) }/>
-
-                <Textile param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem) }/>
-
-                <Goodies  param={param} userRole={userRole} handleAddCart={(cartItem) => handleAddCart(cartItem) }/>
-
-                <Evenement />
-
-                <Photo />
-
-                <Administratif />
-
-                <Impression />
+            <div className="flex flex-col lg:flex-row gap-8">
+                <div className="w-full space-y-6">
+                    <div className='max-h-[60vh] overflow-y-auto pr-4 space-y-4'>
+                        {selectedArticle ? (
+                            renderSelectedComponent()
+                        ) : (
+                            <Card>
+                                <CardContent className="p-8 text-center">
+                                    <div className="text-gray-500 dark:text-gray-400">
+                                        <PackageOpenIcon size={48} className="mx-auto mb-4 opacity-50" />
+                                        <h3 className="text-lg font-semibold mb-2">Sélectionnez un article</h3>
+                                        <p>Cliquez sur l&apos;un des articles ci-dessus pour commencer votre devis</p>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        )}
+                    </div>
                 </div>
-                </div>
-                <CartSection cartItems={cartItems} client={client} RemoveFromCart={(id) =>  RemoveFromCart(id) } devisLivre={devisLivre!} cartItemsInit={ () => cartItemsInit()} />
+                
+            </div>
         </div>
-    </div>
     );
 }

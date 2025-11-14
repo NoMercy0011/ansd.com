@@ -113,6 +113,75 @@ export type devisLivreData = {
   imprimante?: string;
 }
 
+export type devisData = {
+  livre_id?: number;
+  type?: string;
+  dimension_id?: number | null;
+  dimension?: string;
+  papier_id?: number | null;
+  papier?: string;
+  couleur_id?: number | string;
+  couleur?: string;
+  recto_verso_id?: number;
+  recto?:string;
+  pages?: number;
+  couverture_id?: number | null;
+  couverture?: string;
+  reliure_id?: number | string;
+  reliure?: string;
+  reliurePrix?:string;
+  finition_id?: number | null;
+  materiau_id?: number;
+  materiau?: string;
+  packaging_id?: number;
+  montant?: string;
+  quantite?: number;
+  option_id?: string;
+  imprimante_id?: number;
+  imprimante?: string;
+  finition?: string;
+  option?: string;
+  optionPrix?: string;
+  finitionPrix?: number;
+  decoupe?: string;
+  particularite?: string;
+  emplacement_id?: number;
+  emplacement?: string;
+  client_id?: number;
+  socle_id?: number;
+  socle?: string;
+  calendar_id?: number;
+  support_id?: number;
+  support?: string;
+  orientation_id?: number;
+  orientation?: string;
+  face_id?: number;
+  face?: string;
+  forme_couture_id?: number;
+  forme_couture?: string;
+  particularite_id?: number;
+  volet_id?: number;
+  volet?: string;
+  grammage_id?: number;
+  grammage?: string;
+  laize_id?: number;
+  laize?: string;
+  epaisseur_id?: number;
+  epaisseur?: string;
+  grand_format_id?: number;
+  taille_id?: number;
+  taille?: string;
+  technologie_id?: number;
+  technologie?: string;
+  textile_id?: number;
+  type_specifique_id?: number;
+  type_specifique?: string;
+  capacite_id?: number;
+  capacite?: string;
+  goodies_id?: number;
+  forme?: string;
+}
+
 export type CartItemsType = {
     id: number;
     designation : string;
@@ -127,7 +196,7 @@ export type CartItemsType = {
 export type DocumentType = {
   document?: DocumentData;
   ligne_document?: CartItemsType[];
-  devis_livre?: devisLivreData[];
+  devis_livre?: devisData[];
   client?: clientType;
 }
 

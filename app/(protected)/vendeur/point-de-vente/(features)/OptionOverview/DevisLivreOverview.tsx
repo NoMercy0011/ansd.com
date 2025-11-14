@@ -1,9 +1,9 @@
 
-import { devisLivreData } from '@/sources/types/type'
+import { devisData } from '@/sources/types/type'
 import React from 'react'
 
 type DevisLivreOverviewProps = {
-    devisLivre?: devisLivreData;
+    devisLivre?: devisData;
 }
 export default function DevisLivreOverview( {devisLivre} : DevisLivreOverviewProps ) {
   return (

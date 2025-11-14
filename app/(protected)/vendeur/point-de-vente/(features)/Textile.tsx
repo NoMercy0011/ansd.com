@@ -1,10 +1,12 @@
 import { GetClientID } from '@/sources/actions/admin/client.action'
 import { Input } from '@/sources/components/ui'
-import Accordion from '@/sources/components/ui/accordion'
+// import Accordion from '@/sources/components/ui/accordion' // Remplacé
 import { CartItemsType, clientType, devisTextileData } from '@/sources/types/type'
 import { Layers, Shirt } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react' // Ajout de useRef
 import OptionOverview from './OptionOverview/OptionOverview'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card' // Ajout
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs' // Ajout
 
 type PrintArticleProps = {
     userRole?: string;
@@ -14,7 +16,7 @@ type PrintArticleProps = {
 
 export default function Textiles({ param, userRole, handleAddCart }: PrintArticleProps) {
     
-    // Données mock pour les Textiles basées sur le CSV
+    // Données mock (inchangées)
     const TextilesData = {
         types: [
             { id: 1, type: 'tshirt', nom: 'T-shirt' },
@@ -268,6 +270,18 @@ export default function Textiles({ param, userRole, handleAddCart }: PrintArticl
     const [autreEmplacement, setAutreEmplacement] = useState({ nom: '', prix: '' });
     const [autreCouleur, setAutreCouleur] = useState({ nom: '', prix: '' });
 
+    // --- Ajout des Refs et activeTab ---
+    const [activeTab, setActiveTab] = useState('type');
+    const typeRef = useRef<HTMLDivElement>(null);
+    const tailleRef = useRef<HTMLDivElement>(null);
+    const grammageRef = useRef<HTMLDivElement>(null);
+    const dimensionRef = useRef<HTMLDivElement>(null);
+    const emplacementRef = useRef<HTMLDivElement>(null);
+    const technologieRef = useRef<HTMLDivElement>(null);
+    const couleurRef = useRef<HTMLDivElement>(null);
+    const quantiteRef = useRef<HTMLDivElement>(null);
+    // --- Fin Ajout ---
+
     const [devisTextile, setDevisTextile] = useState<devisTextileData>({
         client_id: 0,
         type: '',
@@ -291,15 +305,68 @@ export default function Textiles({ param, userRole, handleAddCart }: PrintArticl
     });
 
     const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
-        setDevisTextile(prevState => ({
-            ...prevState,
-            [name]: value,
-            ...(option !== undefined && { [option]: optionValue }),
-        }));
-        
+         // Logique de réinitialisation lors du changement de type
+        if (name === 'textile_id') {
+            setDevisTextile(prevState => ({
+                client_id: prevState.client_id, // Conserver l'ID client
+                textile_id: Number(value),
+                type: optionValue as string,
+                quantite: 1, // Réinitialiser la quantité
+                // Réinitialiser tous les champs dépendants
+                taille_id: 0,
+                taille: '',
+                grammage_id: 0,
+                grammage: '',
+                dimension_id: 0,
+                dimension: '',
+                emplacement_id: 0,
+                emplacement: '',
+                technologie_id: 0,
+                technologie: '',
+                couleur_id: 0,
+                couleur: '',
+                montant: '',
+                finitionPrix: 0,
+                optionPrix: ''
+            }));
+            // Réinitialiser les champs "autres"
+            setAutreTaille({ nom: '', prix: '' });
+            setAutreDimension({ nom: '', prix: '' });
+            setAutreEmplacement({ nom: '', prix: '' });
+            setAutreCouleur({ nom: '', prix: '' });
+        } else {
+             setDevisTextile(prevState => ({
+                ...prevState,
+                [name]: value,
+                ...(option !== undefined && { [option]: optionValue }),
+            }));
+        }
     };
 
-    // Fonctions pour obtenir les données dynamiques
+    // --- Fonction de Scroll ---
+    const scrollToSection = (section: string) => {
+        setActiveTab(section);
+        const refs: { [key: string]: React.RefObject<HTMLDivElement | null> } = {
+            type: typeRef,
+            taille: tailleRef,
+            grammage: grammageRef,
+            dimension: dimensionRef,
+            emplacement: emplacementRef,
+            technologie: technologieRef,
+            couleur: couleurRef,
+            quantite: quantiteRef
+        };
+
+        if (refs[section]?.current) {
+            refs[section].current?.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    };
+    // --- Fin Fonction de Scroll ---
+
+    // Fonctions pour obtenir les données dynamiques (inchangées)
     const getCurrentTailles = () => {
         if (!selectedType) return [];
         return TextilesData.tailles[selectedType as keyof typeof TextilesData.tailles] || [];
@@ -321,16 +388,18 @@ export default function Textiles({ param, userRole, handleAddCart }: PrintArticl
     };
 
     // Fonction utilitaire pour convertir en nombre sécurisé
-    const safeNumber = (value: string): number => {
+    const safeNumber = (value: string | number): number => {
         const num = Number(value);
         return isNaN(num) ? 0 : num;
     };
 
-    useEffect(() => {
-        setDevisTextile({...devisTextile, 
-            grammage_id : 0, grammage:''});
-    }, [devisTextile.type])
+    // // useEffect pour réinitialiser le grammage (Supprimé car géré par handleSelect)
+    // useEffect(() => {
+    //     setDevisTextile({...devisTextile, 
+    //         grammage_id : 0, grammage:''});
+    // }, [devisTextile.type]) // Cette dépendance est risquée, remplacée par la logique dans handleSelect
 
+    // Calcul du prix (utilisation de safeNumber)
     useEffect(() => {
         if (!selectedType) {
             setPrixUnitaireReel(0);
@@ -346,14 +415,14 @@ export default function Textiles({ param, userRole, handleAddCart }: PrintArticl
             if (taille.taille === 'autres') {
                 prixTotal += safeNumber(autreTaille.prix);
             } else {
-                prixTotal += safeNumber(taille.prix_base.toString());
+                prixTotal += safeNumber(taille.prix_base);
             }
         }
 
         // Prix du grammage
         const grammage = getCurrentGrammages().find(g => g.id === devisTextile.grammage_id);
         if (grammage) {
-            prixTotal += safeNumber(grammage.prix.toString());
+            prixTotal += safeNumber(grammage.prix);
         }
 
         // Prix de la dimension d'impression
@@ -362,7 +431,7 @@ export default function Textiles({ param, userRole, handleAddCart }: PrintArticl
             if (dimension.dimension === 'autres') {
                 prixTotal += safeNumber(autreDimension.prix);
             } else {
-                prixTotal += safeNumber(dimension.prix.toString());
+                prixTotal += safeNumber(dimension.prix);
             }
         }
 
@@ -372,14 +441,14 @@ export default function Textiles({ param, userRole, handleAddCart }: PrintArticl
             if (emplacement.emplacement === 'autres') {
                 prixTotal += safeNumber(autreEmplacement.prix);
             } else {
-                prixTotal += safeNumber(emplacement.prix.toString());
+                prixTotal += safeNumber(emplacement.prix);
             }
         }
 
         // Prix de la technologie
         const technologie = TextilesData.technologies.find(t => t.id === devisTextile.technologie_id);
         if (technologie) {
-            prixTotal += safeNumber(technologie.prix.toString());
+            prixTotal += safeNumber(technologie.prix);
         }
 
         // Prix de la couleur
@@ -388,16 +457,16 @@ export default function Textiles({ param, userRole, handleAddCart }: PrintArticl
             if (couleur.couleur === 'autres') {
                 prixTotal += safeNumber(autreCouleur.prix);
             } else {
-                prixTotal += safeNumber(couleur.prix.toString());
+                prixTotal += safeNumber(couleur.prix);
             }
         }
 
         // Ajouter les options personnalisées
-        prixTotal += safeNumber(devisTextile.finitionPrix.toString());
+        prixTotal += safeNumber(devisTextile.finitionPrix);
         prixTotal += safeNumber(devisTextile.optionPrix);
 
         // Calcul du total avec quantité
-        const quantite = safeNumber(devisTextile.quantite.toString());
+        const quantite = safeNumber(devisTextile.quantite);
         const prixUnitaire = Math.max(0, prixTotal);
         const prixTotalAvecQuantite = prixUnitaire * quantite;
 
@@ -406,6 +475,7 @@ export default function Textiles({ param, userRole, handleAddCart }: PrintArticl
 
     }, [devisTextile, selectedType, autreTaille, autreDimension, autreEmplacement, autreCouleur]);
 
+    // useEffect GetClientID (inchangé)
     useEffect(() => {
         if (param) {
             GetClientID(Number(param))
@@ -417,6 +487,7 @@ export default function Textiles({ param, userRole, handleAddCart }: PrintArticl
         }
     }, [param]);
 
+    // initializeDevisTextile (inchangé)
     const initializeDevisTextile = () => {
         setDevisTextile({
             client_id: Number(client?.id_client),
@@ -446,6 +517,7 @@ export default function Textiles({ param, userRole, handleAddCart }: PrintArticl
         setAutreCouleur({ nom: '', prix: '' });
     };
 
+    // handleAddToCart (utilisation de safeNumber)
     const handleAddToCart = () => {
         const textileType = TextilesData.types.find(t => t.id === devisTextile.textile_id);
         
@@ -463,7 +535,7 @@ export default function Textiles({ param, userRole, handleAddCart }: PrintArticl
             designation: `Textile - ${textileType?.nom}`,
             detail_description: detailsDevis,
             prix_unitaire_ht: prixUnitaireReel,
-            quantite: safeNumber(devisTextile.quantite.toString()),
+            quantite: safeNumber(devisTextile.quantite),
             remise: 0.00,
             service: 'Textile',
         };
@@ -474,302 +546,339 @@ export default function Textiles({ param, userRole, handleAddCart }: PrintArticl
     };
 
     return (
-        <Accordion title="Textiles" icon={<Shirt />} defaultOpen={false}>
-            <div className="flex flex-col lg:flex-row gap-8">
-                <div className="w-full lg:w-2/3 space-y-4">
-                    <div className='max-h-[80vh] overflow-y-auto pr-4 space-y-4'>
+        // --- Nouvelle Structure Card ---
+        <Card>
+             <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 font-semibold">
+                    <Shirt className="h-6 w-6 text-red-500 " />
+                    Textiles
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col lg:flex-row gap-3">
+                    <div className="w-full lg:w-4/5 space-y-1 ">
                         
-                        {/* Type de Produit */}
-                        <div>
-                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                <Layers />
-                                <span className="ml-2"> Type de Produit </span>
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {TextilesData.types.map(type => (
-                                    <button
-                                        key={type.id}
-                                        onClick={() => {
-                                            handleSelect(type.id, 'textile_id', 'type', type.type);
-                                            setSelectedType(type.type);
-                                        }}
-                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.textile_id === type.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                    >
-                                        <span>{type.nom}</span>
-                                    </button>
-                                ))}
-                            </div>
+                        {/* --- Navigation Tabs --- */}
+                        <div className="sticky gap-5 space-x-2 top-0 bg-white dark:bg-slate-900 z-10 pb-0 pt-2 border-b border-slate-200 dark:border-slate-700">
+                            <Tabs value={activeTab} onValueChange={scrollToSection} className="w-full">
+                                <TabsList className="flex-wrap h-auto p-1 bg-white dark:bg-slate-900">
+                                    <TabsTrigger value="type" className="flex items-center gap-1 text-xs ">
+                                        <Layers className="h-3 w-3" />
+                                        Type
+                                    </TabsTrigger>
+                                    <TabsTrigger value="taille" className="flex items-center gap-1 text-xs " disabled={!selectedType}>
+                                        <Layers className="h-3 w-3" />
+                                        Taille
+                                    </TabsTrigger>
+                                    <TabsTrigger value="grammage" className="flex items-center gap-1 text-xs" disabled={!selectedType || getCurrentGrammages().length === 0}>
+                                        <Layers className="h-3 w-3" />
+                                        Grammage
+                                    </TabsTrigger>
+                                    <TabsTrigger value="dimension" className="flex items-center gap-1 text-xs" disabled={!selectedType}>
+                                        <Layers className="h-3 w-3" />
+                                        Dimension Imp.
+                                    </TabsTrigger>
+                                    <TabsTrigger value="emplacement" className="flex items-center gap-1 text-xs" disabled={!selectedType}>
+                                        <Layers className="h-3 w-3" />
+                                        Emplacement
+                                    </TabsTrigger>
+                                    <TabsTrigger value="technologie" className="flex items-center gap-1 text-xs" disabled={!selectedType}>
+                                        <Layers className="h-3 w-3" />
+                                        Technologie
+                                    </TabsTrigger>
+                                    <TabsTrigger value="couleur" className="flex items-center gap-1 text-xs" disabled={!selectedType}>
+                                        <Layers className="h-3 w-3" />
+                                        Couleur
+                                    </TabsTrigger>
+                                    <TabsTrigger value="quantite" className="flex items-center gap-1 text-xs" disabled={!selectedType}>
+                                        <Layers className="h-3 w-3" />
+                                        Quantité
+                                    </TabsTrigger>
+                                </TabsList>
+                            </Tabs>
                         </div>
+                        
+                        {/* --- Contenu Scrollable --- */}
+                        <div className="space-y-8 max-h-[70vh] overflow-y-auto mt-1 pr-2">
+                            
+                            {/* Type de Produit */}
+                            <div ref={typeRef} className="scroll-mt-20">
+                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                    <Layers className="mr-2" />
+                                    Type de Produit
+                                </h4>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    {TextilesData.types.map(type => (
+                                        <button
+                                            key={type.id}
+                                            onClick={() => {
+                                                handleSelect(type.id, 'textile_id', 'type', type.type);
+                                                setSelectedType(type.type);
+                                            }}
+                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.textile_id === type.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                        >
+                                            <span>{type.nom}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
 
-                        {selectedType && (
-                            <>
-                                {/* Taille */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Taille </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentTailles().map(taille => (
-                                            <button
-                                                key={taille.id}
-                                                onClick={() => handleSelect(taille.id, 'taille_id', 'taille', taille.taille)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.taille_id === taille.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{taille.taille}</div>
-                                                <div className="text-xs font-semibold text-green-600">{taille.prix_base.toLocaleString()} Ar</div>
-                                            </button>
-                                        ))}
+                            {selectedType && (
+                                <>
+                                    {/* Taille */}
+                                    <div ref={tailleRef} className="scroll-mt-20">
+                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                            <Layers className="mr-2" />
+                                            Taille
+                                        </h4>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                            {getCurrentTailles().map(taille => (
+                                                <button
+                                                    key={taille.id}
+                                                    onClick={() => handleSelect(taille.id, 'taille_id', 'taille', taille.taille)}
+                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.taille_id === taille.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                >
+                                                    <div className="font-semibold">{taille.taille}</div>
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        {/* Input pour taille "autres" */}
+                                        {devisTextile.taille === 'autres' && (
+                                            <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
+                                                <h5 className="font-semibold mb-3">Taille personnalisée</h5>
+                                                <div className="space-y-3">
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="text"
+                                                            value={autreTaille.nom}
+                                                            onChange={(e) => setAutreTaille(prev => ({ ...prev, nom: e.target.value }))}
+                                                            placeholder="Description de la taille"
+                                                        />
+                                                    </div>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="number"
+                                                            value={autreTaille.prix}
+                                                            onChange={(e) => setAutreTaille(prev => ({ ...prev, prix: e.target.value }))}
+                                                            placeholder="Prix supplémentaire"
+                                                            min="0"
+                                                        />
+                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
                                     </div>
 
-                                    {/* Input pour taille "autres" */}
-                                    {devisTextile.taille === 'autres' && (
-                                        <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
-                                            <h5 className="font-semibold mb-3">Taille personnalisée</h5>
-                                            <div className="space-y-3">
-                                                <div className="relative">
-                                                    <Input
-                                                        type="text"
-                                                        value={autreTaille.nom}
-                                                        onChange={(e) => setAutreTaille(prev => ({ ...prev, nom: e.target.value }))}
-                                                        placeholder="Description de la taille"
-                                                    />
-                                                </div>
-                                                <div className="relative">
-                                                    <Input
-                                                        type="number"
-                                                        value={autreTaille.prix}
-                                                        onChange={(e) => setAutreTaille(prev => ({ ...prev, prix: e.target.value }))}
-                                                        placeholder="Prix supplémentaire"
-                                                        min="0"
-                                                    />
-                                                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
-                                                </div>
+                                    {/* Grammage (uniquement pour certains types) */}
+                                    {getCurrentGrammages().length > 0 && (
+                                        <div ref={grammageRef} className="scroll-mt-20">
+                                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                <Layers className="mr-2" />
+                                                Grammage du tissu
+                                            </h4>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                {getCurrentGrammages().map(grammage => (
+                                                    <button
+                                                        key={grammage.id}
+                                                        onClick={() => handleSelect(grammage.id, 'grammage_id', 'grammage', grammage.grammage)}
+                                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.grammage_id === grammage.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                    >
+                                                        <div className="font-semibold">{grammage.grammage}</div>
+                                                    </button>
+                                                ))}
                                             </div>
                                         </div>
                                     )}
-                                </div>
 
-                                {/* Grammage (uniquement pour certains types) */}
-                                {getCurrentGrammages().length > 0 && (
-                                    <div>
-                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                            <Layers />
-                                            <span className="ml-2"> Grammage du tissu </span>
+                                    {/* Dimensions d'impression */}
+                                    <div ref={dimensionRef} className="scroll-mt-20">
+                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                            <Layers className="mr-2" />
+                                            Dimensions d&apos;impression
                                         </h4>
                                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                            {getCurrentGrammages().map(grammage => (
+                                            {getCurrentDimensions().map(dimension => (
                                                 <button
-                                                    key={grammage.id}
-                                                    onClick={() => handleSelect(grammage.id, 'grammage_id', 'grammage', grammage.grammage)}
-                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.grammage_id === grammage.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                    key={dimension.id}
+                                                    onClick={() => handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension)}
+                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.dimension_id === dimension.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                                                 >
-                                                    <div className="font-semibold">{grammage.grammage}</div>
-                                                    {grammage.prix > 0 && (
-                                                        <div className="text-xs text-green-600">+{grammage.prix.toLocaleString()} Ar</div>
-                                                    )}
+                                                    <div className="font-semibold">{dimension.dimension}</div>
+                                                    <div className="text-xs ">{dimension.unitee}</div>
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        {/* Input pour dimension "autres" */}
+                                        {devisTextile.dimension === 'autres' && (
+                                            <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
+                                                <h5 className="font-semibold mb-3">Dimension personnalisée</h5>
+                                                <div className="space-y-3">
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="text"
+                                                            value={autreDimension.nom}
+                                                            onChange={(e) => setAutreDimension(prev => ({ ...prev, nom: e.target.value }))}
+                                                            placeholder="Description de la dimension"
+                                                        />
+                                                    </div>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="number"
+                                                            value={autreDimension.prix}
+                                                            onChange={(e) => setAutreDimension(prev => ({ ...prev, prix: e.target.value }))}
+                                                            placeholder="Prix supplémentaire"
+                                                            min="0"
+                                                        />
+                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Emplacement d'impression */}
+                                    <div ref={emplacementRef} className="scroll-mt-20">
+                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                            <Layers className="mr-2" />
+                                            Emplacement d&apos;impression
+                                        </h4>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                            {getCurrentEmplacements().map(emplacement => (
+                                                <button
+                                                    key={emplacement.id}
+                                                    onClick={() => handleSelect(emplacement.id, 'emplacement_id', 'emplacement', emplacement.emplacement)}
+                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.emplacement_id === emplacement.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                >
+                                                    <div className="font-semibold">{emplacement.emplacement}</div>
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        {/* Input pour emplacement "autres" */}
+                                        {devisTextile.emplacement === 'autres' && (
+                                            <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
+                                                <h5 className="font-semibold mb-3">Emplacement personnalisé</h5>
+                                                <div className="space-y-3">
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="text"
+                                                            value={autreEmplacement.nom}
+                                                            onChange={(e) => setAutreEmplacement(prev => ({ ...prev, nom: e.target.value }))}
+                                                            placeholder="Description de l'emplacement"
+                                                        />
+                                                    </div>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="number"
+                                                            value={autreEmplacement.prix}
+                                                            onChange={(e) => setAutreEmplacement(prev => ({ ...prev, prix: e.target.value }))}
+                                                            placeholder="Prix supplémentaire"
+                                                            min="0"
+                                                        />
+                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Technologie d'impression */}
+                                    <div ref={technologieRef} className="scroll-mt-20">
+                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                            <Layers className="mr-2" />
+                                            Technologie d&apos;impression
+                                        </h4>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                            {TextilesData.technologies.map(technologie => (
+                                                <button
+                                                    key={technologie.id}
+                                                    onClick={() => handleSelect(technologie.id, 'technologie_id', 'technologie', technologie.technologie)}
+                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.technologie_id === technologie.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                >
+                                                    <div className="font-semibold">{technologie.technologie}</div>
                                                 </button>
                                             ))}
                                         </div>
                                     </div>
-                                )}
 
-                                {/* Dimensions d'impression */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Dimensions d&apos;impression </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentDimensions().map(dimension => (
-                                            <button
-                                                key={dimension.id}
-                                                onClick={() => handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.dimension_id === dimension.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{dimension.dimension}</div>
-                                                <div className="text-xs text-slate-500">{dimension.unitee}</div>
-                                                {dimension.dimension !== 'autres' && (
-                                                    <div className="text-xs text-green-600">+{dimension.prix.toLocaleString()} Ar</div>
-                                                )}
-                                            </button>
-                                        ))}
-                                    </div>
+                                    {/* Couleurs de tissus */}
+                                    <div ref={couleurRef} className="scroll-mt-20">
+                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                            <Layers className="mr-2" />
+                                            Couleur du tissu
+                                        </h4>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                            {TextilesData.couleurs_tissus.map(couleur => (
+                                                <button
+                                                    key={couleur.id}
+                                                    onClick={() => handleSelect(couleur.id, 'couleur_id', 'couleur', couleur.couleur)}
+                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.couleur_id === couleur.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                >
+                                                    <div className="font-semibold">{couleur.couleur}</div>
+                                                </button>
+                                            ))}
+                                        </div>
 
-                                    {/* Input pour dimension "autres" */}
-                                    {devisTextile.dimension === 'autres' && (
-                                        <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
-                                            <h5 className="font-semibold mb-3">Dimension personnalisée</h5>
-                                            <div className="space-y-3">
-                                                <div className="relative">
-                                                    <Input
-                                                        type="text"
-                                                        value={autreDimension.nom}
-                                                        onChange={(e) => setAutreDimension(prev => ({ ...prev, nom: e.target.value }))}
-                                                        placeholder="Description de la dimension"
-                                                    />
-                                                </div>
-                                                <div className="relative">
-                                                    <Input
-                                                        type="number"
-                                                        value={autreDimension.prix}
-                                                        onChange={(e) => setAutreDimension(prev => ({ ...prev, prix: e.target.value }))}
-                                                        placeholder="Prix supplémentaire"
-                                                        min="0"
-                                                    />
-                                                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                        {/* Input pour couleur "autres" */}
+                                        {devisTextile.couleur === 'autres' && (
+                                            <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
+                                                <h5 className="font-semibold mb-3">Couleur personnalisée</h5>
+                                                <div className="space-y-3">
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="text"
+                                                            value={autreCouleur.nom}
+                                                            onChange={(e) => setAutreCouleur(prev => ({ ...prev, nom: e.target.value }))}
+                                                            placeholder="Nom de la couleur"
+                                                        />
+                                                    </div>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="number"
+                                                            value={autreCouleur.prix}
+                                                            onChange={(e) => setAutreCouleur(prev => ({ ...prev, prix: e.target.value }))}
+                                                            placeholder="Prix supplémentaire"
+                                                            min="0"
+                                                        />
+                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                                    </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Emplacement d'impression */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Emplacement d&apos;impression </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentEmplacements().map(emplacement => (
-                                            <button
-                                                key={emplacement.id}
-                                                onClick={() => handleSelect(emplacement.id, 'emplacement_id', 'emplacement', emplacement.emplacement)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.emplacement_id === emplacement.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{emplacement.emplacement}</div>
-                                                {emplacement.prix > 0 && emplacement.emplacement !== 'autres' && (
-                                                    <div className="text-xs text-green-600">+{emplacement.prix.toLocaleString()} Ar</div>
-                                                )}
-                                            </button>
-                                        ))}
+                                        )}
                                     </div>
 
-                                    {/* Input pour emplacement "autres" */}
-                                    {devisTextile.emplacement === 'autres' && (
-                                        <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
-                                            <h5 className="font-semibold mb-3">Emplacement personnalisé</h5>
-                                            <div className="space-y-3">
-                                                <div className="relative">
-                                                    <Input
-                                                        type="text"
-                                                        value={autreEmplacement.nom}
-                                                        onChange={(e) => setAutreEmplacement(prev => ({ ...prev, nom: e.target.value }))}
-                                                        placeholder="Description de l'emplacement"
-                                                    />
-                                                </div>
-                                                <div className="relative">
-                                                    <Input
-                                                        type="number"
-                                                        value={autreEmplacement.prix}
-                                                        onChange={(e) => setAutreEmplacement(prev => ({ ...prev, prix: e.target.value }))}
-                                                        placeholder="Prix supplémentaire"
-                                                        min="0"
-                                                    />
-                                                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Technologie d'impression */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Technologie d&apos;impression </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {TextilesData.technologies.map(technologie => (
-                                            <button
-                                                key={technologie.id}
-                                                onClick={() => handleSelect(technologie.id, 'technologie_id', 'technologie', technologie.technologie)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.technologie_id === technologie.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{technologie.technologie}</div>
-                                                <div className="text-xs text-green-600">+{technologie.prix.toLocaleString()} Ar</div>
-                                            </button>
-                                        ))}
+                                    {/* Quantité */}
+                                    <div ref={quantiteRef} className="scroll-mt-20">
+                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                            <Layers className="mr-2" />
+                                            Quantité
+                                        </h4>
+                                        <Input 
+                                            type="number" 
+                                            value={devisTextile.quantite.toString()} 
+                                            onChange={e => handleSelect(Math.max(1, safeNumber(e.target.value)), 'quantite')} 
+                                            placeholder="Ex: 10" 
+                                            min="1"
+                                        />
                                     </div>
-                                </div>
-
-                                {/* Couleurs de tissus */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Couleur du tissu </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {TextilesData.couleurs_tissus.map(couleur => (
-                                            <button
-                                                key={couleur.id}
-                                                onClick={() => handleSelect(couleur.id, 'couleur_id', 'couleur', couleur.couleur)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisTextile.couleur_id === couleur.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{couleur.couleur}</div>
-                                                {couleur.prix > 0 && couleur.couleur !== 'autres' && (
-                                                    <div className="text-xs text-green-600">+{couleur.prix.toLocaleString()} Ar</div>
-                                                )}
-                                            </button>
-                                        ))}
-                                    </div>
-
-                                    {/* Input pour couleur "autres" */}
-                                    {devisTextile.couleur === 'autres' && (
-                                        <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
-                                            <h5 className="font-semibold mb-3">Couleur personnalisée</h5>
-                                            <div className="space-y-3">
-                                                <div className="relative">
-                                                    <Input
-                                                        type="text"
-                                                        value={autreCouleur.nom}
-                                                        onChange={(e) => setAutreCouleur(prev => ({ ...prev, nom: e.target.value }))}
-                                                        placeholder="Nom de la couleur"
-                                                    />
-                                                </div>
-                                                <div className="relative">
-                                                    <Input
-                                                        type="number"
-                                                        value={autreCouleur.prix}
-                                                        onChange={(e) => setAutreCouleur(prev => ({ ...prev, prix: e.target.value }))}
-                                                        placeholder="Prix supplémentaire"
-                                                        min="0"
-                                                    />
-                                                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Quantité */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mt-3 mb-3 flex items-center ">
-                                        <Layers />
-                                        <span className="ml-2"> Quantité </span>
-                                    </h4>
-                                    <Input 
-                                        type="number" 
-                                        value={devisTextile.quantite.toString()} 
-                                        onChange={e => handleSelect(Math.max(1, safeNumber(e.target.value)), 'quantite')} 
-                                        placeholder="Ex: 10" 
-                                        min="1"
-                                    />
-                                </div>
-                            </>
-                        )}
+                                </>
+                            )}
+                        </div>
                     </div>
-                </div>
                 
-                {/* Overview et calcul des prix */}
-                <OptionOverview 
-                    userRole={userRole} 
-                    prixUnitaireReel={prixUnitaireReel} 
-                    prixTotalReel={prixTotalReel} 
-                    handleAddToCart={handleAddToCart} 
-                    devisTextile={devisTextile} 
-                />
-            </div>
-        </Accordion>
+                    {/* Overview et calcul des prix */}
+                    <OptionOverview 
+                        userRole={userRole} 
+                        prixUnitaireReel={prixUnitaireReel} 
+                        prixTotalReel={prixTotalReel} 
+                        handleAddToCart={handleAddToCart} 
+                        devisTextile={devisTextile} 
+                    />
+                </div>
+            </CardContent>
+        </Card>
     );
 }

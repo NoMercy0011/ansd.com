@@ -1,7 +1,7 @@
 "use client"
 
 import { Button, Input } from '@/sources/components/ui'
-import { devisCalendarData, devisCarterieData, devisChevaletData, devisFlyersData, devisGoodiesData, devisGrandFormatData, devisLivreData, devisPackagingData, devisTextileData } from '@/sources/types/type'
+import {  devisData} from '@/sources/types/type'
 import { DollarSign, ShoppingBasket } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import DevisLivreOverview from './DevisLivreOverview'
@@ -18,15 +18,15 @@ type OptionOverviewProps = {
     userRole?: string;
     prixUnitaireReel: number;
     prixTotalReel: number;
-    devisLivre?: devisLivreData;
-    devisPackaging?: devisPackagingData;
-    devisCalendar?: devisCalendarData;
-    devisChevalet?: devisChevaletData;
-    devisFlyers?: devisFlyersData;
-    devisCarterie?: devisCarterieData;
-    devisGrandFormat?: devisGrandFormatData;
-    devisTextile?: devisTextileData;
-    devisGoodies?: devisGoodiesData;
+    devisLivre?: devisData;
+    devisPackaging?: devisData;
+    devisCalendar?: devisData;
+    devisChevalet?: devisData;
+    devisFlyers?: devisData;
+    devisCarterie?: devisData;
+    devisGrandFormat?: devisData;
+    devisTextile?: devisData;
+    devisGoodies?: devisData;
     handleAddToCart?: () => void;
 }
 export default function OptionOverview( OptionProps : OptionOverviewProps) {
@@ -44,7 +44,7 @@ export default function OptionOverview( OptionProps : OptionOverviewProps) {
 
   return (
     <>
-    <div className="w-full lg:w-1/2 space-y-4 sticky top-24 mt-5">
+    <div className="w-full lg:w-1/4 space-y-4 sticky mt-1">
         {OptionProps.devisLivre && <DevisLivreOverview devisLivre={OptionProps.devisLivre} /> }
         {OptionProps.devisPackaging && <DevisPackaging  devisPackaging={OptionProps.devisPackaging}/> }
         {OptionProps.devisCalendar && <DevisCalendar  devisCalendar={OptionProps.devisCalendar}/> }

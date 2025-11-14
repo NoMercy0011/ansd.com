@@ -1,8 +1,8 @@
-import { devisGrandFormatData } from '@/sources/types/type';
+import { devisData } from '@/sources/types/type';
 import React from 'react'
 
 type DevisProps = {
-    devis?: devisGrandFormatData;
+    devis?: devisData;
 }
 export default function DevisGrandFormat( { devis } : DevisProps) {
   return (

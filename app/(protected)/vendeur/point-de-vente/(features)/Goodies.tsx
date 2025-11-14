@@ -1,10 +1,12 @@
 import { GetClientID } from '@/sources/actions/admin/client.action'
 import { Input } from '@/sources/components/ui'
-import Accordion from '@/sources/components/ui/accordion'
+// import Accordion from '@/sources/components/ui/accordion' // Remplacé
 import { CartItemsType, clientType, devisGoodiesData } from '@/sources/types/type'
 import { Layers, Gift } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react' // Ajout de useRef
 import OptionOverview from './OptionOverview/OptionOverview'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card' // Ajout
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs' // Ajout
 
 type PrintArticleProps = {
     userRole?: string;
@@ -14,7 +16,7 @@ type PrintArticleProps = {
 
 export default function Goodies({ param, userRole, handleAddCart }: PrintArticleProps) {
     
-    // Données mock pour les Goodies basées sur le CSV
+    // Données mock (inchangées)
     const GoodiesData = {
         types: [
             { id: 1, type: 'mug', nom: 'Mug' },
@@ -217,6 +219,16 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
     const [prixTotalReel, setPrixTotalReel] = useState<number>(0.00);
     const [autreType, setAutreType] = useState({ nom: '', prix: '' });
 
+    // --- Ajout des Refs et activeTab ---
+    const [activeTab, setActiveTab] = useState('type');
+    const typeRef = useRef<HTMLDivElement>(null);
+    const specifiqueRef = useRef<HTMLDivElement>(null);
+    const capaciteRef = useRef<HTMLDivElement>(null);
+    const emplacementRef = useRef<HTMLDivElement>(null);
+    const technologieRef = useRef<HTMLDivElement>(null);
+    const quantiteRef = useRef<HTMLDivElement>(null);
+    // --- Fin Ajout ---
+
     const [devisGoodies, setDevisGoodies] = useState<devisGoodiesData>({
         client_id: 0,
         type: '',
@@ -236,14 +248,58 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
     });
 
     const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
-        setDevisGoodies(prevState => ({
-            ...prevState,
-            [name]: value,
-            ...(option !== undefined && { [option]: optionValue }),
-        }));
+         // Logique de réinitialisation lors du changement de type
+        if (name === 'goodies_id') {
+            setDevisGoodies(prevState => ({
+                client_id: prevState.client_id, // Conserver l'ID client
+                goodies_id: Number(value),
+                type: optionValue as string,
+                quantite: 1, // Réinitialiser la quantité
+                // Réinitialiser tous les champs dépendants
+                type_specifique_id: 0,
+                type_specifique: '',
+                capacite_id: 0,
+                capacite: '',
+                emplacement_id: 0,
+                emplacement: '',
+                technologie_id: 0,
+                technologie: '',
+                montant: '',
+                finitionPrix: 0,
+                optionPrix: ''
+            }));
+            setAutreType({ nom: '', prix: '' }); // Réinitialiser aussi 'autreType'
+        } else {
+            setDevisGoodies(prevState => ({
+                ...prevState,
+                [name]: value,
+                ...(option !== undefined && { [option]: optionValue }),
+            }));
+        }
     };
+    
+    // --- Fonction de Scroll ---
+    const scrollToSection = (section: string) => {
+        setActiveTab(section);
+        const refs: { [key: string]: React.RefObject<HTMLDivElement | null> } = {
+            type: typeRef,
+            specifique: specifiqueRef,
+            capacite: capaciteRef,
+            emplacement: emplacementRef,
+            technologie: technologieRef,
+            quantite: quantiteRef
+        };
 
-    // Fonctions pour obtenir les données dynamiques
+        if (refs[section]?.current) {
+            refs[section].current?.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    };
+    // --- Fin Fonction de Scroll ---
+
+    // Fonctions pour obtenir les données dynamiques (inchangées)
     const getCurrentTypesSpecifiques = () => {
         if (!selectedType) return [];
         return GoodiesData.types_specifiques[selectedType as keyof typeof GoodiesData.types_specifiques] || [];
@@ -265,12 +321,12 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
     };
 
     // Fonction utilitaire pour convertir en nombre sécurisé
-    const safeNumber = (value: string): number => {
+    const safeNumber = (value: string | number): number => {
         const num = Number(value);
         return isNaN(num) ? 0 : num;
     };
 
-    // Calcul du prix
+    // Calcul du prix (utilisation de safeNumber)
     useEffect(() => {
         if (!selectedType) {
             setPrixUnitaireReel(0);
@@ -286,34 +342,34 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
             if (typeSpecifique.type === 'autres') {
                 prixTotal += safeNumber(autreType.prix);
             } else {
-                prixTotal += safeNumber(typeSpecifique.prix_base.toString());
+                prixTotal += safeNumber(typeSpecifique.prix_base);
             }
         }
 
         // Prix de la capacité
         const capacite = getCurrentCapacites().find(c => c.id === devisGoodies.capacite_id);
         if (capacite) {
-            prixTotal += safeNumber(capacite.prix.toString());
+            prixTotal += safeNumber(capacite.prix);
         }
 
         // Prix de l'emplacement
         const emplacement = getCurrentEmplacements().find(e => e.id === devisGoodies.emplacement_id);
         if (emplacement) {
-            prixTotal += safeNumber(emplacement.prix.toString());
+            prixTotal += safeNumber(emplacement.prix);
         }
 
         // Prix de la technologie
         const technologie = getCurrentTechnologies().find(t => t.id === devisGoodies.technologie_id);
         if (technologie) {
-            prixTotal += safeNumber(technologie.prix.toString());
+            prixTotal += safeNumber(technologie.prix);
         }
 
         // Ajouter les options personnalisées
-        prixTotal += safeNumber(devisGoodies.finitionPrix.toString());
+        prixTotal += safeNumber(devisGoodies.finitionPrix);
         prixTotal += safeNumber(devisGoodies.optionPrix);
 
         // Calcul du total avec quantité
-        const quantite = safeNumber(devisGoodies.quantite.toString());
+        const quantite = safeNumber(devisGoodies.quantite);
         const prixUnitaire = Math.max(0, prixTotal);
         const prixTotalAvecQuantite = prixUnitaire * quantite;
 
@@ -322,6 +378,7 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
 
     }, [devisGoodies, selectedType, autreType]);
 
+    // useEffect GetClientID (inchangé)
     useEffect(() => {
         if (param) {
             GetClientID(Number(param))
@@ -333,6 +390,7 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
         }
     }, [param]);
 
+    // initializeDevisGoodies (inchangé)
     const initializeDevisGoodies = () => {
         setDevisGoodies({
             client_id: Number(client?.id_client),
@@ -355,6 +413,7 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
         setAutreType({ nom: '', prix: '' });
     };
 
+    // handleAddToCart (utilisation de safeNumber)
     const handleAddToCart = () => {
         const goodiesType = GoodiesData.types.find(t => t.id === devisGoodies.goodies_id);
         
@@ -370,7 +429,7 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
             designation: `Goodies - ${goodiesType?.nom}`,
             detail_description: detailsDevis,
             prix_unitaire_ht: prixUnitaireReel,
-            quantite: safeNumber(devisGoodies.quantite.toString()),
+            quantite: safeNumber(devisGoodies.quantite),
             remise: 0.00,
             service: 'Goodies',
         };
@@ -381,177 +440,210 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
     };
 
     return (
-        <Accordion title="Goodies" icon={<Gift />} defaultOpen={false}>
-            <div className="flex flex-col lg:flex-row gap-8">
-                <div className="w-full lg:w-2/3 space-y-4">
-                    <div className='max-h-[80vh] overflow-y-auto pr-4 space-y-4'>
+        // --- Nouvelle Structure Card ---
+        <Card>
+            <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 font-semibold">
+                    <Gift className="h-6 w-6 text-red-500 " />
+                    Goodies
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col lg:flex-row gap-3">
+                    <div className="w-full lg:w-4/5 space-y-1 ">
                         
-                        {/* Type de Produit */}
-                        <div>
-                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                <Layers />
-                                <span className="ml-2"> Type de Produit </span>
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {GoodiesData.types.map(type => (
-                                    <button
-                                        key={type.id}
-                                        onClick={() => {
-                                            handleSelect(type.id, 'goodies_id', 'type', type.type);
-                                            setSelectedType(type.type);
-                                        }}
-                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisGoodies.goodies_id === type.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                    >
-                                        <span>{type.nom}</span>
-                                    </button>
-                                ))}
-                            </div>
+                        {/* --- Navigation Tabs --- */}
+                        <div className="sticky gap-5 space-x-2 top-0 bg-white dark:bg-slate-900 z-10 pb-0 pt-2 border-b border-slate-200 dark:border-slate-700">
+                            <Tabs value={activeTab} onValueChange={scrollToSection} className="w-full">
+                                <TabsList className="flex-wrap h-auto p-1 bg-white dark:bg-slate-900">
+                                    <TabsTrigger value="type" className="flex items-center gap-1 text-xs ">
+                                        <Layers className="h-3 w-3" />
+                                        Type
+                                    </TabsTrigger>
+                                    <TabsTrigger value="specifique" className="flex items-center gap-1 text-xs " disabled={!selectedType}>
+                                        <Layers className="h-3 w-3" />
+                                        Spécifique
+                                    </TabsTrigger>
+                                    <TabsTrigger value="capacite" className="flex items-center gap-1 text-xs" disabled={!selectedType}>
+                                        <Layers className="h-3 w-3" />
+                                        Capacité
+                                    </TabsTrigger>
+                                    <TabsTrigger value="emplacement" className="flex items-center gap-1 text-xs" disabled={!selectedType}>
+                                        <Layers className="h-3 w-3" />
+                                        Emplacement
+                                    </TabsTrigger>
+                                    <TabsTrigger value="technologie" className="flex items-center gap-1 text-xs" disabled={!selectedType}>
+                                        <Layers className="h-3 w-3" />
+                                        Technologie
+                                    </TabsTrigger>
+                                    <TabsTrigger value="quantite" className="flex items-center gap-1 text-xs" disabled={!selectedType}>
+                                        <Layers className="h-3 w-3" />
+                                        Quantité
+                                    </TabsTrigger>
+                                </TabsList>
+                            </Tabs>
                         </div>
+                        
+                        {/* --- Contenu Scrollable --- */}
+                        <div className="space-y-8 max-h-[70vh] overflow-y-auto mt-1 pr-2">
+                            
+                            {/* Type de Produit */}
+                            <div ref={typeRef} className="scroll-mt-20">
+                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                    <Layers className="mr-2" />
+                                    Type de Produit
+                                </h4>
+                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                    {GoodiesData.types.map(type => (
+                                        <button
+                                            key={type.id}
+                                            onClick={() => {
+                                                handleSelect(type.id, 'goodies_id', 'type', type.type);
+                                                setSelectedType(type.type);
+                                            }}
+                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisGoodies.goodies_id === type.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                        >
+                                            <span>{type.nom}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
 
-                        {selectedType && (
-                            <>
-                                {/* Type Spécifique */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Type Spécifique </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentTypesSpecifiques().map(typeSpecifique => (
-                                            <button
-                                                key={typeSpecifique.id}
-                                                onClick={() => handleSelect(typeSpecifique.id, 'type_specifique_id', 'type_specifique', typeSpecifique.type)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisGoodies.type_specifique_id === typeSpecifique.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{typeSpecifique.type}</div>
-                                                <div className="text-xs font-semibold text-green-600">{typeSpecifique.prix_base.toLocaleString()} Ar</div>
-                                            </button>
-                                        ))}
-                                    </div>
+                            {selectedType && (
+                                <>
+                                    {/* Type Spécifique */}
+                                    <div ref={specifiqueRef} className="scroll-mt-20">
+                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                            <Layers className="mr-2" />
+                                            Type Spécifique
+                                        </h4>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                            {getCurrentTypesSpecifiques().map(typeSpecifique => (
+                                                <button
+                                                    key={typeSpecifique.id}
+                                                    onClick={() => handleSelect(typeSpecifique.id, 'type_specifique_id', 'type_specifique', typeSpecifique.type)}
+                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisGoodies.type_specifique_id === typeSpecifique.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                >
+                                                    <div className="font-semibold">{typeSpecifique.type}</div>
+                                                </button>
+                                            ))}
+                                        </div>
 
-                                    {/* Input pour type "autres" */}
-                                    {devisGoodies.type_specifique === 'autres' && (
-                                        <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
-                                            <h5 className="font-semibold mb-3">Type personnalisé</h5>
-                                            <div className="space-y-3">
-                                                <div className="relative">
-                                                    <Input
-                                                        type="text"
-                                                        value={autreType.nom}
-                                                        onChange={(e) => setAutreType(prev => ({ ...prev, nom: e.target.value }))}
-                                                        placeholder="Description du type personnalisé"
-                                                    />
-                                                </div>
-                                                <div className="relative">
-                                                    <Input
-                                                        type="number"
-                                                        value={autreType.prix}
-                                                        onChange={(e) => setAutreType(prev => ({ ...prev, prix: e.target.value }))}
-                                                        placeholder="Prix supplémentaire"
-                                                        min="0"
-                                                    />
-                                                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                        {/* Input pour type "autres" */}
+                                        {devisGoodies.type_specifique === 'autres' && (
+                                            <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
+                                                <h5 className="font-semibold mb-3">Type personnalisé</h5>
+                                                <div className="space-y-3">
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="text"
+                                                            value={autreType.nom}
+                                                            onChange={(e) => setAutreType(prev => ({ ...prev, nom: e.target.value }))}
+                                                            placeholder="Description du type personnalisé"
+                                                        />
+                                                    </div>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="number"
+                                                            value={autreType.prix}
+                                                            onChange={(e) => setAutreType(prev => ({ ...prev, prix: e.target.value }))}
+                                                            placeholder="Prix supplémentaire"
+                                                            min="0"
+                                                        />
+                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                                    </div>
                                                 </div>
                                             </div>
+                                        )}
+                                    </div>
+
+                                    {/* Capacité / Taille */}
+                                    <div ref={capaciteRef} className="scroll-mt-20">
+                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                            <Layers className="mr-2" />
+                                            Capacité / Taille
+                                        </h4>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                            {getCurrentCapacites().map(capacite => (
+                                                <button
+                                                    key={capacite.id}
+                                                    onClick={() => handleSelect(capacite.id, 'capacite_id', 'capacite', capacite.capacite)}
+                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisGoodies.capacite_id === capacite.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                >
+                                                    <div className="font-semibold">{capacite.capacite}</div>
+                                                </button>
+                                            ))}
                                         </div>
-                                    )}
-                                </div>
-
-                                {/* Capacité / Taille */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Capacité / Taille </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentCapacites().map(capacite => (
-                                            <button
-                                                key={capacite.id}
-                                                onClick={() => handleSelect(capacite.id, 'capacite_id', 'capacite', capacite.capacite)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisGoodies.capacite_id === capacite.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{capacite.capacite}</div>
-                                                {capacite.prix > 0 && (
-                                                    <div className="text-xs text-green-600">+{capacite.prix.toLocaleString()} Ar</div>
-                                                )}
-                                            </button>
-                                        ))}
                                     </div>
-                                </div>
 
-                                {/* Emplacement d'impression */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Emplacement d&apos;impression </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentEmplacements().map(emplacement => (
-                                            <button
-                                                key={emplacement.id}
-                                                onClick={() => handleSelect(emplacement.id, 'emplacement_id', 'emplacement', emplacement.emplacement)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisGoodies.emplacement_id === emplacement.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{emplacement.emplacement}</div>
-                                                {emplacement.prix > 0 && (
-                                                    <div className="text-xs text-green-600">+{emplacement.prix.toLocaleString()} Ar</div>
-                                                )}
-                                            </button>
-                                        ))}
+                                    {/* Emplacement d'impression */}
+                                    <div ref={emplacementRef} className="scroll-mt-20">
+                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                            <Layers className="mr-2" />
+                                            Emplacement d&apos;impression
+                                        </h4>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                            {getCurrentEmplacements().map(emplacement => (
+                                                <button
+                                                    key={emplacement.id}
+                                                    onClick={() => handleSelect(emplacement.id, 'emplacement_id', 'emplacement', emplacement.emplacement)}
+                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisGoodies.emplacement_id === emplacement.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                >
+                                                    <div className="font-semibold">{emplacement.emplacement}</div>
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
 
-                                {/* Technologie d'impression */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Technologie d&apos;impression </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentTechnologies().map(technologie => (
-                                            <button
-                                                key={technologie.id}
-                                                onClick={() => handleSelect(technologie.id, 'technologie_id', 'technologie', technologie.technologie)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisGoodies.technologie_id === technologie.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{technologie.technologie}</div>
-                                                {technologie.prix > 0 && (
-                                                    <div className="text-xs text-green-600">+{technologie.prix.toLocaleString()} Ar</div>
-                                                )}
-                                            </button>
-                                        ))}
+                                    {/* Technologie d'impression */}
+                                    <div ref={technologieRef} className="scroll-mt-20">
+                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                            <Layers className="mr-2" />
+                                            Technologie d&apos;impression
+                                        </h4>
+                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                            {getCurrentTechnologies().map(technologie => (
+                                                <button
+                                                    key={technologie.id}
+                                                    onClick={() => handleSelect(technologie.id, 'technologie_id', 'technologie', technologie.technologie)}
+                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisGoodies.technologie_id === technologie.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                >
+                                                    <div className="font-semibold">{technologie.technologie}</div>
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-                                </div>
 
 
-                                {/* Quantité */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mt-3 mb-3 flex items-center ">
-                                        <Layers />
-                                        <span className="ml-2"> Quantité </span>
-                                    </h4>
-                                    <Input 
-                                        type="number" 
-                                        value={devisGoodies.quantite.toString()} 
-                                        onChange={e => handleSelect(Math.max(1, safeNumber(e.target.value)), 'quantite')} 
-                                        placeholder="Ex: 10" 
-                                        min="1"
-                                    />
-                                </div>
-                            </>
-                        )}
+                                    {/* Quantité */}
+                                    <div ref={quantiteRef} className="scroll-mt-20">
+                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                            <Layers className="mr-2" />
+                                            Quantité
+                                        </h4>
+                                        <Input 
+                                            type="number" 
+                                            value={devisGoodies.quantite.toString()} 
+                                            onChange={e => handleSelect(Math.max(1, safeNumber(e.target.value)), 'quantite')} 
+                                            placeholder="Ex: 10" 
+                                            min="1"
+                                        />
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
-                </div>
                 
-                {/* Overview et calcul des prix */}
-                <OptionOverview 
-                    userRole={userRole} 
-                    prixUnitaireReel={prixUnitaireReel} 
-                    prixTotalReel={prixTotalReel} 
-                    handleAddToCart={handleAddToCart} 
-                    devisGoodies={devisGoodies} 
-                />
-            </div>
-        </Accordion>
+                    {/* Overview et calcul des prix */}
+                    <OptionOverview 
+                        userRole={userRole} 
+                        prixUnitaireReel={prixUnitaireReel} 
+                        prixTotalReel={prixTotalReel} 
+                        handleAddToCart={handleAddToCart} 
+                        devisGoodies={devisGoodies} 
+                    />
+                </div>
+            </CardContent>
+        </Card>
     );
 }

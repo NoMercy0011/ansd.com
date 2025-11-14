@@ -7,7 +7,7 @@ export default function Finition() {
 
 
   return (
-    <Accordion title="Finition & Reliures" icon={<LucideBlocks />} defaultOpen={false}>
+    <Accordion title="Finition & Reliures" icon={<LucideBlocks />} defaultOpen={true}>
                         
     <div className="relative mt-4 mb-4 flex flex-col items-center justify-center p-6 border-2 border-dashed rounded-lg border-gray-300 dark:border-gray-700">
         <div className='flex items-center gap-5 text-red-500'> <AlertCircle size={32} className='animate-pulse text-red-500'/> Indisponible pour l&apos;instant</div>

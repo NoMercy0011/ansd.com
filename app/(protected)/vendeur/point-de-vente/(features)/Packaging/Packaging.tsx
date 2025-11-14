@@ -1,20 +1,35 @@
 import { GetClientID } from '@/sources/actions/admin/client.action'
-import { Input } from '@/sources/components/ui'
-import Accordion from '@/sources/components/ui/accordion'
 import { CartItemsType, clientType, devisPackagingData } from '@/sources/types/type'
 import { Layers, PackageOpenIcon } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import OptionOverview from '../OptionOverview/OptionOverview'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Input } from '@/components/ui/input'
 
 type PrintArticleProps = {
     userRole?: string;
     param?: string;
-    handleAddCart: (cartItem: CartItemsType, devis: devisPackagingData) => void;
+    handleAddCart?: (cartItem: CartItemsType, devis: devisPackagingData) => void;
 }
 
-
 export default function Packaging({ param, userRole, handleAddCart }: PrintArticleProps) {
+    const [selectedPackagingType, setSelectedPackagingType] = useState<string>('');
+    const [activeTab, setActiveTab] = useState('type');
     
+    // Références pour le scroll
+    const typeRef = useRef<HTMLDivElement>(null);
+    const dimensionRef = useRef<HTMLDivElement>(null);
+    const materiauRef = useRef<HTMLDivElement>(null);
+    const couleurRef = useRef<HTMLDivElement>(null);
+    const faceRef = useRef<HTMLDivElement>(null);
+    const imprimanteRef = useRef<HTMLDivElement>(null);
+    const decoupeRef = useRef<HTMLDivElement>(null);
+    const emplacementRef = useRef<HTMLDivElement>(null);
+    const particulariteRef = useRef<HTMLDivElement>(null);
+    const finitionRef = useRef<HTMLDivElement>(null);
+    const quantiteRef = useRef<HTMLDivElement>(null);
+
     // Données mock complètes pour le packaging
     const PackagingData = {
         types: [
@@ -218,10 +233,8 @@ export default function Packaging({ param, userRole, handleAddCart }: PrintArtic
     };
 
     const [client, setClient] = useState<clientType>();
-    const [selectedPackagingType, setSelectedPackagingType] = useState<string>('');
     const [prixUnitaireReel, setPrixUnitaireReel] = useState<number>(0.00);
     const [prixTotalReel, setPrixTotalReel] = useState<number>(0.00);
-
     const [materiauSelected, setMateriauSelected] = useState<{categorie: string, accessoire: string}>({
         categorie: '',
         accessoire: ''
@@ -307,6 +320,31 @@ export default function Packaging({ param, userRole, handleAddCart }: PrintArtic
     const safeNumber = (value: number): number => {
         const num = Number(value);
         return isNaN(num) ? 0 : num;
+    };
+
+    // Fonction de scroll vers une section
+    const scrollToSection = (section: string) => {
+        setActiveTab(section);
+        const refs: { [key: string]: React.RefObject<HTMLDivElement | null> } = {
+            type: typeRef,
+            dimension: dimensionRef,
+            materiau: materiauRef,
+            couleur: couleurRef,
+            face: faceRef,
+            imprimante: imprimanteRef,
+            decoupe: decoupeRef,
+            emplacement: emplacementRef,
+            particularite: particulariteRef,
+            finition: finitionRef,
+            quantite: quantiteRef
+        };
+
+        if (refs[section]?.current) {
+            refs[section].current?.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
     };
 
     // Calcul du prix
@@ -442,268 +480,337 @@ export default function Packaging({ param, userRole, handleAddCart }: PrintArtic
         };
         
         setDevisPackaging(prev => ({ ...prev, montant: String(prixTotalReel) }));
-        handleAddCart(packagingItem, devisPackaging);
+        if (handleAddCart) {
+            handleAddCart(packagingItem, devisPackaging);
+        }
         initializeDevisPackaging();
     };
 
     return (
-        <Accordion title="Packaging & Boites" icon={<PackageOpenIcon />} defaultOpen={false}>
-            <div className="flex flex-col lg:flex-row gap-8">
-                <div className="w-full lg:w-2/3 space-y-4">
-                    <div className='max-h-[80vh] overflow-y-auto pr-4 space-y-4'>
-                        
-                        {/* Type de Packaging */}
-                        <div>
-                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                <Layers />
-                                <span className="ml-2"> Type de Produit </span>
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {PackagingData.types.map(type => (
-                                    <button
-                                        key={type.id}
-                                        onClick={() => {
-                                            handleSelect(type.id, 'packaging_id', 'type', type.type);
-                                            setSelectedPackagingType(type.type);
-                                        }}
-                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.packaging_id === type.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                    >
-                                        <span>{type.nom}</span>
-                                    </button>
-                                ))}
-                            </div>
+        <Card>
+            <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 font-semibold">
+                    <PackageOpenIcon className="h-6 w-6 text-red-500 " />
+                    Packaging & Boites
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col lg:flex-row gap-3">
+                    <div className="w-full lg:w-4/5 space-y-1">
+                        {/* Navigation Tabs - Accès rapide */}
+                        <div className="sticky gap-5 space-x-2 top-0 bg-white dark:bg-slate-900 z-10 pb-0 pt-2 border-b border-slate-200 dark:border-slate-700">
+                            <Tabs value={activeTab} onValueChange={scrollToSection} className="w-full">
+                                <TabsList className="flex-wrap h-auto p-1 bg-white dark:bg-slate-900">
+                                    <TabsTrigger value="type" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Type
+                                    </TabsTrigger>
+                                    <TabsTrigger value="dimension" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Dimension
+                                    </TabsTrigger>
+                                    <TabsTrigger value="materiau" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Matériau
+                                    </TabsTrigger>
+                                    <TabsTrigger value="couleur" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Couleur
+                                    </TabsTrigger>
+                                    <TabsTrigger value="face" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Face
+                                    </TabsTrigger>
+                                    <TabsTrigger value="imprimante" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Impression
+                                    </TabsTrigger>
+                                    <TabsTrigger value="decoupe" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Découpe
+                                    </TabsTrigger>
+                                    <TabsTrigger value="emplacement" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Emplacement
+                                    </TabsTrigger>
+                                    <TabsTrigger value="particularite" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Particularité
+                                    </TabsTrigger>
+                                    <TabsTrigger value="finition" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Finition
+                                    </TabsTrigger>
+                                    <TabsTrigger value="quantite" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Quantité
+                                    </TabsTrigger>
+                                </TabsList>
+                            </Tabs>
                         </div>
 
-                        {selectedPackagingType && (
-                            <>
-                                {/* Dimension */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Dimension </span>
+                        {/* Contenu complet avec toutes les sections */}
+                        <div className="space-y-8 max-h-[70vh] overflow-y-auto mt-1 pr-2">
+                            {/* Section Type de Packaging */}
+                            <div className='flex'>
+                                <div ref={typeRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                        <Layers className="mr-2" />
+                                        Type de Produit
                                     </h4>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentDimensions().map(dimension => (
+                                        {PackagingData.types.map(type => (
                                             <button
-                                                key={dimension.id}
-                                                onClick={() => handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.dimension_id === dimension.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{dimension.dimension}</div>
-                                                <div className={`text-xs text-slate-500`}>{dimension.unitee}</div>
-                                                <div className="text-xs font-semibold text-green-600">{dimension.prix_base} Ar</div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Matériau */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Matériau </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentMateriaux().map(materiau => (
-                                            <button
-                                                key={materiau.id}
+                                                key={type.id}
                                                 onClick={() => {
-                                                    handleSelect(materiau.id, 'materiau_id', 'materiau', `${materiau.categorie} ${materiau.accessoire}`.trim());
-                                                    setMateriauSelected({ 
-                                                        categorie: materiau.categorie, 
-                                                        accessoire: materiau.accessoire 
-                                                    });
+                                                    handleSelect(type.id, 'packaging_id', 'type', type.type);
+                                                    setSelectedPackagingType(type.type);
                                                 }}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.materiau_id === materiau.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.packaging_id === type.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                                             >
-                                                <div className="font-semibold">{materiau.accessoire || materiau.categorie}</div>
-                                                <div className="text-xs text-slate-500">{materiau.accessoire ? materiau.categorie : ''}</div>
-                                                <div className="text-xs font-semibold text-green-600">{materiau.prix} Ar</div>
+                                                <span>{type.nom}</span>
                                             </button>
                                         ))}
                                     </div>
                                 </div>
+                            </div>
 
-                                {/* Couleur */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Couleur </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentCouleur().map(couleur => (
-                                            <button
-                                                key={couleur.id}
-                                                onClick={() => handleSelect(couleur.id.toString(), 'couleur_id', 'couleur', couleur.couleur)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.couleur_id === couleur.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <span>{couleur.couleur}</span>
-                                                {couleur.prix > 0 && (
-                                                    <div className="text-xs text-green-600">+{couleur.prix} Ar</div>
-                                                )}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Recto/Verso */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Face </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {PackagingData.recto_verso.map(recto => (
-                                            <button
-                                                key={recto.id}
-                                                onClick={() => handleSelect(recto.id, 'recto_verso_id', 'recto', recto.code)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.recto_verso_id === recto.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <span>{recto.type}</span>
-                                                <div className="text-xs text-slate-500">x{recto.multiplicateur}</div>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Imprimante */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Technologie d&apos;impression </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentImprimante().map(imprimante => (
-                                            <button
-                                                key={imprimante.id}
-                                                onClick={() => handleSelect(imprimante.id, 'imprimante_id', 'imprimante', imprimante.imprimante)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.imprimante_id === imprimante.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{imprimante.imprimante}</div>
-                                                {imprimante.prix > 0 && (
-                                                    <div className="text-xs text-green-600">+{imprimante.prix} Ar</div>
-                                                )}
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                {/* Découpe */}
-                                {getCurrentDecoupes().length > 0 && getCurrentDecoupes()[0] !== 'aucun' && (
-                                    <div>
-                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                            <Layers />
-                                            <span className="ml-2"> Type de découpe </span>
-                                        </h4>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                            {getCurrentDecoupes().map((decoupe, index) => (
-                                                <button
-                                                    key={index}
-                                                    onClick={() => handleSelect(decoupe, 'decoupe')}
-                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.decoupe === decoupe ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                                >
-                                                    <span>{decoupe}</span>
-                                                </button>
-                                            ))}
+                            {selectedPackagingType && (
+                                <>
+                                    {/* Section Dimension */}
+                                    <div className='flex'>
+                                        <div ref={dimensionRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                <Layers className="mr-2" />
+                                                Dimension
+                                            </h4>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                {getCurrentDimensions().map(dimension => (
+                                                    <button
+                                                        key={dimension.id}
+                                                        onClick={() => handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension)}
+                                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.dimension_id === dimension.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                    >
+                                                        <div className="font-semibold">{dimension.dimension}</div>
+                                                        <div className={`text-xs `}>{dimension.unitee}</div>
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
-                                )}
 
-                                {/* Emplacement */}
-                                {getCurrentEmplacement().length > 0 && getCurrentEmplacement()[0].emplacement !== 'non disponible' && (
-                                    <div>
-                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                            <Layers />
-                                            <span className="ml-2"> Emplacement d&apos;impression </span>
-                                        </h4>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                            {getCurrentEmplacement().map(emplacement => (
-                                                <button
-                                                    key={emplacement.id}
-                                                    onClick={() => handleSelect(emplacement.emplacement, 'emplacement')}
-                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.emplacement === emplacement.emplacement ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                                >
-                                                    <div className="font-semibold">{emplacement.emplacement}</div>
-                                                    {emplacement.prix > 0 && (
-                                                        <div className="text-xs text-green-600">+{emplacement.prix} Ar</div>
-                                                    )}
-                                                </button>
-                                            ))}
+                                    {/* Section Matériau */}
+                                    <div className='flex'>
+                                        <div ref={materiauRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                <Layers className="mr-2" />
+                                                Matériau
+                                            </h4>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                {getCurrentMateriaux().map(materiau => (
+                                                    <button
+                                                        key={materiau.id}
+                                                        onClick={() => {
+                                                            handleSelect(materiau.id, 'materiau_id', 'materiau', `${materiau.categorie} ${materiau.accessoire}`.trim());
+                                                            setMateriauSelected({ 
+                                                                categorie: materiau.categorie, 
+                                                                accessoire: materiau.accessoire 
+                                                            });
+                                                        }}
+                                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.materiau_id === materiau.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                    >
+                                                        <div className="font-semibold">{materiau.accessoire || materiau.categorie}</div>
+                                                        <div className="text-xs">{materiau.accessoire ? materiau.categorie : ''}</div>
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
-                                )}
 
-                                {/* Particularités */}
-                                {getCurrentParticularites().length > 0 && getCurrentParticularites()[0] !== 'aucun' && (
-                                    <div>
-                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                            <Layers />
-                                            <span className="ml-2"> Particularités </span>
-                                        </h4>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                            {getCurrentParticularites().map((part, index) => (
-                                                <button
-                                                    key={index}
-                                                    onClick={() => handleSelect(part, 'particularite')}
-                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.particularite === part ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                                >
-                                                    <span>{part}</span>
-                                                </button>
-                                            ))}
+                                    {/* Section Couleur */}
+                                    <div className='flex'>
+                                        <div ref={couleurRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                <Layers className="mr-2" />
+                                                Couleur
+                                            </h4>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                {getCurrentCouleur().map(couleur => (
+                                                    <button
+                                                        key={couleur.id}
+                                                        onClick={() => handleSelect(couleur.id.toString(), 'couleur_id', 'couleur', couleur.couleur)}
+                                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.couleur_id === couleur.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                    >
+                                                        <span>{couleur.couleur}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
                                         </div>
                                     </div>
-                                )}
 
-                                {/* Finition */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Finition </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-3">
-                                        {getCurrentFinition().map(finition => (
-                                            <button
-                                                key={finition.id}
-                                                onClick={() => handleSelect(finition.id, 'finition_id', 'finition', finition.finition)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.finition_id === finition.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{finition.finition}</div>
-                                                {finition.prix > 0 && (
-                                                    <div className="text-xs text-green-600">+{finition.prix} Ar</div>
-                                                )}
-                                            </button>
-                                        ))}
+                                    {/* Section Recto/Verso */}
+                                    <div className='flex'>
+                                        <div ref={faceRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                <Layers className="mr-2" />
+                                                Face
+                                            </h4>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                {PackagingData.recto_verso.map(recto => (
+                                                    <button
+                                                        key={recto.id}
+                                                        onClick={() => handleSelect(recto.id, 'recto_verso_id', 'recto', recto.code)}
+                                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.recto_verso_id === recto.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                    >
+                                                        <span>{recto.type}</span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
 
-                                {/* Quantité */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mt-3 mb-3 flex items-center ">
-                                        <Layers />
-                                        <span className="ml-2"> Quantité </span>
-                                    </h4>
-                                    <Input 
-                                        type="number" 
-                                        value={devisPackaging.quantite.toString()} 
-                                        onChange={e => handleSelect(Math.max(1, Number(e.target.value)), 'quantite')} 
-                                        placeholder="Ex: 100" 
-                                        min="1"
-                                    />
-                                </div>
-                            </>
-                        )}
+                                    {/* Section Imprimante */}
+                                    <div className='flex'>
+                                        <div ref={imprimanteRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                <Layers className="mr-2" />
+                                                Technologie d&apos;impression
+                                            </h4>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                {getCurrentImprimante().map(imprimante => (
+                                                    <button
+                                                        key={imprimante.id}
+                                                        onClick={() => handleSelect(imprimante.id, 'imprimante_id', 'imprimante', imprimante.imprimante)}
+                                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.imprimante_id === imprimante.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                    >
+                                                        <div className="font-semibold">{imprimante.imprimante}</div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Section Découpe */}
+                                    {getCurrentDecoupes().length > 0 && getCurrentDecoupes()[0] !== 'aucun' && (
+                                        <div className='flex'>
+                                            <div ref={decoupeRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                    <Layers className="mr-2" />
+                                                    Type de découpe
+                                                </h4>
+                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                    {getCurrentDecoupes().map((decoupe, index) => (
+                                                        <button
+                                                            key={index}
+                                                            onClick={() => handleSelect(decoupe, 'decoupe')}
+                                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.decoupe === decoupe ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                        >
+                                                            <span>{decoupe}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Section Emplacement */}
+                                    {getCurrentEmplacement().length > 0 && getCurrentEmplacement()[0].emplacement !== 'non disponible' && (
+                                        <div className='flex'>
+                                            <div ref={emplacementRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                    <Layers className="mr-2" />
+                                                    Emplacement d&apos;impression
+                                                </h4>
+                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                    {getCurrentEmplacement().map(emplacement => (
+                                                        <button
+                                                            key={emplacement.id}
+                                                            onClick={() => handleSelect(emplacement.emplacement, 'emplacement')}
+                                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.emplacement === emplacement.emplacement ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                        >
+                                                            <div className="font-semibold">{emplacement.emplacement}</div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Section Particularités */}
+                                    {getCurrentParticularites().length > 0 && getCurrentParticularites()[0] !== 'aucun' && (
+                                        <div className='flex'>
+                                            <div ref={particulariteRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                    <Layers className="mr-2" />
+                                                    Particularités
+                                                </h4>
+                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                    {getCurrentParticularites().map((part, index) => (
+                                                        <button
+                                                            key={index}
+                                                            onClick={() => handleSelect(part, 'particularite')}
+                                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.particularite === part ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                        >
+                                                            <span>{part}</span>
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Section Finition */}
+                                    <div className='flex'>
+                                        <div ref={finitionRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                <Layers className="mr-2" />
+                                                Finition
+                                            </h4>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                {getCurrentFinition().map(finition => (
+                                                    <button
+                                                        key={finition.id}
+                                                        onClick={() => handleSelect(finition.id, 'finition_id', 'finition', finition.finition)}
+                                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisPackaging.finition_id === finition.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                    >
+                                                        <div className="font-semibold">{finition.finition}</div>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Section Quantité */}
+                                    <div className='flex'>
+                                        <div ref={quantiteRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                <Layers className="mr-2" />
+                                                Quantité
+                                            </h4>
+                                            <Input 
+                                                type="number" 
+                                                value={devisPackaging.quantite.toString()} 
+                                                onChange={e => handleSelect(Math.max(1, Number(e.target.value)), 'quantite')} 
+                                                placeholder="Ex: 100" 
+                                                min="1"
+                                            />
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                        </div>
                     </div>
+                    
+                    {/* Overview et calcul des prix */}
+                    <OptionOverview 
+                        userRole={userRole} 
+                        prixUnitaireReel={prixUnitaireReel} 
+                        prixTotalReel={prixTotalReel} 
+                        handleAddToCart={handleAddToCart} 
+                        devisPackaging={devisPackaging} 
+                    />
                 </div>
-                
-                {/* Overview et calcul des prix */}
-                <OptionOverview 
-                    userRole={userRole} 
-                    prixUnitaireReel={prixUnitaireReel} 
-                    prixTotalReel={prixTotalReel} 
-                    handleAddToCart={handleAddToCart} 
-                    devisPackaging={devisPackaging} 
-                />
-            </div>
-        </Accordion>
+            </CardContent>  
+        </Card>
     );
 }

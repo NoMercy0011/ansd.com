@@ -1,14 +1,14 @@
 "use client"
 import { CreateFacture, CreateProforma } from '@/sources/actions/admin/document.action';
 import { Button, Input } from '@/sources/components/ui';
-import { CartItemsType, clientType, devisLivreData, DocumentType } from '@/sources/types/type';
+import { CartItemsType, clientType, devisData, DocumentType } from '@/sources/types/type';
 import { FileClock, FileSignature, Save, ShoppingCart, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 
 type CartSectionProps = {
     cartItems: CartItemsType[];
     client?: clientType;
-    devisLivre: devisLivreData[];
+    devisLivre: devisData[];
     RemoveFromCart: (id : number) => void;
     cartItemsInit: () => void;
 }
@@ -115,7 +115,7 @@ export default function CartSection({ cartItems, client, devisLivre, RemoveFromC
     };
 
   return (
-      <div className="w-full lg:w-1/3">
+      <div className="w-full lg:w-full">
         <div className="bg-white dark:bg-slate-800 rounded-xl shadow-lg p-6 border border-slate-200 dark:border-slate-700 sticky top-8 space-y-4">
             <h3 className="text-lg font-bold text-slate-800 dark:text-slate-100 border-b border-slate-200 dark:border-slate-700 pb-3 mb-4 flex items-center"><ShoppingCart size={50} className="mr-2"/> Panier pour {client?.nom_societe}</h3>
             <div className="space-y-3 max-h-[30rem] overflow-y-auto pr-2 -mr-2">

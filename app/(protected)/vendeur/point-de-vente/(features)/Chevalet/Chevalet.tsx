@@ -1,10 +1,11 @@
 import { GetClientID } from '@/sources/actions/admin/client.action'
-import { Input } from '@/sources/components/ui'
-import Accordion from '@/sources/components/ui/accordion'
 import { CartItemsType, clientType, devisChevaletData } from '@/sources/types/type'
 import { Layers, Monitor } from 'lucide-react'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import OptionOverview from '../OptionOverview/OptionOverview'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Input } from '@/components/ui/input'
 
 type PrintArticleProps = {
     userRole?: string;
@@ -18,7 +19,21 @@ type CustomSizeType = {
 }
 
 export default function Chevalet({ param, userRole, handleAddCart }: PrintArticleProps) {
+    const [selectedChevaletType, setSelectedChevaletType] = useState<string>('');
+    const [selectedSupport, setSelectedSupport] = useState<string>('');
+    const [activeTab, setActiveTab] = useState('type');
     
+    // Références pour le scroll
+    const typeRef = useRef<HTMLDivElement>(null);
+    const dimensionRef = useRef<HTMLDivElement>(null);
+    const supportRef = useRef<HTMLDivElement>(null);
+    const papierRef = useRef<HTMLDivElement>(null);
+    const orientationRef = useRef<HTMLDivElement>(null);
+    const faceRef = useRef<HTMLDivElement>(null);
+    const formeCoutureRef = useRef<HTMLDivElement>(null);
+    const particulariteRef = useRef<HTMLDivElement>(null);
+    const quantiteRef = useRef<HTMLDivElement>(null);
+
     // Données mock complètes pour les chevalets basées sur le CSV
     const ChevaletData = {
         types: [
@@ -213,8 +228,6 @@ export default function Chevalet({ param, userRole, handleAddCart }: PrintArticl
     };
 
     const [client, setClient] = useState<clientType>();
-    const [selectedChevaletType, setSelectedChevaletType] = useState<string>('');
-    const [selectedSupport, setSelectedSupport] = useState<string>('');
     const [prixUnitaireReel, setPrixUnitaireReel] = useState<number>(0.00);
     const [prixTotalReel, setPrixTotalReel] = useState<number>(0.00);
     const [customSize, setCustomSize] = useState<CustomSizeType>({
@@ -312,6 +325,29 @@ export default function Chevalet({ param, userRole, handleAddCart }: PrintArticl
     const safeNumber = (value: string): number => {
         const num = Number(value);
         return isNaN(num) ? 0 : num;
+    };
+
+    // Fonction de scroll vers une section
+    const scrollToSection = (section: string) => {
+        setActiveTab(section);
+        const refs: { [key: string]: React.RefObject<HTMLDivElement | null> } = {
+            type: typeRef,
+            dimension: dimensionRef,
+            support: supportRef,
+            papier: papierRef,
+            orientation: orientationRef,
+            face: faceRef,
+            formeCouture: formeCoutureRef,
+            particularite: particulariteRef,
+            quantite: quantiteRef
+        };
+
+        if (refs[section]?.current) {
+            refs[section].current?.scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
     };
 
     // Gestion de la sélection du support
@@ -413,134 +449,89 @@ export default function Chevalet({ param, userRole, handleAddCart }: PrintArticl
         }
     }, [param]);
 
-    // Fonction complète de réinitialisation
-// const resetSpecificAttributes = (chevaletType: string) => {
-//     setDevisChevalet(prev => {
-//         const newState = { ...prev };
-        
-//         // Toujours réinitialiser le support (car il change selon le type)
-//         newState.support_id = 0;
-//         newState.support = '';
-//         setAutreSupport({ nom: '', prix: '' });
-        
-//         // Réinitialiser le papier si non disponible pour ce type
-//         if (!ChevaletData.papiers[chevaletType as keyof typeof ChevaletData.papiers]?.length) {
-//             newState.papier_id = 0;
-//             newState.papier = '';
-//             setAutrePapier({ nom: '', prix: '' });
-//         }
-        
-//         // Réinitialiser l'orientation si non disponible
-//         if (!ChevaletData.orientations[chevaletType as keyof typeof ChevaletData.orientations]?.length) {
-//             newState.orientation_id = 0;
-//             newState.orientation = '';
-//         }
-        
-//         // Réinitialiser la face si non disponible
-//         if (!ChevaletData.faces[chevaletType as keyof typeof ChevaletData.faces]?.length) {
-//             newState.face_id = 0;
-//             newState.face = '';
-//         }
-        
-//         // Réinitialiser la forme de couture si non disponible
-//         if (!ChevaletData.formes_couture[chevaletType as keyof typeof ChevaletData.formes_couture]?.length) {
-//             newState.forme_couture_id = 0;
-//             newState.forme_couture = '';
-//         }
-        
-//         // Réinitialiser les particularités si non disponible
-//         if (!ChevaletData.particularites[chevaletType as keyof typeof ChevaletData.particularites]?.length) {
-//             newState.particularite_id = 0;
-//             newState.particularite = '';
-//             setAutreParticularite({ nom: '', prix: '' });
-//         }
-        
-//         return newState;
-//     });
-// };
-
-// Et dans la fonction d'initialisation complète
-const initializeDevisChevalet = () => {
-    setDevisChevalet({
-        client_id: Number(client?.id_client),
-        type: '',
-        dimension_id: 0,
-        dimension: '',
-        support_id: 0,
-        support: '',
-        papier_id: 0,
-        papier: '',
-        orientation_id: 0,
-        orientation: '',
-        face_id: 0,
-        face: '',
-        forme_couture_id: 0,
-        forme_couture: '',
-        particularite_id: 0,
-        particularite: '',
-        chevalet_id: 0,
-        montant: '',
-        quantite: 1,
-        optionPrix: ''
-    });
-    setSelectedChevaletType('');
-    setSelectedSupport('');
-    setCustomSize({ longueur: 0, largeur: 0 });
-    setAutreSupport({ nom: '', prix: '' });
-    setAutrePapier({ nom: '', prix: '' });
-    setAutreParticularite({ nom: '', prix: '' });
-};
-
     const resetSpecificAttributes = (chevaletType: string) => {
         console.log(chevaletType);
-    setDevisChevalet(prev => {
-        const newState = { ...prev };
-        
+
+        setDevisChevalet(prev => {
+            const newState = { ...prev };
+            
             newState.support_id = 0;
             newState.support = '';
             setAutreSupport({ nom: '', prix: '' });
 
-        // Réinitialiser les attributs qui ne sont pas disponibles pour ce type
-        if (!getCurrentPapiers().length) {
-            newState.papier_id = 0;
-            newState.papier = '';
-            setAutrePapier({ nom: '', prix: '' });
-        }
-        
-        if (!getCurrentOrientations().length) {
-            newState.orientation_id = 0;
-            newState.orientation = '';
-        }
-        
-        if (!getCurrentFaces().length) {
-            newState.face_id = 0;
-            newState.face = '';
-        }
-        
-        if (!getCurrentFormesCouture().length) {
-            newState.forme_couture_id = 0;
-            newState.forme_couture = '';
-        }
-        
-        if (!getCurrentParticularites().length) {
-            newState.particularite_id = 0;
-            newState.particularite = '';
-            setAutreParticularite({ nom: '', prix: '' });
-        }
-        
-        return newState;
-    });
-};
+            // Réinitialiser les attributs qui ne sont pas disponibles pour ce type
+            if (!getCurrentPapiers().length) {
+                newState.papier_id = 0;
+                newState.papier = '';
+                setAutrePapier({ nom: '', prix: '' });
+            }
+            
+            if (!getCurrentOrientations().length) {
+                newState.orientation_id = 0;
+                newState.orientation = '';
+            }
+            
+            if (!getCurrentFaces().length) {
+                newState.face_id = 0;
+                newState.face = '';
+            }
+            
+            if (!getCurrentFormesCouture().length) {
+                newState.forme_couture_id = 0;
+                newState.forme_couture = '';
+            }
+            
+            if (!getCurrentParticularites().length) {
+                newState.particularite_id = 0;
+                newState.particularite = '';
+                setAutreParticularite({ nom: '', prix: '' });
+            }
+            
+            return newState;
+        });
+    };
+
+    // Fonction d'initialisation complète
+    const initializeDevisChevalet = () => {
+        setDevisChevalet({
+            client_id: Number(client?.id_client),
+            type: '',
+            dimension_id: 0,
+            dimension: '',
+            support_id: 0,
+            support: '',
+            papier_id: 0,
+            papier: '',
+            orientation_id: 0,
+            orientation: '',
+            face_id: 0,
+            face: '',
+            forme_couture_id: 0,
+            forme_couture: '',
+            particularite_id: 0,
+            particularite: '',
+            chevalet_id: 0,
+            montant: '',
+            quantite: 1,
+            optionPrix: ''
+        });
+        setSelectedChevaletType('');
+        setSelectedSupport('');
+        setCustomSize({ longueur: 0, largeur: 0 });
+        setAutreSupport({ nom: '', prix: '' });
+        setAutrePapier({ nom: '', prix: '' });
+        setAutreParticularite({ nom: '', prix: '' });
+    };
 
     // Utilisation dans la sélection du type de produit
     const handleTypeSelect = (typeId: number, typeName: string) => {
-    handleSelect(typeId, 'chevalet_id', 'type', typeName);
-    setSelectedChevaletType(typeName);
-    setSelectedSupport('');
-    
-    // Réinitialiser les attributs spécifiques
-    resetSpecificAttributes(typeName);
-        };
+        handleSelect(typeId, 'chevalet_id', 'type', typeName);
+        setSelectedChevaletType(typeName);
+        setSelectedSupport('');
+        
+        // Réinitialiser les attributs spécifiques
+        resetSpecificAttributes(typeName);
+    };
 
     const handleAddToCart = () => {
         const chevaletType = ChevaletData.types.find(t => t.id === devisChevalet.chevalet_id);
@@ -581,359 +572,360 @@ const initializeDevisChevalet = () => {
     };
 
     return (
-        <Accordion title="Chevalets & Stand (PLV)" icon={<Monitor />} defaultOpen={false}>
-            <div className="flex flex-col lg:flex-row gap-8">
-                <div className="w-full lg:w-2/3 space-y-4">
-                    <div className='max-h-[80vh] overflow-y-auto pr-4 space-y-4'>
-                        
-                        {/* Type de Chevalet */}
-                        <div>
-                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                <Layers />
-                                <span className="ml-2"> Type de Produit </span>
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {ChevaletData.types.map(type => (
-                                    <button
-                                        key={type.id}
-                                        onClick={() => handleTypeSelect(type.id, type.type)}
-                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.chevalet_id === type.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                    >
-                                        <span>{type.nom}</span>
-                                    </button>
-                                ))}
-                            </div>
+        <Card>
+            <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 font-semibold">
+                    <Monitor className="h-6 w-6 text-red-500" />
+                    Chevalets & Stand (PLV)
+                </CardTitle>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-col lg:flex-row gap-3">
+                    <div className="w-full lg:w-4/5 space-y-1">
+                        {/* Navigation Tabs - Accès rapide */}
+                        <div className="sticky gap-5 space-x-2 top-0 bg-white dark:bg-slate-900 z-10 pb-0 pt-2 border-b border-slate-200 dark:border-slate-700">
+                            <Tabs value={activeTab} onValueChange={scrollToSection} className="w-full">
+                                <TabsList className="flex-wrap h-auto p-1 bg-white dark:bg-slate-900">
+                                    <TabsTrigger value="type" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Type
+                                    </TabsTrigger>
+                                    <TabsTrigger value="dimension" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Dimension
+                                    </TabsTrigger>
+                                    <TabsTrigger value="support" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Support
+                                    </TabsTrigger>
+                                    <TabsTrigger value="papier" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Papier
+                                    </TabsTrigger>
+                                    <TabsTrigger value="orientation" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Orientation
+                                    </TabsTrigger>
+                                    <TabsTrigger value="face" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Face
+                                    </TabsTrigger>
+                                    <TabsTrigger value="formeCouture" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Forme
+                                    </TabsTrigger>
+                                    <TabsTrigger value="particularite" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Particularité
+                                    </TabsTrigger>
+                                    <TabsTrigger value="quantite" className="flex items-center gap-1 text-xs">
+                                        <Layers className="h-3 w-3" />
+                                        Quantité
+                                    </TabsTrigger>
+                                </TabsList>
+                            </Tabs>
                         </div>
 
-                        {selectedChevaletType && (
-                            <>
-                                {/* Dimension */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Dimension </span>
+                        {/* Contenu complet avec toutes les sections */}
+                        <div className="space-y-8 max-h-[70vh] overflow-y-auto mt-1 pr-2">
+                            {/* Section Type de Chevalet */}
+                            <div className='flex'>
+                                <div ref={typeRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                        <Layers className="mr-2" />
+                                        Type de Produit
                                     </h4>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentDimensions().map(dimension => (
+                                        {ChevaletData.types.map(type => (
                                             <button
-                                                key={dimension.id}
-                                                onClick={() => handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.dimension_id === dimension.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                key={type.id}
+                                                onClick={() => handleTypeSelect(type.id, type.type)}
+                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.chevalet_id === type.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                                             >
-                                                <div className="font-semibold">{dimension.dimension}</div>
-                                                <div className="text-xs text-slate-500">{dimension.unitee}</div>
-                                                <div className="text-xs font-semibold text-green-600">{dimension.prix_base.toLocaleString()} Ar</div>
+                                                <span>{type.nom}</span>
                                             </button>
                                         ))}
                                     </div>
-
-                                    {/* Dimension personnalisée */}
-                                    {devisChevalet.dimension === 'autres' && (
-                                        <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
-                                            <h5 className="font-semibold mb-3">Dimensions personnalisées</h5>
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div className="relative">
-                                                    <Input
-                                                        type="number"
-                                                        value={customSize.longueur.toString() }
-                                                        onChange={(e) => handleCustomSizeChange('longueur', e.target.value)}
-                                                        placeholder="Longueur"
-                                                        min="1"
-                                                    />
-                                                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">mm</span>
-                                                </div>
-                                                <div className="relative">
-                                                    <Input
-                                                        type="number"
-                                                        value={customSize.largeur.toString() }
-                                                        onChange={(e) => handleCustomSizeChange('largeur', e.target.value)}
-                                                        placeholder="Largeur"
-                                                        min="1"
-                                                    />
-                                                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">mm</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
+                            </div>
 
-                                {/* Support/Matériau */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Type de Support/Matériau </span>
-                                    </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {getCurrentSupports().map(support => (
-                                            <button
-                                                key={support.id}
-                                                onClick={() => handleSupportSelect(support.id, support.support)}
-                                                className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.support_id === support.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                            >
-                                                <div className="font-semibold">{support.support}</div>
-                                                {support.prix > 0 && support.support !== 'autres' && (
-                                                    <div className="text-xs text-green-600">+{support.prix.toLocaleString()} Ar</div>
+                            {selectedChevaletType && (
+                                <>
+                                    {/* Section Dimension */}
+                                    <div className='flex'>
+                                        <div ref={dimensionRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                <Layers className="mr-2" />
+                                                Dimension
+                                            </h4>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                {getCurrentDimensions().map(dimension => (
+                                                    <button
+                                                        key={dimension.id}
+                                                        onClick={() => handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension)}
+                                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.dimension_id === dimension.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                    >
+                                                        <div className="font-semibold">{dimension.dimension}</div>
+                                                        <div className="text-xs">{dimension.unitee}</div>
+                                                    </button>
+                                                ))}
+                                            </div>
+
+                                            {/* Dimension personnalisée */}
+                                            {devisChevalet.dimension === 'autres' && (
+                                                <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
+                                                    <h5 className="font-semibold mb-3">Dimensions personnalisées</h5>
+                                                    <div className="grid grid-cols-2 gap-4">
+                                                        <div className="relative">
+                                                            <Input
+                                                                type="number"
+                                                                value={customSize.longueur.toString()}
+                                                                onChange={(e) => handleCustomSizeChange('longueur', e.target.value)}
+                                                                placeholder="Longueur"
+                                                                min="1"
+                                                            />
+                                                            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">mm</span>
+                                                        </div>
+                                                        <div className="relative">
+                                                            <Input
+                                                                type="number"
+                                                                value={customSize.largeur.toString()}
+                                                                onChange={(e) => handleCustomSizeChange('largeur', e.target.value)}
+                                                                placeholder="Largeur"
+                                                                min="1"
+                                                            />
+                                                            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">mm</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Section Support/Matériau */}
+                                    <div className='flex'>
+                                        <div ref={supportRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                <Layers className="mr-2" />
+                                                Type de Support/Matériau
+                                            </h4>
+                                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                {getCurrentSupports().map(support => (
+                                                    <button
+                                                        key={support.id}
+                                                        onClick={() => handleSupportSelect(support.id, support.support)}
+                                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.support_id === support.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                    >
+                                                        <div className="font-semibold">{support.support}</div>
+                                                    </button>
+                                                ))}
+                                            </div>
+
+                                            {/* Input pour support "autres" */}
+                                            {devisChevalet.support === 'autres' && (
+                                                <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
+                                                    <h5 className="font-semibold mb-3">Support personnalisé</h5>
+                                                    <div className="space-y-3">
+                                                        <div className="relative">
+                                                            <Input
+                                                                type="number"
+                                                                value={autreSupport.prix}
+                                                                onChange={(e) => setAutreSupport(prev => ({ ...prev, prix: e.target.value }))}
+                                                                placeholder="Prix du support"
+                                                                min="0"
+                                                            />
+                                                            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Section Papier */}
+                                    {getCurrentPapiers().length > 0 && selectedSupport && (
+                                        <div className='flex'>
+                                            <div ref={papierRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                    <Layers className="mr-2" />
+                                                    Type de Papier - {selectedSupport}
+                                                </h4>
+                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                    {getCurrentPapiers().map(papier => (
+                                                        <button
+                                                            key={papier.id}
+                                                            onClick={() => handleSelect(papier.id, 'papier_id', 'papier', `${papier.type} ${papier.grammage}`)}
+                                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.papier_id === papier.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                        >
+                                                            <div className="font-semibold">{papier.type}</div>
+                                                            <div className="text-xs text-slate-500">{papier.grammage}</div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+
+                                                {/* Input pour papier "autres" */}
+                                                {devisChevalet.papier === 'autres' && (
+                                                    <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
+                                                        <h5 className="font-semibold mb-3">Papier personnalisé</h5>
+                                                        <div className="space-y-3">
+                                                            <div className="relative">
+                                                                <Input
+                                                                    type="number"
+                                                                    value={autrePapier.prix}
+                                                                    onChange={(e) => setAutrePapier(prev => ({ ...prev, prix: e.target.value }))}
+                                                                    placeholder="Prix du papier"
+                                                                    min="0"
+                                                                />
+                                                                <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 )}
-                                            </button>
-                                        ))}
-                                    </div>
+                                            </div>
+                                        </div>
+                                    )}
 
-                                    {/* Input pour support "autres" */}
-                                    {devisChevalet.support === 'autres' && (
-                                        <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
-                                            <h5 className="font-semibold mb-3">Support personnalisé</h5>
-                                            <div className="space-y-3">
-                                                {/* <div className="relative">
-                                                    <Input
-                                                        type="text"
-                                                        value={autreSupport.nom}
-                                                        onChange={(e) => setAutreSupport(prev => ({ ...prev, nom: e.target.value }))}
-                                                        placeholder="Nom du support personnalisé"
-                                                    />
-                                                </div> */}
-                                                <div className="relative">
-                                                    <Input
-                                                        type="number"
-                                                        value={autreSupport.prix}
-                                                        onChange={(e) => setAutreSupport(prev => ({ ...prev, prix: e.target.value }))}
-                                                        placeholder="Prix du support"
-                                                        min="0"
-                                                    />
-                                                    <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                    {/* Section Orientation */}
+                                    {getCurrentOrientations().length > 0 && (
+                                        <div className='flex'>
+                                            <div ref={orientationRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                    <Layers className="mr-2" />
+                                                    Orientation
+                                                </h4>
+                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                    {getCurrentOrientations().map(orientation => (
+                                                        <button
+                                                            key={orientation.id}
+                                                            onClick={() => handleSelect(orientation.id, 'orientation_id', 'orientation', orientation.orientation)}
+                                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.orientation_id === orientation.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                        >
+                                                            <span>{orientation.orientation}</span>
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             </div>
                                         </div>
                                     )}
-                                </div>
 
-                                {/* Papier (uniquement pour chevalet de table) */}
-                                {getCurrentPapiers().length > 0 && selectedSupport && (
-                                    <div>
-                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                            <Layers />
-                                            <span className="ml-2"> Type de Papier - {selectedSupport} </span>
-                                        </h4>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                            {getCurrentPapiers().map(papier => (
-                                                <button
-                                                    key={papier.id}
-                                                    onClick={() => handleSelect(papier.id, 'papier_id', 'papier', `${papier.type} ${papier.grammage}`)}
-                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.papier_id === papier.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                                >
-                                                    <div className="font-semibold">{papier.type}</div>
-                                                    <div className="text-xs text-slate-500">{papier.grammage}</div>
-                                                    {papier.type !== 'autres' && (
-                                                        <div className="text-xs text-green-600">+{papier.prix.toLocaleString()} Ar</div>
-                                                    )}
-                                                </button>
-                                            ))}
-                                        </div>
-
-                                        {/* Input pour papier "autres" */}
-                                        {devisChevalet.papier === 'autres' && (
-                                            <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
-                                                <h5 className="font-semibold mb-3">Papier personnalisé</h5>
-                                                <div className="space-y-3">
-                                                    {/* <div className="relative">
-                                                        <Input
-                                                            type="text"
-                                                            value={autrePapier.nom}
-                                                            onChange={(e) => setAutrePapier(prev => ({ ...prev, nom: e.target.value }))}
-                                                            placeholder="Nom du papier personnalisé"
-                                                        />
-                                                    </div> */}
-                                                    <div className="relative">
-                                                        <Input
-                                                            type="number"
-                                                            value={autrePapier.prix}
-                                                            onChange={(e) => setAutrePapier(prev => ({ ...prev, prix: e.target.value }))}
-                                                            placeholder="Prix du papier"
-                                                            min="0"
-                                                        />
-                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
-                                                    </div>
+                                    {/* Section Face */}
+                                    {getCurrentFaces().length > 0 && (
+                                        <div className='flex'>
+                                            <div ref={faceRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                    <Layers className="mr-2" />
+                                                    Face d&apos;impression
+                                                </h4>
+                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                    {getCurrentFaces().map(face => (
+                                                        <button
+                                                            key={face.id}
+                                                            onClick={() => handleSelect(face.id, 'face_id', 'face', face.face)}
+                                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.face_id === face.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                        >
+                                                            <div className="font-semibold">{face.face}</div>
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {/* Orientation */}
-                                {getCurrentOrientations().length > 0 && (
-                                    <div>
-                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                            <Layers />
-                                            <span className="ml-2"> Orientation </span>
-                                        </h4>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                            {getCurrentOrientations().map(orientation => (
-                                                <button
-                                                    key={orientation.id}
-                                                    onClick={() => handleSelect(orientation.id, 'orientation_id', 'orientation', orientation.orientation)}
-                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.orientation_id === orientation.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                                >
-                                                    <span>{orientation.orientation}</span>
-                                                </button>
-                                            ))}
                                         </div>
-                                    </div>
-                                )}
+                                    )}
 
-                                {/* Face */}
-                                {getCurrentFaces().length > 0 && (
-                                    <div>
-                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                            <Layers />
-                                            <span className="ml-2"> Face d&aposimpression </span>
-                                        </h4>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                            {getCurrentFaces().map(face => (
-                                                <button
-                                                    key={face.id}
-                                                    onClick={() => handleSelect(face.id, 'face_id', 'face', face.face)}
-                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.face_id === face.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                                >
-                                                    <div className="font-semibold">{face.face}</div>
-                                                    {face.prix > 0 && (
-                                                        <div className="text-xs text-green-600">+{face.prix.toLocaleString()} Ar</div>
-                                                    )}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Forme de couture (oriflamme) */}
-                                {getCurrentFormesCouture().length > 0 && (
-                                    <div>
-                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                            <Layers />
-                                            <span className="ml-2"> Forme de couture </span>
-                                        </h4>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                            {getCurrentFormesCouture().map(forme => (
-                                                <button
-                                                    key={forme.id}
-                                                    onClick={() => handleSelect(forme.id, 'forme_couture_id', 'forme_couture', forme.forme)}
-                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.forme_couture_id === forme.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                                >
-                                                    <div className="font-semibold">{forme.forme}</div>
-                                                    <div className="text-xs text-green-600">+{forme.prix.toLocaleString()} Ar</div>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                )}
-
-                                {/* Particularités */}
-                                {getCurrentParticularites().length > 0 && (
-                                    <div>
-                                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                            <Layers />
-                                            <span className="ml-2"> Particularités </span>
-                                        </h4>
-                                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                            {getCurrentParticularites().map(particularite => (
-                                                <button
-                                                    key={particularite.id}
-                                                    onClick={() => handleParticulariteSelect(particularite.id, particularite.particularite)}
-                                                    className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.particularite_id === particularite.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                                >
-                                                    <div className="font-semibold">{particularite.particularite}</div>
-                                                    {particularite.prix > 0 && particularite.particularite !== 'autres' && (
-                                                        <div className="text-xs text-green-600">+{particularite.prix.toLocaleString()} Ar</div>
-                                                    )}
-                                                </button>
-                                            ))}
-                                        </div>
-
-                                        {/* Input pour particularité "autres" */}
-                                        {devisChevalet.particularite === 'autres' && (
-                                            <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
-                                                <h5 className="font-semibold mb-3">Particularité personnalisée</h5>
-                                                <div className="space-y-3">
-                                                    {/* <div className="relative">
-                                                        <Input
-                                                            type="text"
-                                                            value={autreParticularite.nom}
-                                                            onChange={(e) => setAutreParticularite(prev => ({ ...prev, nom: e.target.value }))}
-                                                            placeholder="Nom de la particularité"
-                                                        />
-                                                    </div> */}
-                                                    <div className="relative">
-                                                        <Input
-                                                            type="number"
-                                                            value={autreParticularite.prix}
-                                                            onChange={(e) => setAutreParticularite(prev => ({ ...prev, prix: e.target.value }))}
-                                                            placeholder="Prix de la particularité"
-                                                            min="0"
-                                                        />
-                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
-                                                    </div>
+                                    {/* Section Forme de couture */}
+                                    {getCurrentFormesCouture().length > 0 && (
+                                        <div className='flex'>
+                                            <div ref={formeCoutureRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                    <Layers className="mr-2" />
+                                                    Forme de couture
+                                                </h4>
+                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                    {getCurrentFormesCouture().map(forme => (
+                                                        <button
+                                                            key={forme.id}
+                                                            onClick={() => handleSelect(forme.id, 'forme_couture_id', 'forme_couture', forme.forme)}
+                                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.forme_couture_id === forme.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                        >
+                                                            <div className="font-semibold">{forme.forme}</div>
+                                                        </button>
+                                                    ))}
                                                 </div>
                                             </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {/* Options personnalisées */}
-                                {/* <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-2 mt-3 flex items-center">
-                                        <Layers />
-                                        <span className="ml-2"> Options supplémentaires </span>
-                                    </h4>
-                                    <div className="space-y-3">
-                                        <div className="relative">
-                                            <Input
-                                                type="number"
-                                                value={devisChevalet.finitionPrix.toString()}
-                                                onChange={(e) => handleSelect(safeNumber(e.target.value), 'finitionPrix')}
-                                                placeholder="Prix finition supplémentaire"
-                                                min="0"
-                                            />
-                                            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
                                         </div>
-                                        <div className="relative">
-                                            <Input
-                                                type="number"
-                                                value={devisChevalet.optionPrix}
-                                                onChange={(e) => handleSelect(safeNumber(e.target.value), 'optionPrix')}
-                                                placeholder="Prix option supplémentaire"
-                                                min="0"
+                                    )}
+
+                                    {/* Section Particularités */}
+                                    {getCurrentParticularites().length > 0 && (
+                                        <div className='flex'>
+                                            <div ref={particulariteRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                                <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                    <Layers className="mr-2" />
+                                                    Particularités
+                                                </h4>
+                                                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                                    {getCurrentParticularites().map(particularite => (
+                                                        <button
+                                                            key={particularite.id}
+                                                            onClick={() => handleParticulariteSelect(particularite.id, particularite.particularite)}
+                                                            className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisChevalet.particularite_id === particularite.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                                        >
+                                                            <div className="font-semibold">{particularite.particularite}</div>
+                                                        </button>
+                                                    ))}
+                                                </div>
+
+                                                {/* Input pour particularité "autres" */}
+                                                {devisChevalet.particularite === 'autres' && (
+                                                    <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
+                                                        <h5 className="font-semibold mb-3">Particularité personnalisée</h5>
+                                                        <div className="space-y-3">
+                                                            <div className="relative">
+                                                                <Input
+                                                                    type="number"
+                                                                    value={autreParticularite.prix}
+                                                                    onChange={(e) => setAutreParticularite(prev => ({ ...prev, prix: e.target.value }))}
+                                                                    placeholder="Prix de la particularité"
+                                                                    min="0"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Section Quantité */}
+                                    <div className='flex'>
+                                        <div ref={quantiteRef} className="w-full lg:w-1/2 scroll-mt-20">
+                                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                                                <Layers className="mr-2" />
+                                                Quantité
+                                            </h4>
+                                            <Input 
+                                                type="number" 
+                                                value={devisChevalet.quantite.toString()} 
+                                                onChange={e => handleSelect(Math.max(1, safeNumber(e.target.value)), 'quantite')} 
+                                                placeholder="Ex: 1" 
+                                                min="1"
                                             />
-                                            <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
                                         </div>
                                     </div>
-                                </div> */}
-
-                                {/* Quantité */}
-                                <div>
-                                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mt-3 mb-3 flex items-center ">
-                                        <Layers />
-                                        <span className="ml-2"> Quantité </span>
-                                    </h4>
-                                    <Input 
-                                        type="number" 
-                                        value={devisChevalet.quantite.toString()} 
-                                        onChange={e => handleSelect(Math.max(1, safeNumber(e.target.value)), 'quantite')} 
-                                        placeholder="Ex: 1" 
-                                        min="1"
-                                    />
-                                </div>
-                            </>
-                        )}
+                                </>
+                            )}
+                        </div>
                     </div>
+                    
+                    {/* Overview et calcul des prix */}
+                    <OptionOverview 
+                        userRole={userRole} 
+                        prixUnitaireReel={prixUnitaireReel} 
+                        prixTotalReel={prixTotalReel} 
+                        handleAddToCart={handleAddToCart} 
+                        devisChevalet={devisChevalet} 
+                    />
                 </div>
-                
-                {/* Overview et calcul des prix */}
-                <OptionOverview 
-                    userRole={userRole} 
-                    prixUnitaireReel={prixUnitaireReel} 
-                    prixTotalReel={prixTotalReel} 
-                    handleAddToCart={handleAddToCart} 
-                    devisChevalet={devisChevalet} 
-                />
-            </div>
-        </Accordion>
+            </CardContent>
+        </Card>
     );
 }

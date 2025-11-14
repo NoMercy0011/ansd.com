@@ -1,8 +1,8 @@
-import { devisCarterieData } from '@/sources/types/type';
+import { devisData } from '@/sources/types/type';
 import React from 'react'
 
 type DevisProps = {
-    devis?: devisCarterieData;
+    devis?: devisData;
 }
 export default function DevisCarterie( { devis } : DevisProps) {
   return (

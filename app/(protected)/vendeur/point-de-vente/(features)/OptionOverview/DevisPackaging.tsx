@@ -1,8 +1,8 @@
-import { devisPackagingData } from '@/sources/types/type';
+import { devisData } from '@/sources/types/type';
 import React from 'react'
 
 type DevisPackagingProps = {
-    devisPackaging?: devisPackagingData;
+    devisPackaging?: devisData;
 }
 export default function DevisPackaging( { devisPackaging } : DevisPackagingProps) {
   return (

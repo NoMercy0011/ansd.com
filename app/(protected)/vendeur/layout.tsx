@@ -15,7 +15,7 @@ export default function ModeratorLayout({
         <LateralBarVendeur />
         <main className="flex-1 flex flex-col">
           <HeaderVendeur />
-          <div className="p-4 md:p-6 lg:p-8 animate-fade-in flex-1 overflow-y-auto bg-slate-100/50 dark:bg-slate-900/50">
+          <div className="p-1 md:p-2 lg:p-4 animate-fade-in flex-1 overflow-y-auto bg-slate-100/50 dark:bg-slate-900/50">
             {children}
           </div>
         </main>
