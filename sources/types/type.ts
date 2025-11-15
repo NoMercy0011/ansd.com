@@ -396,3 +396,7 @@ export type devisGoodiesData = {
   finitionPrix: number;
   optionPrix: string;
 };
+
+export type gitType = {
+  exemple: string;
+}
