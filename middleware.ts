@@ -1,0 +1,36 @@
+import { NextRequest, NextResponse } from 'next/server';
+
+export async function middleware(req: NextRequest) {
+  const token = req.cookies.get('token')?.value;
+  const role = req.cookies.get('role')?.value;
+  
+  if (!token) {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+    if (!role) {
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
+
+    try{
+      
+    const pathname = new URL(req.url).pathname;
+    console.log(pathname);
+    
+    if (pathname.startsWith('/admin') && role !== 'admin') {
+      return NextResponse.redirect(new URL('/unauthorized', req.url));
+    }
+
+    /*if (pathname.startsWith('/vendeur') && (role === 'user' || role === 'admin')) {
+      return NextResponse.redirect(new URL(pathname, req.url));
+    }*/
+
+    return NextResponse.next();
+    }catch (error) {
+      console.error('Erreur lors de la recupération du token : ' , error);
+      return NextResponse.redirect(new URL('/login', req.url));
+    }
+}
+
+export const config = {
+  matcher: ['/vendeur/:path*', '/admin/:path*'],
+};
