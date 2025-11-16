@@ -81,13 +81,10 @@ export default function Packaging({ param, userRole, handleAddCart }: PrintArtic
                 { id: 14, categorie: 'Vynil transparent', accessoire: '', prix: 50 }
             ],
             boite: [
-                { id: 15, categorie: 'PCB', accessoire: '250G', prix: 100 },
                 { id: 16, categorie: 'PCB', accessoire: '300G', prix: 120 },
                 { id: 17, categorie: 'PCB', accessoire: '350G', prix: 140 },
                 { id: 18, categorie: 'PCB', accessoire: '600G', prix: 35 },
                 { id: 19, categorie: 'PCB', accessoire: '700G', prix: 35 },
-                { id: 20, categorie: 'PCB pellicule', accessoire: '170G', prix: 40 },
-                { id: 21, categorie: 'PCB pellicule', accessoire: '250G', prix: 45 },
                 { id: 22, categorie: 'PCB pellicule', accessoire: '300G', prix: 45 },
                 { id: 23, categorie: 'PCB pellicule', accessoire: '350G', prix: 45 },
                 { id: 24, categorie: 'PCB pellicule', accessoire: '600G', prix: 45 },
