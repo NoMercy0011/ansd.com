@@ -165,9 +165,6 @@ export default function Packaging({ param, userRole, handleAddCart }: PrintArtic
                 { id: 3, finition: "Pelliculage à froid", prix: 150 },
                 { id: 4, finition: 'autres', prix: 150 },
             ],
-            boite: [
-                { id: 5, finition: "aucun", prix: 0 },
-            ],
             doypack: [
                 { id: 6, finition: "aucun", prix: 0 },
             ],
