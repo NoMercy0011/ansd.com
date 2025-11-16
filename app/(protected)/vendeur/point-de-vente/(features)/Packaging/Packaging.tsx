@@ -65,13 +65,11 @@ export default function Packaging({ param, userRole, handleAddCart }: PrintArtic
 
         materiaux: {
             hangtag: [
-                // { id: 1, categorie: 'PCB', accessoire: '170G', prix: 20 },
                 { id: 2, categorie: 'PCB', accessoire: '250G', prix: 25 },
                 { id: 3, categorie: 'PCB', accessoire: '300G', prix: 30 },
                 { id: 4, categorie: 'PCB', accessoire: '350G', prix: 35 },
                 { id: 5, categorie: 'PCB', accessoire: '600G', prix: 35 },
                 { id: 6, categorie: 'PCB', accessoire: '700G', prix: 35 },
-                // { id: 7, categorie: 'PCB pellicule', accessoire: '170G', prix: 40 },
                 { id: 8, categorie: 'PCB pellicule', accessoire: '250G', prix: 45 },
                 { id: 9, categorie: 'PCB pellicule', accessoire: '300G', prix: 45 },
                 { id: 10, categorie: 'PCB pellicule', accessoire: '350G', prix: 45 },
