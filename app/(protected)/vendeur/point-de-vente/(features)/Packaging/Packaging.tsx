@@ -65,7 +65,6 @@ export default function Packaging({ param, userRole, handleAddCart }: PrintArtic
 
         materiaux: {
             hangtag: [
-                { id: 1, categorie: 'PCB', accessoire: '170G', prix: 20 },
                 { id: 2, categorie: 'PCB', accessoire: '250G', prix: 25 },
                 { id: 3, categorie: 'PCB', accessoire: '300G', prix: 30 },
                 { id: 4, categorie: 'PCB', accessoire: '350G', prix: 35 },
