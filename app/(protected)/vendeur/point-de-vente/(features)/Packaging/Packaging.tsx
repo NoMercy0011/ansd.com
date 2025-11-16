@@ -77,8 +77,8 @@ export default function Packaging({ param, userRole, handleAddCart }: PrintArtic
                 { id: 12, categorie: 'autres', accessoire: '', prix: 45 }
             ],
             etiquette: [
-                { id: 13, categorie: 'Autocollant Vinyle', accessoire: '', prix: 60 },
-                { id: 14, categorie: 'Papier Collant', accessoire: '', prix: 50 }
+                { id: 13, categorie: 'Vynil blanc', accessoire: '', prix: 60 },
+                { id: 14, categorie: 'Vynil transparent', accessoire: '', prix: 50 }
             ],
             boite: [
                 { id: 15, categorie: 'PCB', accessoire: '250G', prix: 100 },
