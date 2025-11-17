@@ -58,13 +58,11 @@ export default function Calendar({ param, userRole, handleAddCart }: PrintArticl
 
         materiaux: {
             calendrier: [
-                { id: 1, categorie: 'PCB', accessoire: '170G', prix: 20 },
                 { id: 2, categorie: 'PCB', accessoire: '250G', prix: 25 },
                 { id: 3, categorie: 'PCB', accessoire: '300G', prix: 30 },
                 { id: 4, categorie: 'PCB', accessoire: '350G', prix: 35 },
                 { id: 5, categorie: 'PCB', accessoire: '600G', prix: 35 },
                 { id: 6, categorie: 'PCB', accessoire: '700G', prix: 35 },
-                { id: 7, categorie: 'PCB pellicule', accessoire: '170G', prix: 40 },
                 { id: 8, categorie: 'PCB pellicule', accessoire: '250G', prix: 45 },
                 { id: 9, categorie: 'PCB pellicule', accessoire: '300G', prix: 45 },
                 { id: 10, categorie: 'PCB pellicule', accessoire: '350G', prix: 45 },
@@ -75,13 +73,11 @@ export default function Calendar({ param, userRole, handleAddCart }: PrintArticl
                 { id: 15, categorie: 'autres', accessoire: '', prix: 45 },
             ],
             marque_page: [
-                { id: 16, categorie: 'PCB', accessoire: '170G', prix: 20 },
                 { id: 17, categorie: 'PCB', accessoire: '250G', prix: 25 },
                 { id: 18, categorie: 'PCB', accessoire: '300G', prix: 30 },
                 { id: 19, categorie: 'PCB', accessoire: '350G', prix: 35 },
                 { id: 20, categorie: 'PCB', accessoire: '600G', prix: 35 },
                 { id: 21, categorie: 'PCB', accessoire: '700G', prix: 35 },
-                { id: 22, categorie: 'PCB pellicule', accessoire: '170G', prix: 40 },
                 { id: 23, categorie: 'PCB pellicule', accessoire: '250G', prix: 45 },
                 { id: 24, categorie: 'PCB pellicule', accessoire: '300G', prix: 45 },
                 { id: 25, categorie: 'PCB pellicule', accessoire: '350G', prix: 45 },
