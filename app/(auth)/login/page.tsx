@@ -1,6 +1,6 @@
 "use client"
 
-import { Moon, Sun, Eye, EyeOff, LogInIcon } from 'lucide-react';
+import { Moon, Sun, Eye, EyeOff, LogInIcon, CheckCircle, AlertCircle } from 'lucide-react';
 import { Button } from '@/sources/components/ui';
 import { useState } from 'react';
 import { useTheme } from 'next-themes';
@@ -86,14 +86,16 @@ export default function LoginScreen() {
           <h2 className="text-2xl font-semibold text-foreground mb-6 text-center">Connexion</h2>
           
           {errorLog && (
-            <p className="bg-destructive/15 text-destructive p-3 rounded-lg text-center text-red-500 text-sm mb-4">
-              {errorLog}
-            </p>
+            <div className=' flex items-center justify-center space-x-3 bg-red-100 p-2 rounded-lg text-center text-red-500 text-sm mb-4'>
+              <AlertCircle size={24} />
+              <p> {errorLog} </p>
+            </div>
           )}
           {success && (
-            <p className="bg-destructive/15 text-destructive p-3 rounded-lg text-center text-green-500 text-sm mb-4">
-              {success}
-            </p>
+            <div className='flex items-center justify-center space-x-3 bg-green-100 p-2 rounded-lg text-center text-green-500 text-sm mb-4'>
+             <CheckCircle size={24} /> 
+            <p> {success}</p>
+            </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
