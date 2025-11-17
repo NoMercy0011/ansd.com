@@ -135,11 +135,6 @@ export default function Packaging({ param, userRole, handleAddCart }: PrintArtic
                 { id: 1, imprimante: "Jet d'encre", prix: 150 },
                 { id: 2, imprimante: 'Laser', prix: 150 },
             ],
-            etiquette: [
-                { id: 3, imprimante: "Jet d'encre", prix: 150 },
-                { id: 4, imprimante: 'Laser', prix: 150 },
-                { id: 5, imprimante: 'Eco-Solvant', prix: 150 },
-            ],
             boite: [
                 { id: 6, imprimante: "Jet d'encre", prix: 150 },
                 { id: 7, imprimante: 'Laser', prix: 150 },
@@ -596,7 +591,7 @@ export default function Packaging({ param, userRole, handleAddCart }: PrintArtic
                                         <div ref={materiauRef} className="w-full lg:w-1/2 scroll-mt-20">
                                             <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
                                                 <Layers className="mr-2" />
-                                                Matériau
+                                                Matériaux
                                             </h4>
                                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                                 {getCurrentMateriaux().map(materiau => (
