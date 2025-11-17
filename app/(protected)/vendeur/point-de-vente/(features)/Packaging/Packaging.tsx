@@ -135,11 +135,6 @@ export default function Packaging({ param, userRole, handleAddCart }: PrintArtic
                 { id: 1, imprimante: "Jet d'encre", prix: 150 },
                 { id: 2, imprimante: 'Laser', prix: 150 },
             ],
-            etiquette: [
-                { id: 3, imprimante: "Jet d'encre", prix: 150 },
-                { id: 4, imprimante: 'Laser', prix: 150 },
-                { id: 5, imprimante: 'Eco-Solvant', prix: 150 },
-            ],
             boite: [
                 { id: 6, imprimante: "Jet d'encre", prix: 150 },
                 { id: 7, imprimante: 'Laser', prix: 150 },
