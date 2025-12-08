@@ -52,3 +52,6 @@ app/(protected)/admin/matiere
 app/(protected)/admin/parametre
 app/test
 sources/features
+
+#SQL files
+data.sql

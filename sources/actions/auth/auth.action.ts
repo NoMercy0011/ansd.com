@@ -1,6 +1,6 @@
 "use server"
 
-import { userLoginType } from "@/sources/types/type";
+import { userLoginType } from "@/types/type";
 import { cookies } from "next/headers";
 
 

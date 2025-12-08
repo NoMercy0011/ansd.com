@@ -1,5 +1,5 @@
 
-import { devisData } from '@/sources/types/type'
+import { devisData } from '@/types/type'
 import React from 'react'
 
 type DevisLivreOverviewProps = {

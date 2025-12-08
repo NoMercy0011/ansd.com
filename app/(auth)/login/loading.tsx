@@ -1,8 +1,9 @@
+import { Loading } from "@/components/extra/loading";
 
 export default function loginLoading() {
     return (
-        <div>
-            Chargement...
+         <div>
+           <Loading label="Un Instant..."/>
         </div>
     )
 }

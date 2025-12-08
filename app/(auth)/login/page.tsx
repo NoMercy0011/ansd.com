@@ -5,7 +5,7 @@ import { Button } from '@/sources/components/ui';
 import { useState } from 'react';
 import { useTheme } from 'next-themes';
 import { LoginRequest } from '@/sources/actions/auth/auth.action';
-import { userLoginType } from '@/sources/types/type';
+import { userLoginType } from '@/types/type';
 import { useRouter } from 'next/navigation';
 import Logo from '@/sources/components/ui/logo';
 

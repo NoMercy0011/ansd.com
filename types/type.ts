@@ -180,6 +180,9 @@ export type devisData = {
   capacite?: string;
   goodies_id?: number;
   forme?: string;
+  categorie?: string;
+  categorie_id?: number;
+  ratio?: number;
 }
 
 export type CartItemsType = {
@@ -400,3 +403,4 @@ export type devisGoodiesData = {
 export type gitType = {
   exemple: string;
 }
+

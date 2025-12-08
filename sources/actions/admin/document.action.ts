@@ -1,6 +1,6 @@
 "use server"
 
-import { DocumentType } from "@/sources/types/type";
+import { DocumentType } from "@/types/type";
 import { cookies } from "next/headers";
 
 

@@ -3,7 +3,7 @@
 import { useDocument } from '@/hooks/useModerator';
 import { Button, Input, Select } from '@/sources/components/ui';
 import SectionTitle from '@/sources/components/ui/sectionTitle';
-import { DocumentType } from '@/sources/types/type';
+import { DocumentType } from '@/types/type';
 import {  Copy, Edit, Eye, PlusCircle, RefreshCw, Search } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react'

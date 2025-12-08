@@ -1,11 +1,11 @@
 
-import { Loader2 } from "lucide-react";
+import { Loading } from "@/components/extra/loading";
 
 
-export default function Loading(){
+export default function LoadingPage(){
     return(
-        <div className="absolute position-absolute top-[50%] left-[50%] ">
-            <Loader2 className="w-10 h-10 animate-spin text-red-500"/>
+        <div>
+            <Loading label="Un Instant :smile ..."/>
         </div>
     )
 }

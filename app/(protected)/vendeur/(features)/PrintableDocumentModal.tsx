@@ -2,7 +2,7 @@
 
 import { Button } from '@/sources/components/ui';
 import Logo from '@/sources/components/ui/logo';
-import { DocumentType } from '@/sources/types/type';
+import { DocumentType } from '@/types/type';
 import { Printer } from 'lucide-react';
 import React from 'react'
 

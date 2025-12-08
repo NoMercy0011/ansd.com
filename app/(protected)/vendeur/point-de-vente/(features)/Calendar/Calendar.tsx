@@ -1,7 +1,7 @@
 import { GetClientID } from '@/sources/actions/admin/client.action'
 import { Input } from '@/sources/components/ui'
 // import Accordion from '@/sources/components/ui/accordion' // Remplacé par Card
-import { CartItemsType, clientType, devisCalendarData } from '@/sources/types/type'
+import { CartItemsType, clientType, devisCalendarData } from '@/types/type'
 import { CalendarDays, Layers } from 'lucide-react'
 import React, { useEffect, useState, useRef } from 'react' // Ajout de useRef
 import OptionOverview from '../OptionOverview/OptionOverview'

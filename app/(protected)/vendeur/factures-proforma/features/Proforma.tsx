@@ -6,7 +6,7 @@ import SectionTitle from '@/sources/components/ui/sectionTitle';
 import { Edit, Eye, FileSignatureIcon, PlusCircle, Save, Search } from 'lucide-react';
 import React, {  useState } from 'react'
 import PrintableDocumentModal from '../../(features)/PrintableDocumentModal';
-import { CartItemsType, DocumentType } from '@/sources/types/type';
+import { CartItemsType, DocumentType } from '@/types/type';
 
 export default function Proforma() {
         const { proformas, documentLoading } = useDocument();

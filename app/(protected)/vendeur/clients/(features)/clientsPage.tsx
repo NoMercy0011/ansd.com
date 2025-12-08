@@ -1,7 +1,7 @@
 "use client"
 import { useClient, useCommercial } from '@/hooks/useModerator';
 import { Button, Input } from '@/sources/components/ui';
-import { clientType } from '@/sources/types/type';
+import { clientType } from '@/types/type';
 import { Clock, Edit, Eye, PlusCircle, RectangleHorizontalIcon, Search, Trash2 } from 'lucide-react';
 import React, { useState } from 'react'
 import ClientModal from './clientModal';

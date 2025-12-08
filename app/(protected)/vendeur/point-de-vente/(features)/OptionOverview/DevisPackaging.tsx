@@ -1,4 +1,4 @@
-import { devisData } from '@/sources/types/type';
+import { devisData } from '@/types/type';
 import React from 'react'
 
 type DevisPackagingProps = {
@@ -37,7 +37,7 @@ export default function DevisPackaging( { devisPackaging } : DevisPackagingProps
                     </span>
                 </div>
 
-                <div className="flex justify-between">
+                <div className={`flex justify-between ${devisPackaging?.recto === 'invalide' ? 'hidden' : '' }`}>
                     <span>Face :</span>
                     <span className="font-semibold">
                         {devisPackaging?.recto }
@@ -49,26 +49,26 @@ export default function DevisPackaging( { devisPackaging } : DevisPackagingProps
                         {devisPackaging?.imprimante}
                     </span>
                 </div>
-                <div className="flex justify-between">
+                <div className={`flex justify-between ${devisPackaging?.decoupe === 'invalide' ? 'hidden' : '' }`}>
                     <span>Découpage :</span>
                     <span className="font-semibold">
                         {devisPackaging?.decoupe}
                     </span>
                 </div>
 
-                <div className="flex justify-between">
+                <div className={`flex justify-between ${devisPackaging?.emplacement === 'invalide' ? 'hidden' : '' }`}>
                     <span>Emplacement :</span>
                     <span className="font-semibold">
                         {devisPackaging?.emplacement || ''}
                     </span>
                 </div>
-                <div className="flex justify-between">
+                <div className={`flex justify-between ${devisPackaging?.finition === 'invalide' ? 'hidden' : ''}`}>
                     <span>Finition :</span>
                     <span className="font-semibold">
                         {devisPackaging?.finition || ''}
                     </span>
                 </div>
-                <div className="flex justify-between">
+                <div className={`flex justify-between ${devisPackaging?.particularite === 'invalide' ? 'hidden' : '' }`}>
                     <span>Particularités :</span>
                     <span className="font-semibold">
                         {devisPackaging?.particularite || ''}

@@ -1,7 +1,7 @@
 "use client"
 import { CreateFacture, CreateProforma } from '@/sources/actions/admin/document.action';
 import { Button, Input } from '@/sources/components/ui';
-import { CartItemsType, clientType, devisData, DocumentType } from '@/sources/types/type';
+import { CartItemsType, clientType, devisData, DocumentType } from '@/types/type';
 import { FileClock, FileSignature, Save, ShoppingCart, Trash2 } from 'lucide-react';
 import React, { useEffect, useState } from 'react'
 

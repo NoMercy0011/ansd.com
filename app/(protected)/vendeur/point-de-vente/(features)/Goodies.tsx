@@ -1,7 +1,7 @@
 import { GetClientID } from '@/sources/actions/admin/client.action'
 import { Input } from '@/sources/components/ui'
 // import Accordion from '@/sources/components/ui/accordion' // Remplacé
-import { CartItemsType, clientType, devisGoodiesData } from '@/sources/types/type'
+import { CartItemsType, clientType, devisGoodiesData } from '@/types/type'
 import { Layers, Gift } from 'lucide-react'
 import React, { useEffect, useState, useRef } from 'react' // Ajout de useRef
 import OptionOverview from './OptionOverview/OptionOverview'

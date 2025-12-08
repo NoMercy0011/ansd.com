@@ -1,7 +1,7 @@
 "use client"
 import { CreateClient, DeleteClient, UpdateClient } from '@/sources/actions/admin/client.action';
 import { Button, Input } from '@/sources/components/ui';
-import { clientType, CommercialData } from '@/sources/types/type';
+import { clientType, CommercialData } from '@/types/type';
 import { AlertTriangle, Quote, X } from 'lucide-react';
 import React, { useState } from 'react'
 

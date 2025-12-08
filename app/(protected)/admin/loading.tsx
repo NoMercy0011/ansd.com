@@ -1,9 +1,10 @@
+import { Loading } from "@/components/extra/loading";
 
 
-export default function Loading(){
+export default function LoadingPage(){
     return (
-        <div className="content-center m-auto text-sm text-blue-700 ">
-            Chargement...
+        <div>
+           <Loading label="Un Instant..."/>
         </div>
     )
 }

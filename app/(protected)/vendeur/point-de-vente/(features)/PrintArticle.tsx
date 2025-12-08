@@ -5,7 +5,7 @@ import OptionOverview from './OptionOverview/OptionOverview'
 import { Button, Input } from '@/sources/components/ui'
 import { Book, BookOpen, ChevronsLeftRightEllipsisIcon, Layers, Loader2, Weight } from 'lucide-react'
 // import Accordion from '@/sources/components/ui/accordion' // Remplacé
-import { CartItemsType, clientType, devisData } from '@/sources/types/type'
+import { CartItemsType, clientType, devisData } from '@/types/type'
 import { useLivre } from '@/hooks/useModerator'
 import { GetClientID } from '@/sources/actions/admin/client.action'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card' // Ajout

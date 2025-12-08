@@ -1,6 +1,6 @@
 "use client"
 
-import { CartItemsType, clientType, devisData } from '@/sources/types/type';
+import { CartItemsType, clientType, devisData } from '@/types/type';
 import React, { useEffect, useState } from 'react'
 import { GetClientID } from '@/sources/actions/admin/client.action';
 import PrintArticle from './PrintArticle';
@@ -22,6 +22,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { BookOpen, CalendarCheck, CalendarDays, Camera, FileText, FileTextIcon, Gift, LucideBlocks, Map, Maximize2, Monitor, PackageOpenIcon, Printer, Shirt, ShoppingCart } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { toast } from 'sonner';
 
 type PointDeVenteProps = {
     userRole?: string;
@@ -55,13 +56,14 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
     //     setDevisLivre(devisLivre);
     // }
 
-    const handleAddCart = (cartItem : CartItemsType, devis ?: devisData) => {
+    const handleAddCart =  (cartItem : CartItemsType, devis ?: devisData) => {
         const itemsCopy = [...cartItems];
         itemsCopy.push(cartItem);
         setCartItems(itemsCopy);
         const devisCopy = [...devisLivre];
         devisCopy.push(devis!);
         setDevisLivre(devisCopy);
+        toast.success('Commande ajouter au panier');
     }
 
     const RemoveFromCart = (id : number) => {
@@ -162,9 +164,9 @@ export default function PointDeVentePage( { param, userRole } : PointDeVenteProp
                             title={item.name} 
                             variant={selectedArticle === item.id ? "default" : "ghost"}
                             onClick={() => handleArticleSelect(item.id)}
-                            className={`flex cursor-pointer justify-start items-center gap-2 mx-0.5 p-2 border rounded-lg transition-colors duration-200 w-full ${
+                            className={`flex cursor-pointer justify-start items-center gap-2 mx-0.5 p-2 border-1 rounded-lg transition-colors duration-200 w-full ${
                                 selectedArticle === item.id 
-                                    ? 'bg-red-600 text-white border-red-600' 
+                                    ? 'bg-red-600 text-white hover:bg-red-700 border-red-500' 
                                     : 'bg-gray-100 dark:bg-gray-800 hover:border-red-500 dark:hover:bg-gray-700'
                             }`}
                         >                    

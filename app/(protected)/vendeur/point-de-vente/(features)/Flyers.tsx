@@ -1,5 +1,5 @@
 import { GetClientID } from '@/sources/actions/admin/client.action'
-import { CartItemsType, clientType, devisFlyersData } from '@/sources/types/type'
+import { CartItemsType, clientType, devisFlyersData } from '@/types/type'
 import { Layers, FileText } from 'lucide-react'
 import React, { useEffect, useState, useRef } from 'react'
 import OptionOverview from './OptionOverview/OptionOverview'

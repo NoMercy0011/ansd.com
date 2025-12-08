@@ -1,6 +1,6 @@
 import { GetClientID } from '@/sources/actions/admin/client.action'
 import { Input } from '@/sources/components/ui'
-import { CartItemsType, clientType, devisData } from '@/sources/types/type'
+import { CartItemsType, clientType, devisData } from '@/types/type'
 import { Layers, Maximize2 } from 'lucide-react'
 import React, { useEffect, useState, useRef } from 'react' 
 import OptionOverview from './OptionOverview/OptionOverview'

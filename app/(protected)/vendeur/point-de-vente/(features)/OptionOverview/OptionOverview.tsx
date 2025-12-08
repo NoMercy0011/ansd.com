@@ -1,7 +1,7 @@
 "use client"
 
 import { Button, Input } from '@/sources/components/ui'
-import {  devisData} from '@/sources/types/type'
+import {  devisData} from '@/types/type'
 import { DollarSign, ShoppingBasket } from 'lucide-react'
 import React, { useEffect, useState } from 'react'
 import DevisLivreOverview from './DevisLivreOverview'
@@ -42,9 +42,13 @@ export default function OptionOverview( OptionProps : OptionOverviewProps) {
         setPrixUnitaireForceHT(OptionProps.prixUnitaireReel);
     }, [OptionProps.prixTotalReel , OptionProps.prixUnitaireReel]);
 
+    const handleClick = () => {
+        OptionProps.handleAddToCart!();
+    }
+
   return (
     <>
-    <div className="w-full lg:w-1/4 space-y-4 sticky mt-1">
+    <div className="w-full lg:w-1/4 space-y-4 mt-1">
         {OptionProps.devisLivre && <DevisLivreOverview devisLivre={OptionProps.devisLivre} /> }
         {OptionProps.devisPackaging && <DevisPackaging  devisPackaging={OptionProps.devisPackaging}/> }
         {OptionProps.devisCalendar && <DevisCalendar  devisCalendar={OptionProps.devisCalendar}/> }
@@ -235,7 +239,7 @@ export default function OptionOverview( OptionProps : OptionOverviewProps) {
         </>)} */}
      </div>
     </div>
-        <Button variant="success" icon={<ShoppingBasket/>} onClick={OptionProps.handleAddToCart} disabled={prixTotalForceHT <= 0} className="w-full">Ajouter au Panier</Button>
+        <Button variant="success" icon={<ShoppingBasket/>} onClick={handleClick} disabled={prixTotalForceHT <= 0} className="w-full">Ajouter au Panier</Button>
     </div>
     </>
   )
