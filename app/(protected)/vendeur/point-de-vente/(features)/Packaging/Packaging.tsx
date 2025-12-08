@@ -107,37 +107,37 @@ export default function Packaging({ userRole, param, handleAddCart }: CatalogueP
                 </CardTitle>
 
                 {/* Barre de Navigation Sticky */}
-                <div className="sticky top-0 z-10 bg-white dark:bg-slate-950 pt-2 pb-2 border-b border-slate-200 dark:border-slate-800">
+                <div className="sticky top-0 z-10 bg-white dark:bg-slate-900 pt-2 pb-2 border-b border-slate-200 dark:border-slate-700">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                         <TabsList className="flex flex-wrap h-auto w-full justify-start gap-1 bg-transparent p-0">
-                            <TabsTrigger value="type" className="data-[state=active]:bg-slate-100 data-[state=active]:text-slate-900 border border-transparent data-[state=active]:border-slate-200 text-xs px-3 py-1.5 h-auto">
+                            <TabsTrigger value="type" className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
                                 <Layers className="h-3 w-3 mr-1" /> Type
                             </TabsTrigger>
-                            <TabsTrigger value="dimension" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 border border-transparent data-[state=active]:border-slate-200 text-xs px-3 py-1.5 h-auto">
+                            <TabsTrigger value="dimension" className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
                                 Dimension
                             </TabsTrigger>
-                            <TabsTrigger value="materiau" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 border border-transparent data-[state=active]:border-slate-200 text-xs px-3 py-1.5 h-auto">
+                            <TabsTrigger value="materiau" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
                                 Matériau
                             </TabsTrigger>
-                            <TabsTrigger value="couleur" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 border border-transparent data-[state=active]:border-slate-200 text-xs px-3 py-1.5 h-auto">
+                            <TabsTrigger value="couleur" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
                                 Couleur
                             </TabsTrigger>
-                            <TabsTrigger value="face" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 border border-transparent data-[state=active]:border-slate-200 text-xs px-3 py-1.5 h-auto">
+                            <TabsTrigger value="face" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
                                 Face
                             </TabsTrigger>
-                            <TabsTrigger value="imprimante" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 border border-transparent data-[state=active]:border-slate-200 text-xs px-3 py-1.5 h-auto">
+                            <TabsTrigger value="imprimante" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
                                 Impression
                             </TabsTrigger>
-                            <TabsTrigger value="decoupe" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 border border-transparent data-[state=active]:border-slate-200 text-xs px-3 py-1.5 h-auto">
+                            <TabsTrigger value="decoupe" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
                                 Découpe
                             </TabsTrigger>
-                            <TabsTrigger value="emplacement" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 border border-transparent data-[state=active]:border-slate-200 text-xs px-3 py-1.5 h-auto">
+                            <TabsTrigger value="emplacement" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
                                 Emplacement
                             </TabsTrigger>
                             {/* <TabsTrigger value="finition" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 border border-transparent data-[state=active]:border-slate-200 text-xs px-3 py-1.5 h-auto">
                                 Finition
                             </TabsTrigger> */}
-                            <TabsTrigger value="quantite" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 border border-transparent data-[state=active]:border-slate-200 text-xs px-3 py-1.5 h-auto">
+                            <TabsTrigger value="quantite" disabled={!selectedPackagingType} className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
                                 Quantité
                             </TabsTrigger>
                         </TabsList>
@@ -157,16 +157,17 @@ export default function Packaging({ userRole, param, handleAddCart }: CatalogueP
                                         <Layers className="w-5 h-5 mr-2" />
                                         Type de Produit
                                     </h4>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 ">
                                         {PackagingData.types.map(type => (
                                             <Button
                                                 key={type.id}
+                                                title={type.nom}
                                                 onClick={() => {
                                                     setSelectedPackagingType(type.type);
                                                     setActiveTab('dimension'); // Auto-switch tab
                                                 }}
                                                 variant={selectedPackagingType === type.type ? "default" : "outline"}
-                                                className={`h-auto py-3 justify-start px-4 text-left ${selectedPackagingType === type.type ? 'bg-red-600 hover:bg-red-700 border-red-600' : 'hover:border-red-500'}`}
+                                                className={`h-auto py-3 px-4 justify-start ${selectedPackagingType === type.type ? 'bg-red-600 hover:bg-red-700 border-red-600 dark:text-white' : 'hover:border-red-500 dark:bg-slate-600'}`}
                                             >
                                                 {type.nom}
                                             </Button>
