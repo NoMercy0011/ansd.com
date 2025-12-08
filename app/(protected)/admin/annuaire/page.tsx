@@ -2,8 +2,6 @@
 
 import { Search } from 'lucide-react';
 import React, { useState } from 'react'
-import DefaultMan from "@/public/avatarMan.png"
-import DefaultWoman from "@/public/avatarWoman.png"
 import Image from 'next/image';
 
 export default function Page() {
@@ -11,7 +9,7 @@ export default function Page() {
   const [searchTerm, setSearchTerm] = useState('');
   const filteredPersonnel =  [
     {
-      id: 'personne-a', matricule: 'E001', name: 'Ando Rakoto', email: 'a.rakoto@ans.mg', password: 'password123', role: 'ROLES.EMPLOYEE', avatar: DefaultWoman, position: 'Opérateur Prépresse',
+      id: 'personne-a', matricule: 'E001', name: 'Ando Rakoto', email: 'a.rakoto@ans.mg', password: 'password123', role: 'ROLES.EMPLOYEE', avatar: "/avatarWoman.png", position: 'Opérateur Prépresse',
       managerId: 'admin-d', hireDate: new Date('2022-03-15'), jobHistory: ['Opérateur Finition (2022-2024)', 'Opérateur Prépresse (2024-...)'],
       skills: ['Suite Adobe', 'Maintenance préventive presse Heidelberg', 'CACES 3'],
       leaveBalance: { paid: 12.5, rtt: 3 },
@@ -29,7 +27,7 @@ export default function Page() {
       objectives: [{ id: 'OBJ-1', text: 'Réduire le taux d\'erreur en conception de 5%', progress: 60 }, { id: 'OBJ-2', text: 'Se former sur la nouvelle découpeuse laser', progress: 20 }],
     },
      {
-      id: 'personne-c', matricule: 'E002', name: 'Faly Andriana', email: 'f.andriana@ans.mg', password: 'password123', role: 'ROLES.EMPLOYEE', avatar: DefaultMan, position: 'Graphiste',
+      id: 'personne-c', matricule: 'E002', name: 'Faly Andriana', email: 'f.andriana@ans.mg', password: 'password123', role: 'ROLES.EMPLOYEE', avatar: "/avatarMan.png", position: 'Graphiste',
       managerId: 'admin-d', hireDate: new Date('2021-09-01'), jobHistory: ['Graphiste Junior (2021-2023)', 'Graphiste (2023-...)'],
       skills: ['Figma', 'Illustrator', 'Motion Design'],
       leaveBalance: { paid: 20, rtt: 8 },
