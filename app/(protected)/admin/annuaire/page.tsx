@@ -47,13 +47,13 @@ export default function Page() {
       objectives: [{ id: 'OBJ-3', text: 'Proposer 3 nouvelles pistes graphiques pour la campagne interne', progress: 100 }],
     },
     {
-      id: 'admin-d', matricule: 'A001', name: 'Riana Vololona', email: 'r.vololona@ans.mg', password: 'adminpass', role: 'ROLES.ADMIN', avatar: DefaultWoman, position: 'Directrice Générale',
+      id: 'admin-d', matricule: 'A001', name: 'Riana Vololona', email: 'r.vololona@ans.mg', password: 'adminpass', role: 'ROLES.ADMIN', avatar: "/avatarWoman.png", position: 'Directrice Générale',
     },
      {
-      id: 'personne-b', matricule: 'E003', name: 'Mamy Andria', email: 'm.andria@ans.mg', password: 'password123', role: 'ROLES.EMPLOYEE', avatar: DefaultMan, position: 'Graphiste',
+      id: 'personne-b', matricule: 'E003', name: 'Mamy Andria', email: 'm.andria@ans.mg', password: 'password123', role: 'ROLES.EMPLOYEE', avatar: "/avatarMan.png", position: 'Graphiste',
     },
     {
-      id: 'personne-d', matricule: 'E004', name: 'Fara Rasoa', email: 'f.rasoa@ans.mg', password: 'password123', role: 'ROLES.EMPLOYEE', avatar: DefaultWoman, position: 'Chef d\'atelier',
+      id: 'personne-d', matricule: 'E004', name: 'Fara Rasoa', email: 'f.rasoa@ans.mg', password: 'password123', role: 'ROLES.EMPLOYEE', avatar: "/avatarWoman.png", position: 'Chef d\'atelier',
     },
   ];
 

@@ -3,7 +3,6 @@
 
 import { Bell, Search } from "lucide-react";
 import {  useEffect, useState } from "react";
-import DefaultMan from "@/public/avatarMan.png"
 import Image from "next/image";
 
 
@@ -32,7 +31,7 @@ export default function HeaderAdmin() {
                 <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
             </div>
             <div className="flex items-center gap-3">
-                <Image src={DefaultMan} alt="Avatar" className="w-10 h-10 rounded-full border " />
+                <Image src="/avatarMan.png" alt="Avatar" className="w-10 h-10 rounded-full border " />
                 <div className="hidden md:block">
                     <p className="font-semibold text-sm text-slate-800 dark:text-slate-100">Admin</p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">admin</p>
