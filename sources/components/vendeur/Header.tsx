@@ -31,7 +31,7 @@ export default function HeaderVendeur() {
             {/* <select value={userRole} onChange={e => setUserRole(e.target.value)} className="bg-slate-100 dark:bg-slate-700 border-slate-300 dark:border-slate-600 rounded-md text-sm p-1 text-slate-800 dark:text-slate-200"><option value="admin">Admin</option><option value="vendeur">Vendeur</option></select></div> */}
         </div>
         
-        <Image src="/avatarMan.png" alt="Avatar" className="w-9 h-9 rounded-full" />
+        <Image src="/avatarMan.png" alt="Avatar" width={20} height={20} className="w-9 h-9 rounded-full" />
     </div>
     </header>
   );

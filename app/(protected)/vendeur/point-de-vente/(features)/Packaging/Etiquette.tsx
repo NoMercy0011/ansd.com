@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { itemType } from '@/types/packaging/packagingType'
+import { itemType } from '@/types/itemType';
 import { devisData } from '@/types/type';
 import { Layers } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react'
@@ -132,7 +132,7 @@ useEffect(() => {
         // Matériau personnalisé
         prixUnitaire += autreMateriau.prix;
     } else {
-        const materiauSelectionne = etiquette.matieres.find(
+        const materiauSelectionne = etiquette.matieres!.find(
             m => m.id === devisEncours.materiau_id
         );
         if (materiauSelectionne) {
@@ -167,7 +167,7 @@ useEffect(() => {
         if (devisEncours.decoupe === 'personnalisée') {
             prixUnitaire += autreDecoupe.prix;
         } else {
-            const decoupeSelectionnee = etiquette.decoupes.find(
+            const decoupeSelectionnee = etiquette.decoupes!.find(
                 d => d.decoupe === devisEncours.decoupe
             );
             if (decoupeSelectionnee) {
@@ -253,7 +253,7 @@ useEffect(() => {
                             Dimension
                         </h4>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            {etiquette.dimensions.map(dimension => (
+                            {etiquette.dimensions!.map(dimension => (
                                 <button
                                     key={dimension.id}
                                     onClick={() => {
@@ -277,7 +277,7 @@ useEffect(() => {
                             Matériaux
                         </h4>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            {etiquette.matieres.map(matiere => (
+                            {etiquette.matieres!.map(matiere => (
                                 <button
                                     key={matiere.id}
                                     onClick={() => {
@@ -336,7 +336,7 @@ useEffect(() => {
                         Couleur
                     </h4>
                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        {etiquette.couleurs.map(couleur => (
+                        {etiquette.couleurs!.map(couleur => (
                             <button
                                 title={couleur.couleur}
                                 key={couleur.id}
@@ -386,7 +386,7 @@ useEffect(() => {
                             Technologie d&apos;impression
                         </h4>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            {etiquette.imprimantes.map(imprimante => (
+                            {etiquette.imprimantes!.map(imprimante => (
                                 <Button
                                     key={imprimante.id}
                                     variant='ghost'
@@ -408,7 +408,7 @@ useEffect(() => {
                             Type de découpe
                         </h4>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            {etiquette.decoupes.map((decoupe) => (
+                            {etiquette.decoupes!.map((decoupe) => (
                                 <button
                                     key={decoupe.id}
                                     onClick={() => handleSelect(decoupe.decoupe, 'decoupe')}
@@ -457,7 +457,7 @@ useEffect(() => {
                             Finition
                         </h4>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            {etiquette.finitions.map((fintion) => (
+                            {etiquette.finitions!.map((fintion) => (
                                 <button
                                     key={fintion.id}
                                     title={fintion.finition}

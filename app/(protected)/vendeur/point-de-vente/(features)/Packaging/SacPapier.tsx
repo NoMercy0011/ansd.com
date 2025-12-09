@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { itemType } from '@/types/packaging/packagingType'
+import { itemType } from '@/types/itemType';
 import { devisData } from '@/types/type';
 import { Layers } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react'
@@ -27,7 +27,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
           prix: 0,
         })
   
-        const [autreDecoupe, setAutreDecoupe] = useState({
+        const [autreDimension, setAutreDimension] = useState({
           nom: "",
           prix: 0,
         })
@@ -112,7 +112,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
     // 1. Prix de base selon la dimension
     if (devisEncours.dimension === 'sur devis') {
         // Dimension personnalisée
-        prixUnitaire += autreDecoupe.prix;
+        prixUnitaire += autreDimension.prix;
     }
 
     // 2. Prix du matériau
@@ -120,7 +120,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
         // Matériau personnalisé
         prixUnitaire += autreMateriau.prix;
     } else {
-        const materiauSelectionne = sac_papier.matieres.find(
+        const materiauSelectionne = sac_papier.matieres!.find(
             m => m.id === devisEncours.materiau_id
         );
         if (materiauSelectionne) {
@@ -135,7 +135,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
     } 
 
     // 4. Prix de la face (recto/verso)
-    const faceSelectionnee = sac_papier.faces.find(
+    const faceSelectionnee = sac_papier.faces!.find(
         f => f.id === devisEncours.recto_verso_id
     );
     if (faceSelectionnee) {
@@ -155,7 +155,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
         prixUnitaire += autreEmplacement.prix;
     } 
     else {
-        const emplacementSelectionne = sac_papier.emplacements.find(
+        const emplacementSelectionne = sac_papier.emplacements!.find(
             e => e.emplacement === devisEncours.emplacement
         );
         if (emplacementSelectionne) {
@@ -200,7 +200,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
     devisEncours.emplacement,
     devisEncours.quantite,
     autreMateriau.prix,
-    autreDecoupe.prix,
+    autreDimension.prix,
     autreEmplacement.prix,
     autreCouleur.prix,
 ]);
@@ -227,7 +227,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
                  Dimension
              </h4>
              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                 {sac_papier.dimensions.map(dimension => (
+                 {sac_papier.dimensions!.map(dimension => (
                      <button
                          key={dimension.id}
                          onClick={() => handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension) }
@@ -239,7 +239,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
              </div>
          </div>
          <div className="w-full lg:w-1/2 scroll-mt-20">
-        {/* Input pour découpe "personnalisé" */}
+        {/* Input pour dimension "personnalisé" */}
         {devisEncours.dimension === 'sur devis' && (
         <div className="mt-3 px-2">
             <div className="space-y-3">
@@ -247,16 +247,16 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
                 <div className="relative">
                     <Input
                         type="text"
-                        value={autreDecoupe.nom}
-                        onChange={(e) => setAutreDecoupe(prev => ({ ...prev, nom: e.target.value }))}
+                        value={autreDimension.nom}
+                        onChange={(e) => setAutreDimension(prev => ({ ...prev, nom: e.target.value }))}
                         placeholder="Description de la dimension personnalisé"
                     />
                 </div>
                 <div className="relative">
                     <Input
                         type="number"
-                        value={autreDecoupe.prix || ''}
-                        onChange={(e) => setAutreDecoupe(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                        value={autreDimension.prix || ''}
+                        onChange={(e) => setAutreDimension(prev => ({ ...prev, prix: Number(e.target.value) }))}
                         placeholder="Prix supplémentaire"
                         min="0"
                     />
@@ -276,7 +276,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
             Matériaux
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {sac_papier.matieres.map(matiere => (
+            {sac_papier.matieres!.map(matiere => (
                 <Button
                     key={matiere.id}
                     title={matiere.type}
@@ -337,7 +337,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
             Couleur
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {sac_papier.couleurs.map(couleur => (
+            {sac_papier.couleurs!.map(couleur => (
                 <button
                     title={couleur.couleur}
                     key={couleur.id}
@@ -385,7 +385,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
                 Face
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {sac_papier.faces.map(face => (
+                {sac_papier.faces!.map(face => (
                     <button
                         key={face.id}
                         onClick={() => handleSelect(face.id, 'recto_verso_id', 'recto', face.face)}
@@ -406,7 +406,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
                 Technologie d&apos;impression
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {sac_papier.imprimantes.map(imprimante => (
+                {sac_papier.imprimantes!.map(imprimante => (
                     <Button
                         key={imprimante.id}
                         variant='ghost'
@@ -428,7 +428,7 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
             Emplacement d&apos;impression
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {sac_papier.emplacements.map(emplacement => (
+            {sac_papier.emplacements!.map(emplacement => (
                 <button
                     key={emplacement.id}
                     onClick={() => handleSelect(emplacement.emplacement, 'emplacement')}

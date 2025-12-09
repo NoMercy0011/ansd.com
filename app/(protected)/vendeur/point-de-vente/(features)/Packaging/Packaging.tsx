@@ -2,7 +2,6 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { usePackaging } from '@/hooks/useModerator';
 import { Layers, PackageOpenIcon } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import Hangtag from './Hangtag';
@@ -15,6 +14,7 @@ import { CartItemsType, devisData } from '@/types/type';
 import OptionOverview from '../OptionOverview/OptionOverview';
 import { GetClientID } from '@/sources/actions/admin/client.action';
 import CatalogSkeleton from '../skeleton/skeleton';
+import { usePackaging } from '@/hooks/use-fetch-item';
 
 type CatalogueProps = {
     userRole?: string;
@@ -106,6 +106,9 @@ export default function Packaging({ userRole, param, handleAddCart }: CatalogueP
                     Packaging & Boites
                 </CardTitle>
 
+            </CardHeader>
+
+            <CardContent>
                 {/* Barre de Navigation Sticky */}
                 <div className="sticky top-0 z-10 bg-white dark:bg-slate-900 pt-2 pb-2 border-b border-slate-200 dark:border-slate-700">
                     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -143,9 +146,6 @@ export default function Packaging({ userRole, param, handleAddCart }: CatalogueP
                         </TabsList>
                     </Tabs>
                 </div>
-            </CardHeader>
-
-            <CardContent>
                 <div className="flex flex-col lg:flex-row gap-6">
                     <div className="w-full lg:w-3/4 space-y-1">
                         {packagingLoading ? <CatalogSkeleton /> : (

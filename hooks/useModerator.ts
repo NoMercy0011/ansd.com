@@ -4,8 +4,6 @@ import { GetClientID, GetClients } from '@/sources/actions/admin/client.action';
 import { GetCommerciaux } from '@/sources/actions/admin/commercial.action';
 import { GetDocument } from '@/sources/actions/admin/document.action';
 import { GetLivre } from '@/sources/actions/admin/livre.action';
-import { GetPackaging } from '@/sources/actions/admin/packaging.action';
-import { itemType } from '@/types/packaging/packagingType';
 import { clientType, CommercialData, DocumentType, LivreType } from '@/types/type';
 import useSWR from 'swr';
 
@@ -64,19 +62,5 @@ export function useDocument() {
         documentLoading: isLoading,
         documentError: error,
         mutate
-    }
-}
-
-export function usePackaging() {
-    const { data , isLoading, error, mutate} = useSWR( 'get-packaging', GetPackaging);
-    return {
-        hangtag : data?.data[0] as itemType,
-        etiquette: data?.data[1] as itemType,
-        boite: data?.data[2] as itemType,
-        doypack: data?.data[3] as itemType,
-        sac_papier: data?.data[4] as itemType,
-        packagingLoading: isLoading,
-        packagingError: error,
-        mutate,
     }
 }

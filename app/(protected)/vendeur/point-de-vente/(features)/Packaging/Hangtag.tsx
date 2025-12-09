@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { itemType } from '@/types/packaging/packagingType'
+import { itemType } from '@/types/itemType';
 import { devisData } from '@/types/type';
 import { Book, Layers, Weight } from 'lucide-react';
 import React, { useEffect, useState, useRef } from 'react'
@@ -117,7 +117,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
             // Matériau personnalisé
             prixUnitaire += autreMateriau.prix;
         } else {
-            const materiauSelectionne = hangtag.matieres.find(
+            const materiauSelectionne = hangtag.matieres!.find(
                 m => m.id === devisHangtag.materiau_id
             );
             if (materiauSelectionne) {
@@ -137,7 +137,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
         }
 
         // 3. Prix de la face (recto/verso)
-        const faceSelectionnee = hangtag.faces.find(
+        const faceSelectionnee = hangtag.faces!.find(
             f => f.id === devisHangtag.recto_verso_id
         );
         if (faceSelectionnee) {
@@ -145,7 +145,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
         }
 
         // 4. Prix de la découpe (si applicable)
-        if (devisHangtag.decoupe && hangtag.decoupes.length > 0) {
+        if (devisHangtag.decoupe && hangtag.decoupes!.length > 0) {
         if (devisHangtag.decoupe === 'autres') {
             prixUnitaire += autreDecoupe.prix;
         } 
@@ -231,7 +231,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
                                 Dimension
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {hangtag.dimensions.map(dimension => (
+                                {hangtag.dimensions!.map(dimension => (
                                     <button
                                         key={dimension.id}
                                         onClick={() => {
@@ -283,7 +283,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
                                         Grammage
                                     </div>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {hangtag.matieres.map(materiau => (
+                                        {hangtag.matieres!.map(materiau => (
                                             <button
                                                 key={materiau.id}
                                                 onClick={() => {
@@ -340,7 +340,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
                                 Couleur
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {hangtag.couleurs.map(couleur => (
+                                {hangtag.couleurs!.map(couleur => (
                                     <button
                                         title={couleur.couleur}
                                         key={couleur.id}
@@ -362,7 +362,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
                                 Face
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {hangtag.faces.map(face => (
+                                {hangtag.faces!.map(face => (
                                     <button
                                         key={face.id}
                                         onClick={() => handleSelect(face.id, 'recto_verso_id', 'recto', face.face)}
@@ -383,7 +383,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
                                 Technologie d&apos;impression
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {hangtag.imprimantes.map(imprimante => (
+                                {hangtag.imprimantes!.map(imprimante => (
                                     <button
                                         key={imprimante.id}
                                         onClick={() => handleSelect(imprimante.id, 'imprimante_id', 'imprimante', imprimante.imprimante)}
@@ -404,7 +404,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
                                 Type de découpe
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {hangtag.decoupes.map((decoupe) => (
+                                {hangtag.decoupes!.map((decoupe) => (
                                     <button
                                         key={decoupe.id}
                                         onClick={() => handleSelect(decoupe.decoupe, 'decoupe')}
@@ -454,7 +454,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
                                 Emplacement d&apos;impression
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {hangtag.emplacements.map(emplacement => (
+                                {hangtag.emplacements!.map(emplacement => (
                                     <button
                                         key={emplacement.id}
                                         onClick={() => handleSelect(emplacement.emplacement, 'emplacement')}
@@ -502,7 +502,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
                                 Particularités
                             </h4>
                             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {hangtag.particularites.map((part) => (
+                                {hangtag.particularites!.map((part) => (
                                     <button
                                         key={part.id}
                                         title={part.particularite}

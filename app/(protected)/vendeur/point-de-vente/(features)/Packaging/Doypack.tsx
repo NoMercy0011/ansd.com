@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { itemType } from '@/types/packaging/packagingType'
+import { itemType } from '@/types/itemType';
 import { devisData } from '@/types/type';
 import { Layers } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react'
@@ -134,7 +134,7 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
     }*/
 
     // 2. Prix du matériau
-    const materiauSelectionne = doypack.matieres.find(
+    const materiauSelectionne = doypack.matieres!.find(
         m => m.id === devisEncours.materiau_id
     );
     if (materiauSelectionne) {
@@ -150,7 +150,7 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
     }*/
 
     // 4. Prix de la face (recto/verso)
-    const faceSelectionnee = doypack.faces.find(
+    const faceSelectionnee = doypack.faces!.find(
         f => f.id === devisEncours.recto_verso_id
     );
     if (faceSelectionnee) {
@@ -233,7 +233,7 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
                  Dimension
              </h4>
              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                 {doypack.dimensions.map(dimension => (
+                 {doypack.dimensions!.map(dimension => (
                      <button
                          key={dimension.id}
                          onClick={() => handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension) }
@@ -282,7 +282,7 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
             Matériaux
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {doypack.matieres.map(matiere => (
+            {doypack.matieres!.map(matiere => (
                 <Button
                     key={matiere.id}
                     variant='ghost'
@@ -306,7 +306,7 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
                 Technologie d&apos;impression
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {doypack.imprimantes.map(imprimante => (
+                {doypack.imprimantes!.map(imprimante => (
                     <Button
                         key={imprimante.id}
                         variant='ghost'
@@ -328,7 +328,7 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
                 Face
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {doypack.faces.map(face => (
+                {doypack.faces!.map(face => (
                     <button
                         key={face.id}
                         onClick={() => handleSelect(face.id, 'recto_verso_id', 'recto', face.face)}
@@ -349,7 +349,7 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
                 Emplacement d&apos;impression
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {doypack.emplacements.map(emplacement => (
+                {doypack.emplacements!.map(emplacement => (
                     <button
                         key={emplacement.id}
                         onClick={() => handleSelect(emplacement.emplacement, 'emplacement')}

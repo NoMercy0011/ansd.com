@@ -74,7 +74,7 @@ export default function Page() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {filteredPersonnel.map(person => (
                     <div key={person.id} className="text-center bg-white dark:bg-slate-800/50 p-6 rounded-xl shadow-lg shadow-slate-200/40 dark:shadow-black/20 border border-slate-200/50 dark:border-slate-700/50 transform hover:-translate-y-1 transition-transform duration-300">
-                        <Image src={person.avatar} alt={person.name} className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-200 dark:border-slate-700" />
+                        <Image src={person.avatar} alt={person.name} width={20} height={20} className="w-24 h-24 rounded-full mx-auto mb-4 border-4 border-slate-200 dark:border-slate-700" />
                         <h3 className="text-lg font-semibold text-slate-800 dark:text-slate-100">{person.name}</h3>
                         <p className="text-sm text-red-500">{person.position}</p>
                     </div>

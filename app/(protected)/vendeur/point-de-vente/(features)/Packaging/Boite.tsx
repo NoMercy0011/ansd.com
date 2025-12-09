@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { itemType } from '@/types/packaging/packagingType'
+import { itemType } from '@/types/itemType';
 import { devisData } from '@/types/type';
 import { Book, Layers, Weight } from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react'
@@ -145,7 +145,7 @@ const [prix, setPrix] = useState({
         prixUnitaire += autreMateriau.prix;
     } else {
         // Prix du grammage sélectionné
-        const materiauSelectionne = boite.matieres.find(
+        const materiauSelectionne = boite.matieres!.find(
             m => m.id === devisEncours.materiau_id
         );
         if (materiauSelectionne) {
@@ -189,7 +189,7 @@ const [prix, setPrix] = useState({
     }*/
 
     // 6. Prix de la découpe (si applicable)
-    if (devisEncours.decoupe && boite.decoupes.length > 0) {
+    if (devisEncours.decoupe && boite.decoupes!.length > 0) {
         if (devisEncours.decoupe === 'autres') {
             prixUnitaire += autreDecoupe.prix;
         } 
@@ -293,7 +293,7 @@ const [prix, setPrix] = useState({
                  Dimension
              </h4>
              <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                 {boite.dimensions.map(dimension => (
+                 {boite.dimensions!.map(dimension => (
                      <button
                          key={dimension.id}
                          onClick={() => handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension) }
@@ -371,7 +371,7 @@ const [prix, setPrix] = useState({
               Grammage
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-              {boite.matieres.map(materiau => (
+              {boite.matieres!.map(materiau => (
                   <button
                       key={materiau.id}
                       onClick={() => {
@@ -429,7 +429,7 @@ const [prix, setPrix] = useState({
             Couleur
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {boite.couleurs.map(couleur => (
+            {boite.couleurs!.map(couleur => (
                 <button
                     title={couleur.couleur}
                     key={couleur.id}
@@ -451,7 +451,7 @@ const [prix, setPrix] = useState({
                 Face
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {boite.faces.map(face => (
+                {boite.faces!.map(face => (
                     <button
                         key={face.id}
                         onClick={() => handleSelect(face.id, 'recto_verso_id', 'recto', face.face)}
@@ -472,7 +472,7 @@ const [prix, setPrix] = useState({
                 Technologie d&apos;impression
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {boite.imprimantes.map(imprimante => (
+                {boite.imprimantes!.map(imprimante => (
                     <button
                         key={imprimante.id}
                         onClick={() => handleSelect(imprimante.id, 'imprimante_id', 'imprimante', imprimante.imprimante)}
@@ -486,14 +486,14 @@ const [prix, setPrix] = useState({
     </div>
 
     {/* Section Decoupe */}
-    <div className={`flex mb-4 ${ !boite.decoupes.length ? 'hidden' : ''}`}>
+    <div className={`flex mb-4 ${ !boite.decoupes!.length ? 'hidden' : ''}`}>
         <div ref={decoupeRef} className="w-full lg:w-1/2 scroll-mt-20">
             <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
                 <Layers className="mr-2" />
                 Type de découpe
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {boite.decoupes.map((decoupe) => (
+                {boite.decoupes!.map((decoupe) => (
                     <button
                         key={decoupe.id}
                         onClick={() => handleSelect(decoupe.decoupe, 'decoupe')}
@@ -543,7 +543,7 @@ const [prix, setPrix] = useState({
             Emplacement d&apos;impression
         </h4>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {boite.emplacements.map(emplacement => (
+            {boite.emplacements!.map(emplacement => (
                 <button
                     key={emplacement.id}
                     onClick={() => handleSelect(emplacement.emplacement, 'emplacement')}
@@ -617,7 +617,7 @@ const [prix, setPrix] = useState({
                 Particularités
             </h4>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {boite.particularites.map((part) => (
+                {boite.particularites!.map((part) => (
                     <button
                         key={part.id}
                         title={part.particularite}
