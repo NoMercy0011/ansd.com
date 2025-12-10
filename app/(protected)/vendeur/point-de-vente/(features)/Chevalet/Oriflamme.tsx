@@ -21,7 +21,7 @@ export default function Oriflamme({item, activeSection, getDevis, getPrix} : Ite
         prixTotal: 0,
         prixUnitaire: 0,
     });
-    //const [activeTab, setActiveTab] = useState('type');
+    //const [activeTab, setActiveTab] = useState('type'); 4
     const [ratioState, setRatioState] = useState(1);
 
     const [autreMateriau, setAutreMateriau] = useState({
