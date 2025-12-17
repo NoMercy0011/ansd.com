@@ -2,18 +2,18 @@
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { CalendarDays, Layers } from 'lucide-react';
+import { Layers, Map } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CartItemsType, devisData } from '@/types/type';
 import OptionOverview from '../OptionOverview/OptionOverview';
 import { GetClientID } from '@/sources/actions/admin/client.action';
 import CatalogSkeleton from '../skeleton/skeleton';
-import { useCalendar } from '@/hooks/use-fetch-item';
-import CalendrierPlateau from './Plateaux';
-import MarquePage from './MarquePage';
-import Chevalet from './Chevalet';
+import { useCarterie } from '@/hooks/use-fetch-item';
 import { toast } from 'sonner';
+import Visite from './Visite';
+import Fidelite from './Fidelite';
+import Jeux from './Jeux';
 
 type CatalogueProps = {
     userRole?: string;
@@ -21,8 +21,8 @@ type CatalogueProps = {
     handleAddCart: (cartItem: CartItemsType, devis: devisData) => void;
 }
 
-export default function Calendar({ userRole, param, handleAddCart }: CatalogueProps) {
-    const { chevalet, calendrier, marque_page, calendarLoading, calendarError } = useCalendar();
+export default function Carterie({ userRole, param, handleAddCart }: CatalogueProps) {
+    const { fidelite, jeux, visite, carterieLoading, carterieError } = useCarterie();
 
     const [selectedCatalogueType, setSelectedCatalogueType] = useState<string>('');
     
@@ -45,9 +45,9 @@ export default function Calendar({ userRole, param, handleAddCart }: CataloguePr
 
     const itemData = {
         types: [
-            { id: 1, type: 'calendrier', nom: 'Calendrier plateaux' },
-            { id: 2, type: 'marque_page', nom: 'Marque-Page' },
-            { id: 3, type: 'chevalet', nom: 'Chevalet' },
+            { id: 1, type: 'visite', nom: 'Carte de visite' },
+            { id: 2, type: 'fidelite', nom: 'Carte de fidélité' },
+            { id: 3, type: 'jeux', nom: 'Jeux de cartes' },
         ]
     };
 
@@ -59,7 +59,7 @@ export default function Calendar({ userRole, param, handleAddCart }: CataloguePr
                     setDevisEncours(prev => ({ ...prev, client_id: Number(clientData?.id_client) } as devisData));
                 });
         }
-        if(calendarError) {
+        if(carterieError) {
             toast.error("Erreur s'est produite lors de la récupération des données");
         }
     }, [param]);
@@ -101,13 +101,13 @@ export default function Calendar({ userRole, param, handleAddCart }: CataloguePr
     return (
         <Card className="w-full">
             <CardHeader className="pb-2">
-                { calendarLoading ? ( <CardTitle className="flex text-slate-700 animate-pulse items-center gap-2 text-lg font-semibold">
-                    <CalendarDays className="h-6 w-6 text-red-500" />
+                { carterieLoading ? ( <CardTitle className="flex text-slate-700 animate-pulse items-center gap-2 text-lg font-semibold">
+                    <Map className="h-6 w-6 text-red-500" />
                     Préparation...
                 </CardTitle> ) :    
                 (<CardTitle className="flex items-center gap-2 text-lg font-semibold">
-                    <CalendarDays className="h-6 w-6 text-red-500" />
-                    { calendrier.catalogue?.catalogue }
+                    <Map className="h-6 w-6 text-red-500" />
+                    { jeux.catalogue?.catalogue }
                 </CardTitle>)
                 }
             </CardHeader>
@@ -136,10 +136,10 @@ export default function Calendar({ userRole, param, handleAddCart }: CataloguePr
                             <TabsTrigger value="imprimante" disabled={!selectedCatalogueType} className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
                                 Impression
                             </TabsTrigger>
-                            {/* <TabsTrigger value="decoupe" disabled={!selectedCatalogueType} className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
+                             <TabsTrigger value="decoupe" disabled={!selectedCatalogueType} className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
                                 Découpe
                             </TabsTrigger>
-                            <TabsTrigger value="emplacement" disabled={!selectedCatalogueType} className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
+                            {/*<TabsTrigger value="emplacement" disabled={!selectedCatalogueType} className="data-[state=active]:bg-slate-100 data-[state=active]:dark:bg-slate-900  border-3 border-transparent data-[state=active]:border-b-red-500 text-xs px-3 py-1.5 h-auto">
                                 Emplacement
                             </TabsTrigger>
                             <TabsTrigger value="finition" disabled={!selectedCatalogueType} className="data-[state=active]:bg-slate-100 border border-transparent data-[state=active]:border-slate-200 text-xs px-3 py-1.5 h-auto">
@@ -154,7 +154,7 @@ export default function Calendar({ userRole, param, handleAddCart }: CataloguePr
 
                 <div className="flex flex-col lg:flex-row gap-6">
                     <div className="w-full lg:w-3/4 space-y-1">
-                        {calendarLoading ? <CatalogSkeleton /> : (
+                        {carterieLoading ? <CatalogSkeleton /> : (
                             <div className="space-y-8 max-h-[70vh] overflow-y-auto mt-1 pr-2 scroll-smooth">
                                 
                                 {/* Section Choix du Type (Toujours visible) */}
@@ -182,27 +182,27 @@ export default function Calendar({ userRole, param, handleAddCart }: CataloguePr
                                 </div>
 
                                 {/* Rendu Conditionnel des Enfants avec passage de activeTab */}
-                                {selectedCatalogueType === 'calendrier' && (
-                                    <CalendrierPlateau 
-                                        item={calendrier} 
+                                {selectedCatalogueType === 'visite' && (
+                                    <Visite 
+                                        item={visite} 
                                         userRole={String(userRole)} 
                                         getDevis={getDevis} 
                                         getPrix={getPrix}
                                         activeSection={activeTab} // On passe la section active pour le scroll
                                     />
                                 )}
-                                {selectedCatalogueType === 'marque_page' && (
-                                    <MarquePage 
-                                        item={marque_page} 
+                                {selectedCatalogueType === 'fidelite' && (
+                                    <Fidelite 
+                                        item={fidelite} 
                                         userRole={String(userRole)} 
                                         getDevis={getDevis} 
                                         getPrix={getPrix} 
                                         activeSection={activeTab} 
                                     />
                                 )}
-                                {selectedCatalogueType === 'chevalet' && (
-                                    <Chevalet 
-                                        item={chevalet} 
+                                {selectedCatalogueType === 'jeux' && (
+                                    <Jeux 
+                                        item={jeux} 
                                         userRole={String(userRole)} 
                                         getDevis={getDevis} 
                                         getPrix={getPrix} 
@@ -220,7 +220,7 @@ export default function Calendar({ userRole, param, handleAddCart }: CataloguePr
                         prixTotalReel={prix.prixTotal}
                         handleAddToCart={handleAddToCart}
                         // On cast ici car OptionOverview attend un type générique ou spécifique
-                        devisCalendar={devisEncours as devisData} 
+                        devisCarterie={devisEncours as devisData} 
                     />
                 </div>
             </CardContent>

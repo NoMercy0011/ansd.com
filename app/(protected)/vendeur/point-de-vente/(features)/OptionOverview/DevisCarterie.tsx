@@ -24,33 +24,31 @@ export default function DevisCarterie( { devis } : DevisProps) {
                     </span>
                 </div>
 
+                <div className={`${devis?.materiau === 'invalide' ? 'hidden' : 'flex justify-between'}`}>
+                    <span>Matériau:</span>
+                    <span className="font-semibold truncate ml-2.5">
+                        {devis?.materiau || ''}
+                    </span>
+                </div>
+
                 <div className="flex justify-between">
-                    <span>Découpe :</span>
+                    <span>Face :</span>
                     <span className="font-semibold">
-                        {devis?.forme}
+                        {devis?.recto }
                     </span>
                 </div>
-
-
-                <div className="flex justify-between text-right">
-                    <span>Support :</span>
-                    <span className="font-semibold">
-                        {devis?.support || ''}
-                    </span>
-                </div>
-
-
+                
                 <div className="flex justify-between">
                     <span>Imprimante :</span>
                     <span className="font-semibold">
                         {devis?.imprimante}
                     </span>
                 </div>
-                
+
                 <div className="flex justify-between">
-                    <span>Face :</span>
+                    <span>Découpe :</span>
                     <span className="font-semibold">
-                        {devis?.face }
+                        {devis?.decoupe}
                     </span>
                 </div>
 

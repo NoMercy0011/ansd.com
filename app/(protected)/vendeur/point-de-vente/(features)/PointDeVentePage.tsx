@@ -7,7 +7,7 @@ import PrintArticle from './PrintArticle';
 import Packaging from './Packaging/Packaging';
 import Chevalet from './Chevalet/Chevalet';
 import Calendar from './Calendar/Calendar';
-import Cartetie from './Cartetie';
+import Cartetie from './Carterie/Cartetie';
 import CartSection from './CartSection';
 import Flyers from './Flyers';
 import Finition from './Finition';
