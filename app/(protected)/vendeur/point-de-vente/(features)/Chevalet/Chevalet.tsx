@@ -25,7 +25,7 @@ type CatalogueProps = {
     handleAddCart: (cartItem: CartItemsType, devis: devisData) => void;
 }
 
-export default function Packaging({ userRole, param, handleAddCart }: CatalogueProps) {
+export default function Chevalet({ userRole, param, handleAddCart }: CatalogueProps) {
     const { chevalet_de_table, porte_affiche, porte_flyers, roll_up_deluxe, 
             roll_up_standard, oriflamme, stop_trottoir, x_banner, chevaletLoading } = useChevalet();
 

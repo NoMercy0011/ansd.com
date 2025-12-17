@@ -31,27 +31,27 @@ export default function DevisCalendar( { devisCalendar } : DevisPackagingProps) 
                     </span>
                 </div>
 
-                <div className="flex justify-between">
+                <div className={`${devisCalendar?.recto === 'invalide' ? 'hidden' : 'flex justify-between'}`}>
                     <span>Face :</span>
                     <span className="font-semibold">
                         {devisCalendar?.recto }
                     </span>
                 </div>
 
-                <div className="flex justify-between">
+                <div className={`${devisCalendar?.imprimante === 'invalide' ? 'hidden' : 'flex justify-between'}`}>
                     <span>Imprimante :</span>
                     <span className="font-semibold">
                         {devisCalendar?.imprimante}
                     </span>
                 </div>
 
-                <div className="flex justify-between">
+                <div className={`${devisCalendar?.socle === 'invalide' ? 'hidden' : 'flex justify-between'}`}>
                     <span>Socle :</span>
                     <span className="font-semibold">
                         {devisCalendar?.socle || ''}
                     </span>
                 </div>
-                <div className="flex justify-between">
+                <div className={`${devisCalendar?.particularite === 'invalide' ? 'hidden' : 'flex justify-between'}`}>
                     <span>Particularités :</span>
                     <span className="font-semibold">
                         {devisCalendar?.particularite || ''}
