@@ -19,7 +19,7 @@ export default function Etiquette({etiquette, activeSection, getDevis, getPrix} 
         prixTotal: 0,
         prixUnitaire: 0 ,
     })
-    //const [activeTab, setActiveTab] = useState('type');
+    
     const [ratioState, setRatioState] = useState(1);
 
     const [autreMateriau, setAutreMateriau] = useState({
@@ -27,14 +27,23 @@ export default function Etiquette({etiquette, activeSection, getDevis, getPrix} 
         prix: 0,
     })
 
+    const [prixMaterieau, setPrixMaterieau] = useState(0);
+
+    const [autreDimension, setAutreDimension] = useState({
+        longueur: 0,
+        largeur: 0,
+    })
+
     const [autreDecoupe, setAutreDecoupe] = useState({
         nom: "",
         prix: 0,
     })
+    
     const [autreCouleur, setAutreCouleur] = useState({
         nom: "",
         prix: 0,
     })
+    
     const [autreFinition, setAutreFinition] = useState({
         nom: "",
         prix: 0,
@@ -99,137 +108,114 @@ export default function Etiquette({etiquette, activeSection, getDevis, getPrix} 
         }
     }, [activeSection]);
 
-    useEffect( () => {
+    useEffect(() => {
         getDevis(devisEncours);
-        // Le prix est mis à jour dans l'autre useEffect
         getPrix(prix.prixTotal, prix.prixUnitaire); 
     }, [devisEncours, prix.prixTotal, prix.prixUnitaire]);
 
-useEffect(() => {
-    // --- Logique de Calcul du Prix pour Etiquette ---
-    
-    // Vérification des sélections obligatoires
-    /*if (!devisEncours.dimension_id || 
-        !devisEncours.materiau_id || 
-        !devisEncours.couleur_id || 
-        !devisEncours.imprimante_id) {
-        setPrix({ prixTotal: 0, prixUnitaire: 0 });
-        return;
-    }*/
+    useEffect(() => {
+        // --- Logique de Calcul du Prix pour Etiquette ---
 
-    let prixUnitaire = 0;
-    
-    // 1. Prix de base selon la dimension (avec ratio)
-    // const dimensionSelectionnee = etiquette.dimensions.find(
-    //     d => d.id === devisEncours.dimension_id
-    // );
-    // if (dimensionSelectionnee) {
-    //     prixUnitaire += dimensionSelectionnee.prix * ratioState;
-    // }
-
-    // 2. Prix du matériau
-    if (devisEncours.materiau_id === 999) {
-        // Matériau personnalisé
-        prixUnitaire += autreMateriau.prix;
-    } else {
-        const materiauSelectionne = etiquette.matieres!.find(
-            m => m.id === devisEncours.materiau_id
+        let prixUnitaire = 0;
+        
+        // 1. Calcul de la surface en m²
+        let surfaceM2 = 0;
+        
+        const dimensionSelectionnee = etiquette.dimensions?.find(
+            d => d.id === devisEncours.dimension_id
         );
-        if (materiauSelectionne) {
-            prixUnitaire += Number(materiauSelectionne.prix_unitaire);
-        }
-    }
-
-    // 3. Prix de la couleur
-    if (devisEncours.couleur === 'autres') {
-        // Couleur personnalisée
-        prixUnitaire += autreCouleur.prix;
-     } 
-    //else {
-    //     const couleurSelectionnee = etiquette.couleurs.find(
-    //         c => c.id === devisEncours.couleur_id
-    //     );
-    //     if (couleurSelectionnee) {
-    //         prixUnitaire += couleurSelectionnee.prix;
-    //     }
-    // }
-
-    // 4. Prix de l'imprimante/technologie
-    // const imprimanteSelectionnee = etiquette.imprimantes.find(
-    //     i => i.id === devisEncours.imprimante_id
-    // );
-    // if (imprimanteSelectionnee) {
-    //     prixUnitaire += imprimanteSelectionnee.prix;
-    // }
-
-    // 5. Prix de la découpe
-    if (devisEncours.decoupe) {
-        if (devisEncours.decoupe === 'personnalisée') {
-            prixUnitaire += autreDecoupe.prix;
+        
+        if (dimensionSelectionnee?.dimension === 'linéaire') {
+            // Dimension personnalisée en mm → conversion en m²
+            // Surface = (longueur × largeur) / 1,000,000
+            if (autreDimension.longueur > 0 && autreDimension.largeur > 0) {
+                surfaceM2 = (autreDimension.longueur * autreDimension.largeur) / 1000000;
+            }
         } else {
-            const decoupeSelectionnee = etiquette.decoupes!.find(
-                d => d.decoupe === devisEncours.decoupe
-            );
-            if (decoupeSelectionnee) {
-                prixUnitaire += Number(decoupeSelectionnee.prix) || 0;
+            // Dimension standard : 50cm × 50cm = 0.5m × 0.5m = 0.25 m²
+            surfaceM2 = 0.5 * 0.5;
+        }
+
+        // 2. Prix du matériau (prix au m² × surface)
+        if (devisEncours.materiau_id === 999) {
+            // Matériau personnalisé
+            prixUnitaire = autreMateriau.prix * surfaceM2;
+        } else {
+            // Matériau standard avec prix au m² saisi
+            if (prixMaterieau > 0) {
+                prixUnitaire = prixMaterieau * surfaceM2;
             }
         }
-    }
 
-    // 6. Prix de la finition
-    if (devisEncours.finition) {
-        if (devisEncours.finition === 'autres') {
-            prixUnitaire += autreFinition.prix;
+        // 3. Prix de la couleur (supplément fixe)
+        if (devisEncours.couleur === 'autres') {
+            prixUnitaire += autreCouleur.prix;
         } 
-        // else {
-        //     const finitionSelectionnee = etiquette.finitions.find(
-        //         f => f.finition === devisEncours.finition
-        //     );
-        //     if (finitionSelectionnee) {
-        //         prixUnitaire += finitionSelectionnee.prix || 0;
-        //     }
-        // }
-    }
 
-    // 7. Application des paliers de quantité (remise par volume)
-    const quantite = devisEncours.quantite || 1;
-    let coefficientQuantite = 1;
-    
-    if (quantite >= 10000) {
-        coefficientQuantite = 0.75; // 25% de réduction
-    } else if (quantite >= 5000) {
-        coefficientQuantite = 0.80; // 20% de réduction
-    } else if (quantite >= 1000) {
-        coefficientQuantite = 0.85; // 15% de réduction
-    } else if (quantite >= 500) {
-        coefficientQuantite = 0.90; // 10% de réduction
-    } else if (quantite >= 100) {
-        coefficientQuantite = 0.95; // 5% de réduction
-    }
 
-    const prixUnitaireFinal = prixUnitaire * coefficientQuantite;
-    const prixTotalFinal = prixUnitaireFinal * quantite;
+        // 5. Prix de la découpe (supplément fixe)
+        if (devisEncours.decoupe) {
+            if (devisEncours.decoupe === 'personnalisée') {
+                prixUnitaire += autreDecoupe.prix;
+            } else {
+                const decoupeSelectionnee = etiquette.decoupes?.find(
+                    d => d.decoupe === devisEncours.decoupe
+                );
+                if (decoupeSelectionnee && decoupeSelectionnee.prix) {
+                    prixUnitaire += Number(decoupeSelectionnee.prix);
+                }
+            }
+        }
 
-    // Mise à jour de l'état
-    setPrix({
-        prixUnitaire: Math.round(prixUnitaireFinal),
-        prixTotal: Math.round(prixTotalFinal)
-    });
+        // 6. Prix de la finition (supplément fixe)
+        if (devisEncours.finition) {
+            if (devisEncours.finition === 'autres') {
+                prixUnitaire += autreFinition.prix;
+            } 
+        }
 
-}, [
-    devisEncours.dimension_id, 
-    devisEncours.materiau_id, 
-    devisEncours.couleur_id, 
-    devisEncours.imprimante_id, 
-    devisEncours.decoupe, 
-    devisEncours.finition,
-    devisEncours.quantite,
-    ratioState,
-    autreMateriau.prix,
-    autreDecoupe.prix,
-    autreCouleur.prix,
-    autreFinition.prix,
-]);
+        // 7. Application des paliers de quantité (remise par volume)
+        const quantite = devisEncours.quantite || 1;
+        let coefficientQuantite = 1;
+        
+        if (quantite >= 10000) {
+            coefficientQuantite = 0.75; // 25% de réduction
+        } else if (quantite >= 5000) {
+            coefficientQuantite = 0.80; // 20% de réduction
+        } else if (quantite >= 1000) {
+            coefficientQuantite = 0.85; // 15% de réduction
+        } else if (quantite >= 500) {
+            coefficientQuantite = 0.90; // 10% de réduction
+        } else if (quantite >= 100) {
+            coefficientQuantite = 0.95; // 5% de réduction
+        }
+
+        const prixUnitaireFinal = prixUnitaire * coefficientQuantite;
+        const prixTotalFinal = prixUnitaireFinal * quantite;
+
+        // Mise à jour de l'état
+        setPrix({
+            prixUnitaire: Math.round(prixUnitaireFinal),
+            prixTotal: Math.round(prixTotalFinal)
+        });
+
+    }, [
+        devisEncours.dimension_id, 
+        devisEncours.materiau_id, 
+        devisEncours.couleur_id, 
+        devisEncours.imprimante_id, 
+        devisEncours.decoupe, 
+        devisEncours.finition,
+        devisEncours.quantite,
+        ratioState,
+        autreMateriau.prix,
+        autreDecoupe.prix,
+        autreCouleur.prix,
+        autreFinition.prix,
+        prixMaterieau,
+        autreDimension.largeur,
+        autreDimension.longueur,
+    ]);
         
     const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
         setDevisEncours(prevState => ({
@@ -240,7 +226,6 @@ useEffect(() => {
         }));
     };
 
-    // ... Reste du composant (JSX) inchangé ...
     return (
         <div className="flex flex-col lg:flex-row gap-3">
             <div className="w-full lg:w-full space-y-1">
@@ -259,6 +244,10 @@ useEffect(() => {
                                     onClick={() => {
                                         handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension);
                                         setRatioState(dimension.ratio);
+                                        // Réinitialiser les dimensions personnalisées si on change
+                                        if (dimension.dimension !== 'linéaire') {
+                                            setAutreDimension({ longueur: 0, largeur: 0 });
+                                        }
                                     }}
                                     className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.dimension_id === dimension.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                                 >
@@ -267,6 +256,42 @@ useEffect(() => {
                             ))}
                         </div>
                     </div>
+
+                    {/* Input pour dimension "linéaire" */}
+                    {devisEncours.dimension === 'linéaire' && (
+                        <div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">
+                            <div className="space-y-3">
+                                <h1 className='text-sm font-bold ml-2'>Dimension Personnalisée
+                                {autreDimension.longueur > 0 && autreDimension.largeur > 0 && (
+                                    <span className="text-xs text-red-600 dark:text-gray-400 ml-2 mt-2">
+                                       ( Surface : {((autreDimension.longueur * autreDimension.largeur) / 1000000).toFixed(4)} m² ) 
+                                    </span>
+                                )}
+                                </h1>
+                                <div className="relative">
+                                    <Input
+                                        type="number"
+                                        value={autreDimension.longueur || ''}
+                                        onChange={(e) => setAutreDimension(prev => ({ ...prev, longueur: Number(e.target.value) }))}
+                                        min="0"
+                                        placeholder="Longueur"
+                                    />
+                                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">mm</span>
+                                </div>
+                                <div className="relative">
+                                    <Input
+                                        type="number"
+                                        value={autreDimension.largeur || ''}
+                                        onChange={(e) => setAutreDimension(prev => ({ ...prev, largeur: Number(e.target.value) }))}
+                                        placeholder="Largeur"
+                                        min="0"
+                                    />
+                                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">mm</span>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Section Materiaux */}
@@ -281,7 +306,9 @@ useEffect(() => {
                                 <button
                                     key={matiere.id}
                                     onClick={() => {
-                                        handleSelect(matiere.id, 'materiau_id', 'materiau', matiere.type );
+                                        handleSelect(matiere.id, 'materiau_id', 'materiau', matiere.type);
+                                        // Réinitialiser le prix au changement
+                                        setPrixMaterieau(0);
                                     }}
                                     className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.materiau_id === matiere.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                                 >
@@ -289,92 +316,109 @@ useEffect(() => {
                                 </button>
                             ))}
                             <button
-                                    
                                 onClick={() => {
-                                    handleSelect(999, 'materiau_id', 'materiau', 'autres' );
-                                    }}
+                                    handleSelect(999, 'materiau_id', 'materiau', 'autres');
+                                }}
                                 className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.materiau_id === 999 ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                             >
-                                <div className="font-semibold truncate"> autres </div>
+                                <div className="font-semibold truncate">autres</div>
                             </button>
                         </div>
                     </div>
 
-                    {/* Input pour materiau "autres" */}
-                    {devisEncours.materiau === 'autres' && (
-                    <div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">
-                        <div className="space-y-3">
-                            <h1 className='text-sm font-bold ml-2'> Autres materiaux</h1>
-                            <div className="relative">
-                                <Input
-                                    type="text"
-                                    value={autreMateriau.nom}
-                                    onChange={(e) => setAutreMateriau(prev => ({ ...prev, nom: e.target.value }))}
-                                    placeholder="Description du materiau personnalisé"
-                                />
-                            </div>
-                            <div className="relative">
-                                <Input
-                                    type="number"
-                                    value={autreMateriau.prix || ''}
-                                    onChange={(e) => setAutreMateriau(prev => ({ ...prev, prix: Number(e.target.value) }))}
-                                    placeholder="Prix de base"
-                                    min="0"
-                                />
-                                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                    {/* Input pour materiau */}
+                    {devisEncours.materiau === 'autres' ? (
+                        <div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">
+                            <div className="space-y-3">
+                                <h1 className='text-sm font-bold ml-2'>Matériau personnalisé</h1>
+                                <div className="relative">
+                                    <Input
+                                        type="text"
+                                        value={autreMateriau.nom}
+                                        onChange={(e) => setAutreMateriau(prev => ({ ...prev, nom: e.target.value }))}
+                                        placeholder="Description du matériau"
+                                    />
+                                </div>
+                                <div className="relative">
+                                    <Input
+                                        type="number"
+                                        value={autreMateriau.prix || ''}
+                                        onChange={(e) => setAutreMateriau(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                        placeholder="Prix au m²"
+                                        min="0"
+                                    />
+                                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">Ar/m²</span>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    )}
+                    ) : devisEncours.materiau ? (
+                        <div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">
+                            <div className="space-y-3">
+                                <h1 className='text-sm font-bold ml-2'>{devisEncours.materiau}</h1>
+                                <div className="relative">
+                                    <Input
+                                        type="number"
+                                        value={prixMaterieau || ''}
+                                        onChange={(e) => setPrixMaterieau(Number(e.target.value))}
+                                        placeholder="Prix au m²"
+                                        min="0"
+                                    />
+                                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">Ar/m²</span>
+                                </div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400 ml-2">
+                                    Entrez le prix par mètre carré du matériau
+                                </div>
+                            </div>
+                        </div>
+                    ) : null}
                 </div>
 
                 {/* Section Couleur */}
-                <div className='flex  mb-4'>
-                <div ref={couleurRef} className="w-full lg:w-1/2 scroll-mt-20">
-                    <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
-                        <Layers className="mr-2" />
-                        Couleur
-                    </h4>
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                        {etiquette.couleurs!.map(couleur => (
-                            <button
-                                title={couleur.couleur}
-                                key={couleur.id}
-                                onClick={() => handleSelect(couleur.id, 'couleur_id', 'couleur', couleur.couleur)}
-                                className={`truncate p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.couleur_id === couleur.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                            >
-                                <span>{couleur.couleur}</span>
-                            </button>
-                        ))}
-                        </div>
-                </div>
-                <div className="w-full lg:w-1/2 scroll-mt-20">
-                    {/* Input pour couleur "personnalisé" */}
-                    {devisEncours.couleur === 'autres' && (
-                    <div className="mt-3 px-2">
-                        <div className="space-y-3">
-                            <h1 className='text-sm font-bold ml-2'> Couleur personnalisé</h1>
-                            <div className="relative">
-                                <Input
-                                    type="text"
-                                    value={autreCouleur.nom}
-                                    onChange={(e) => setAutreCouleur(prev => ({ ...prev, nom: e.target.value }))}
-                                    placeholder="Description de la couleur personnalisé"
-                                />
-                            </div>
-                            <div className="relative">
-                                <Input
-                                    type="number"
-                                    value={autreCouleur.prix || ''}
-                                    onChange={(e) => setAutreCouleur(prev => ({ ...prev, prix: Number(e.target.value) }))}
-                                    placeholder="Prix supplémentaire"
-                                    min="0"
-                                />
-                                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
-                            </div>
+                <div className='flex mb-4'>
+                    <div ref={couleurRef} className="w-full lg:w-1/2 scroll-mt-20">
+                        <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                            <Layers className="mr-2" />
+                            Couleur
+                        </h4>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                            {etiquette.couleurs!.map(couleur => (
+                                <button
+                                    title={couleur.couleur}
+                                    key={couleur.id}
+                                    onClick={() => handleSelect(couleur.id, 'couleur_id', 'couleur', couleur.couleur)}
+                                    className={`truncate p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.couleur_id === couleur.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                >
+                                    <span>{couleur.couleur}</span>
+                                </button>
+                            ))}
                         </div>
                     </div>
-                    )}
+                    <div className="w-full lg:w-1/2 scroll-mt-20">
+                        {devisEncours.couleur === 'autres' && (
+                            <div className="mt-3 px-2">
+                                <div className="space-y-3">
+                                    <h1 className='text-sm font-bold ml-2'>Couleur personnalisée</h1>
+                                    <div className="relative">
+                                        <Input
+                                            type="text"
+                                            value={autreCouleur.nom}
+                                            onChange={(e) => setAutreCouleur(prev => ({ ...prev, nom: e.target.value }))}
+                                            placeholder="Description de la couleur"
+                                        />
+                                    </div>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            value={autreCouleur.prix || ''}
+                                            onChange={(e) => setAutreCouleur(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                            placeholder="Prix supplémentaire"
+                                            min="0"
+                                        />
+                                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -420,85 +464,84 @@ useEffect(() => {
                         </div>
                     </div>
                     <div className="w-full lg:w-1/2 scroll-mt-20">
-                    {/* Input pour découpe "personnalisé" */}
-                    {devisEncours.decoupe === 'personnalisée' && (
-                    <div className="mt-3 px-2">
-                        <div className="space-y-3">
-                            <h1 className='text-sm font-bold ml-2'> Découpe personnalisé</h1>
-                            <div className="relative">
-                                <Input
-                                    type="text"
-                                    value={autreDecoupe.nom}
-                                    onChange={(e) => setAutreDecoupe(prev => ({ ...prev, nom: e.target.value }))}
-                                    placeholder="Description du découpe personnalisé"
-                                />
+                        {devisEncours.decoupe === 'personnalisée' && (
+                            <div className="mt-3 px-2">
+                                <div className="space-y-3">
+                                    <h1 className='text-sm font-bold ml-2'>Découpe personnalisée</h1>
+                                    <div className="relative">
+                                        <Input
+                                            type="text"
+                                            value={autreDecoupe.nom}
+                                            onChange={(e) => setAutreDecoupe(prev => ({ ...prev, nom: e.target.value }))}
+                                            placeholder="Description de la découpe"
+                                        />
+                                    </div>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            value={autreDecoupe.prix || ''}
+                                            onChange={(e) => setAutreDecoupe(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                            placeholder="Prix supplémentaire"
+                                            min="0"
+                                        />
+                                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="relative">
-                                <Input
-                                    type="number"
-                                    value={autreDecoupe.prix || ''}
-                                    onChange={(e) => setAutreDecoupe(prev => ({ ...prev, prix: Number(e.target.value) }))}
-                                    placeholder="Prix supplémentaire"
-                                    min="0"
-                                />
-                                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
-                            </div>
-                        </div>
-                    </div>
-                    )}
+                        )}
                     </div>
                 </div>
 
                 {/* Section Finition */}
                 <div className='flex mb-4'>
-                    <div /*ref={finitionRef}*/ className="w-full lg:w-1/2 scroll-mt-20">
+                    <div className="w-full lg:w-1/2 scroll-mt-20">
                         <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
                             <Layers className="mr-2" />
                             Finition
                         </h4>
                         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                            {etiquette.finitions!.map((fintion) => (
+                            {etiquette.finitions!.map((finition) => (
                                 <button
-                                    key={fintion.id}
-                                    title={fintion.finition}
-                                    onClick={() => handleSelect(fintion.finition, 'finition')}
-                                    className={`p-3 truncate border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.finition === fintion.finition ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                    key={finition.id}
+                                    title={finition.finition}
+                                    onClick={() => handleSelect(finition.finition, 'finition')}
+                                    className={`p-3 truncate border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.finition === finition.finition ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                                 >
-                                    <span>{fintion.finition}</span>
+                                    <span>{finition.finition}</span>
                                 </button>
                             ))}
                         </div>
                     </div>
                     <div className="w-full lg:w-1/2 scroll-mt-20">
-                    {/* Input pour finition "personnalisé" */}
-                    {devisEncours.finition === 'autres' && (
-                    <div className="mt-3 px-2">
-                        <div className="space-y-3">
-                            <h1 className='text-sm font-bold ml-2'> Fintion personnalisé</h1>
-                            <div className="relative">
-                                <Input
-                                    type="text"
-                                    value={autreFinition.nom}
-                                    onChange={(e) => setAutreFinition(prev => ({ ...prev, nom: e.target.value }))}
-                                    placeholder="Description de la finition personnalisé"
-                                />
+                        {devisEncours.finition === 'autres' && (
+                            <div className="mt-3 px-2">
+                                <div className="space-y-3">
+                                    <h1 className='text-sm font-bold ml-2'>Finition personnalisée</h1>
+                                    <div className="relative">
+                                        <Input
+                                            type="text"
+                                            value={autreFinition.nom}
+                                            onChange={(e) => setAutreFinition(prev => ({ ...prev, nom: e.target.value }))}
+                                            placeholder="Description de la finition"
+                                        />
+                                    </div>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            value={autreFinition.prix || ''}
+                                            onChange={(e) => setAutreFinition(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                            placeholder="Prix supplémentaire"
+                                            min="0"
+                                        />
+                                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div className="relative">
-                                <Input
-                                    type="number"
-                                    value={autreFinition.prix || ''}
-                                    onChange={(e) => setAutreFinition(prev => ({ ...prev, prix: Number(e.target.value) }))}
-                                    placeholder="Prix supplémentaire"
-                                    min="0"
-                                />
-                                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
-                            </div>
-                        </div>
-                    </div>
-                    )}
+                        )}
                     </div>
                 </div>
 
+                {/* Section Quantité */}
                 <div className='flex mb-4'>
                     <div ref={quantiteRef} className="w-full lg:w-1/2 scroll-mt-20">
                         <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
