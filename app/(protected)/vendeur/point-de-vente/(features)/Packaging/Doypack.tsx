@@ -15,6 +15,67 @@ type DoypackProps = {
 
 export default function Doypack( { doypack, activeSection, getDevis, getPrix }: DoypackProps) {
 
+    const COLOR_PALETTE = [
+    // Noirs et gris
+        { name: 'Noir', hex: '#000000' },
+        { name: 'Gris très foncé', hex: '#333333' },
+        { name: 'Gris foncé', hex: '#666666' },
+        { name: 'Gris moyen', hex: '#999999' },
+        { name: 'Gris clair', hex: '#CCCCCC' },
+        { name: 'Blanc', hex: '#FFFFFF' },
+        
+        // Rouges
+        { name: 'Rouge vif', hex: '#FF0000' },
+        { name: 'Rouge foncé', hex: '#CC0000' },
+        { name: 'Rouge Bordeaux', hex: '#800000' },
+        { name: 'Rose', hex: '#FF66CC' },
+        { name: 'Rose pâle', hex: '#FFCCFF' },
+        
+        // Bleus
+        { name: 'Bleu roi', hex: '#0000FF' },
+        { name: 'Bleu marine', hex: '#000080' },
+        { name: 'Bleu ciel', hex: '#3399FF' },
+        { name: 'Bleu clair', hex: '#66CCFF' },
+        { name: 'Bleu turquoise', hex: '#00CCCC' },
+        
+        // Verts
+        { name: 'Vert vif', hex: '#00FF00' },
+        { name: 'Vert foncé', hex: '#006600' },
+        { name: 'Vert forêt', hex: '#339933' },
+        { name: 'Vert menthe', hex: '#99FF99' },
+        { name: 'Vert olive', hex: '#808000' },
+        
+        // Jaunes/Oranges
+        { name: 'Jaune vif', hex: '#FFFF00' },
+        { name: 'Jaune pâle', hex: '#FFFF99' },
+        { name: 'Orange vif', hex: '#FF6600' },
+        { name: 'Orange pâle', hex: '#FFCC99' },
+        { name: 'Or', hex: '#FFCC00' },
+        
+        // Pourpres/Violets
+        { name: 'Violet', hex: '#6600CC' },
+        { name: 'Violet pâle', hex: '#CC99FF' },
+        { name: 'Magenta', hex: '#FF00FF' },
+        { name: 'Lavande', hex: '#CCCCFF' },
+        { name: 'Mauve', hex: '#9966CC' },
+        
+        // Marrons/Beiges
+        { name: 'Marron', hex: '#663300' },
+        { name: 'Marron clair', hex: '#996633' },
+        { name: 'Beige', hex: '#F5F5DC' },
+        { name: 'Crème', hex: '#FFFDD0' },
+        { name: 'Chocolat', hex: '#D2691E' }
+    ];
+
+    // Fonction simplifiée
+    const [selectedColor, setSelectedColor] = useState<string>('#000000');
+
+    const handleColorSelect = (name: string, hex: string) => {
+        setSelectedColor(hex);
+        const customId = Date.now();
+        handleSelect(customId, 'couleur_id', 'couleur', `${name} (${hex})`);
+    };
+
   const [prix, setPrix] = useState({
               prixTotal: 0,
               prixUnitaire: 0 ,
@@ -213,14 +274,16 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
 ]);
       
   
-      const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
-          setDevisEncours(prevState => ({
-              ...prevState,
-              type: doypack.type,
-              [name]: value,
-              ...(option !== undefined && { [option]: optionValue }),
-          }));
-      };
+    const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
+        setDevisEncours(prevState => ({
+            ...prevState,
+            type: doypack.type,
+            [name]: value,
+            ...(option !== undefined && { [option]: optionValue }),
+        }));
+    };
+
+
   return (
   <div className="flex flex-col lg:flex-row gap-3">
     <div className="w-full lg:w-full space-y-1">
@@ -298,24 +361,30 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
       </div>
     </div>
 
-    {/* Section Imprimante */}
+
+
+    {/* Section Couleur */}
     <div className='flex mb-4'>
-        <div ref={imprimanteRef} className="w-full lg:w-1/2 scroll-mt-20">
+        <div ref={couleurRef} className="w-full scroll-mt-20">
             <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
-                <Layers className="mr-2" />
-                Technologie d&apos;impression
+            <Layers className="mr-2" />
+            Couleur
             </h4>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                {doypack.imprimantes!.map(imprimante => (
-                    <Button
-                        key={imprimante.id}
-                        variant='ghost'
-                        onClick={() => handleSelect(imprimante.id, 'imprimante_id', 'imprimante', imprimante.imprimante)}
-                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.imprimante_id === imprimante.id ? 'bg-red-600 text-white border-red-600 shadow-md hover:bg-red-600 hover:text-white' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                    >
-                        <div className="font-semibold">{imprimante.imprimante}</div>
-                    </Button>
-                ))}
+            <div className="mb-6">
+                <div className="mb-6">
+                <h5 className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-3">Palette de couleurs</h5>
+                <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-1 bg-accent rounded-2xl p-5">
+                    {COLOR_PALETTE.map((color, index) => (
+                        <button
+                            key={`color-${index}`}
+                            onClick={() => handleColorSelect(color.name, color.hex)}
+                            className={`aspect-square  rounded-full border border-slate-200 dark:border-slate-700 hover:scale-110 transition-transform ${selectedColor === color.hex ? 'ring-2 ring-red-500 ring-offset-2' : ''}`}
+                            style={{ backgroundColor: color.hex }}
+                            title={color.name}
+                        />
+                    ))}
+                </div>
+                </div>
             </div>
         </div>
     </div>
@@ -341,6 +410,28 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
         </div>
     </div>
 
+    {/* Section Imprimante */}
+    <div className='flex mb-4'>
+        <div ref={imprimanteRef} className="w-full lg:w-1/2 scroll-mt-20">
+            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
+                <Layers className="mr-2" />
+                Technologie d&apos;impression
+            </h4>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                {doypack.imprimantes!.map(imprimante => (
+                    <Button
+                        key={imprimante.id}
+                        variant='ghost'
+                        onClick={() => handleSelect(imprimante.id, 'imprimante_id', 'imprimante', imprimante.imprimante)}
+                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.imprimante_id === imprimante.id ? 'bg-red-600 text-white border-red-600 shadow-md hover:bg-red-600 hover:text-white' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                    >
+                        <div className="font-semibold">{imprimante.imprimante}</div>
+                    </Button>
+                ))}
+            </div>
+        </div>
+    </div>
+
     {/* Section Emplacement */}
     <div className='flex mb-4'>
         <div ref={emplacementRef} className="w-full lg:w-1/2 scroll-mt-20">
@@ -360,7 +451,7 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
                 ))}
             </div>
         </div>
-        
+
         {/* Input pour emplacement "autres" */}
         {devisEncours.emplacement === 'autres' ? (
         <div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">

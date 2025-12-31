@@ -119,14 +119,15 @@ export default function SacPapier( {sac_papier, activeSection, getDevis, getPrix
     if (devisEncours.materiau_id === 999) {
         // Matériau personnalisé
         prixUnitaire += autreMateriau.prix;
-    } else {
-        const materiauSelectionne = sac_papier.matieres!.find(
-            m => m.id === devisEncours.materiau_id
-        );
-        if (materiauSelectionne) {
-            prixUnitaire += Number(materiauSelectionne.prix_unitaire);
-        }
-    }
+    } 
+    //else {
+    //     const materiauSelectionne = sac_papier.matieres!.find(
+    //         m => m.id === devisEncours.materiau_id
+    //     );
+    //     if (materiauSelectionne) {
+    //         prixUnitaire += Number(materiauSelectionne.prix_unitaire);
+    //     }
+    // }
 
     // 3. Prix de la couleur
     if (devisEncours.couleur === 'autres') {

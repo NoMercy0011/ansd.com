@@ -110,18 +110,6 @@ const [prix, setPrix] = useState({
 
     useEffect(() => {
     // --- Logique de Calcul du Prix pour Boite ---
-    
-    // Vérification des sélections obligatoires
-    /*if (!devisEncours.dimension_id || 
-        !devisEncours.categorie_id ||
-        !devisEncours.materiau_id || 
-        !devisEncours.couleur_id || 
-        !devisEncours.recto_verso_id ||
-        !devisEncours.imprimante_id ||
-        !devisEncours.emplacement) {
-        setPrix({ prixTotal: 0, prixUnitaire: 0 });
-        return;
-    }*/
 
     let prixUnitaire = 0;
     
@@ -130,39 +118,6 @@ const [prix, setPrix] = useState({
         // Dimension personnalisée
         prixUnitaire += autreDecoupe.prix;
     } 
-    /*else {
-        const dimensionSelectionnee = boite.dimensions.find(
-            d => d.id === devisEncours.dimension_id
-        );
-        if (dimensionSelectionnee) {
-            prixUnitaire += dimensionSelectionnee.prix;
-        }
-    }*/
-
-    // 2. Prix du matériau (catégorie + grammage)
-    if (devisEncours.categorie === 'autres') {
-        // Matériau personnalisé
-        prixUnitaire += autreMateriau.prix;
-    } else {
-        // Prix du grammage sélectionné
-        const materiauSelectionne = boite.matieres!.find(
-            m => m.id === devisEncours.materiau_id
-        );
-        if (materiauSelectionne) {
-            prixUnitaire += Number(materiauSelectionne.prix_unitaire);
-        }
-        
-        // Supplément selon la catégorie (PCB, PCB Pelliculé)
-        const categorieSelectionnee = categories.find(
-            c => c.id === devisEncours.categorie_id
-        );
-        if (categorieSelectionnee) {
-            // Appliquer un coefficient selon la catégorie
-            if (devisEncours.categorie === 'PCB Pélliculé') {
-                prixUnitaire += 600; // +600 Ar de supplément pour pelliculé
-            }
-        }
-    }
 
     // 3. Prix de la couleur
     /*const couleurSelectionnee = boite.couleurs.find(
@@ -172,21 +127,6 @@ const [prix, setPrix] = useState({
         prixUnitaire += couleurSelectionnee.prix;
     }*/
 
-    // 4. Prix de la face (recto/verso)
-    /*const faceSelectionnee = boite.faces.find(
-        f => f.id === devisEncours.recto_verso_id
-    );
-    if (faceSelectionnee) {
-        prixUnitaire += faceSelectionnee.prix;
-    }*/
-
-    // 5. Prix de l'imprimante/technologie
-    /*const imprimanteSelectionnee = boite.imprimantes.find(
-        i => i.id === devisEncours.imprimante_id
-    );
-    if (imprimanteSelectionnee) {
-        prixUnitaire += imprimanteSelectionnee.prix;
-    }*/
 
     // 6. Prix de la découpe (si applicable)
     if (devisEncours.decoupe && boite.decoupes!.length > 0) {
@@ -422,25 +362,75 @@ const [prix, setPrix] = useState({
     </div>
 
     {/* Section Couleur */}
-    <div className='flex  mb-4'>
-    <div ref={couleurRef} className="w-full lg:w-1/2 scroll-mt-20">
+    {/* Section Couleur avec palette visuelle simplifiée */}
+<div className='flex mb-4'>
+    <div ref={couleurRef} className="w-full scroll-mt-20">
         <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
             <Layers className="mr-2" />
             Couleur
         </h4>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {boite.couleurs!.map(couleur => (
-                <button
-                    title={couleur.couleur}
-                    key={couleur.id}
-                    onClick={() => handleSelect(couleur.id, 'couleur_id', 'couleur', couleur.couleur)}
-                    className={`truncate p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.couleur_id === couleur.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                >
-                    <span>{couleur.couleur}</span>
-                </button>
-            ))}
-            </div>
+        
+        {/* Options standard */}
+        <div className="mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                {doypack.couleurs!.map(couleur => (
+                    <button
+                        key={couleur.id}
+                        onClick={() => handleSelect(couleur.id, 'couleur_id', 'couleur', couleur.couleur)}
+                        className={`flex items-center justify-between p-3 border rounded-lg transition-all duration-200 ${devisEncours.couleur_id === couleur.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                    >
+                        <div className="flex items-center">
+    <div className={`w-6 h-6 rounded mr-3 border border-slate-300`} />
+        <span>{couleur.couleur}</span>
     </div>
+                            {couleur.prix > 0 && (
+                                <span className="text-xs font-semibold text-green-600">+{couleur.prix} Ar</span>
+                            )}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Palette de couleurs visuelle */}
+            <div className="mb-6">
+                <h5 className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-3">Palette de couleurs</h5>
+                <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-1">
+                    {COLOR_PALETTE.map((color, index) => (
+                        <button
+                            key={`color-${index}`}
+                            onClick={() => handleColorSelect(color.name, color.hex)}
+                            className={`aspect-square rounded border border-slate-200 dark:border-slate-700 hover:scale-110 transition-transform ${selectedColor === color.hex ? 'ring-2 ring-red-500 ring-offset-2' : ''}`}
+                            style={{ backgroundColor: color.hex }}
+                            title={color.name}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            {/* Sélecteur de couleur personnalisée */}
+            <div className="mt-4">
+                <h5 className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-3">Couleur personnalisée</h5>
+                <div className="flex items-center gap-3">
+                    <div className="flex-1">
+                        <input
+                            type="color"
+                            value={selectedColor || '#000000'}
+                            onChange={(e) => handleColorSelect('Personnalisé', e.target.value)}
+                            className="w-full h-10 cursor-pointer rounded-lg"
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <input
+                            type="text"
+                            value={selectedColor || '#000000'}
+                            onChange={(e) => handleColorSelect('Personnalisé', e.target.value)}
+                            placeholder="#RRGGBB"
+                            className="w-full px-3 py-2 border rounded-lg dark:bg-slate-700 dark:border-slate-600"
+                        />
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     {/* Section Face */}
