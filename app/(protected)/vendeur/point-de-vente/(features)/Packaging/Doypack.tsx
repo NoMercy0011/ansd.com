@@ -372,7 +372,6 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
             </h4>
             <div className="mb-6">
                 <div className="mb-6">
-                <h5 className="text-sm font-medium text-slate-600 dark:text-slate-300 mb-3">Palette de couleurs</h5>
                 <div className="grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-1 bg-accent rounded-2xl p-5">
                     {COLOR_PALETTE.map((color, index) => (
                         <button
