@@ -9,7 +9,7 @@ import Chevalet from './Chevalet/Chevalet';
 import Calendar from './Calendar/Calendar';
 import Cartetie from './Carterie/Cartetie';
 import CartSection from './CartSection';
-import Flyers from './Flyers';
+import Flyers from './Flyers/Flyers';
 import Finition from './Finition';
 import GrandFormat from './GrandFormat';
 import Textile from './Textile';

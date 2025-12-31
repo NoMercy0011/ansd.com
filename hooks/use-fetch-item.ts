@@ -1,5 +1,5 @@
 
-import { GetCalendar, GetCarterie, GetChevalet, GetPackaging } from "@/sources/actions/admin/get-item.action";
+import { GetCalendar, GetCarterie, GetChevalet, GetFlyers, GetPackaging } from "@/sources/actions/admin/get-item.action";
 import { itemType } from "@/types/itemType";
 import useSWR from "swr";
 
@@ -55,6 +55,16 @@ export function useCarterie() {
         jeux: data?.data[2] as itemType,
         carterieLoading: isLoading,
         carterieError: error,
+        mutate,
+    }
+}
+
+export function useFlyers() {
+    const { data , isLoading, error, mutate} = useSWR( 'get-flyers', GetFlyers);
+    return {
+        flyers: data?.data[0] as itemType,
+        flyersLoading: isLoading,
+        flyersError: error,
         mutate,
     }
 }

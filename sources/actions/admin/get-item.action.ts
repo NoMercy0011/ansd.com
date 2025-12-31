@@ -100,4 +100,26 @@ export async function GetCarterie() {
         }
 }
 
-
+export async function GetFlyers() {
+    const header = (await cookies()).get('header')?.value;
+    const token = (await cookies()).get('token')?.value;
+    
+        try {
+    
+            const response = await fetch (`${process.env.NEXT_PUBLIC_API_URI}/flyers`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" , "client-id" : `${header}`, "Authorization" : `Bearer ${token}`},
+            });
+    
+            const item = await response.json();
+            //console.log(item.chevalet[0]);
+            return {
+                message : 'Les données sur les flyers',
+                data: item.flyers as itemType[],
+            }
+    
+        }catch(error) {
+            console.error('Erreur : ' , error);
+            throw new Error ("Erreur lors de données :" , error!);
+        }
+}
