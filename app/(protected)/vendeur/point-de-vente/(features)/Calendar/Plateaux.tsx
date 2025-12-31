@@ -33,6 +33,8 @@ export default function CalendrierPlateau({item, activeSection, getDevis, getPri
         prix: 0,
     })
 
+    const [prixDimension , setPrixDimension] = useState(0);
+
 
     // Catégories de papier
     const categories = [
@@ -137,30 +139,36 @@ export default function CalendrierPlateau({item, activeSection, getDevis, getPri
         // --- Logique de Calcul du Prix pour Chevalet de Table ---
       
         let prixUnitaire = 0;
+
+        if( devisEncours.dimension === 'autres') {
+            prixUnitaire += autreDimension.prix;
+        } else {
+            prixUnitaire += prixDimension;
+        }
       
         // 1. Prix du matériau
-        if (devisEncours.materiau_id === 999) {
-            prixUnitaire += autreMateriau.prix;
-        } else {
-            const materiauSelectionne = item.matieres!.find(
-                m => m.id === devisEncours.materiau_id
-            );
-            if (materiauSelectionne) {
-                prixUnitaire += Number(materiauSelectionne.prix_unitaire);
-            }
+        // if (devisEncours.materiau_id === 999) {
+        //     prixUnitaire += autreMateriau.prix;
+        // } else {
+        //     const materiauSelectionne = item.matieres!.find(
+        //         m => m.id === devisEncours.materiau_id
+        //     );
+        //     if (materiauSelectionne) {
+        //         prixUnitaire += Number(materiauSelectionne.prix_unitaire);
+        //     }
 
-            const categorieSelectionnee = categories.find(
-                c => c.id === devisEncours.categorie_id
-            );
-            if (categorieSelectionnee) {
-                // Appliquer un coefficient selon la catégorie
-                if (devisEncours.categorie === 'PCB Pélliculé' &&  materiauSelectionne) {
-                    prixUnitaire = (prixUnitaire + 600) * ratioState; // +600 Ar de supplément pour pelliculé
-                } else {
-                    prixUnitaire *= ratioState;
-                }
-            }
-        }
+        //     const categorieSelectionnee = categories.find(
+        //         c => c.id === devisEncours.categorie_id
+        //     );
+        //     if (categorieSelectionnee) {
+        //         // Appliquer un coefficient selon la catégorie
+        //         if (devisEncours.categorie === 'PCB Pélliculé' &&  materiauSelectionne) {
+        //             prixUnitaire = (prixUnitaire + 600) * ratioState; // +600 Ar de supplément pour pelliculé
+        //         } else {
+        //             prixUnitaire *= ratioState;
+        //         }
+        //     }
+        // }
 
         const faceSelectionnee = item.faces!.find(
             f => f.id === devisEncours.recto_verso_id
@@ -202,6 +210,8 @@ export default function CalendrierPlateau({item, activeSection, getDevis, getPri
         devisEncours.recto_verso_id,
         ratioState,
         autreMateriau.prix,
+        prixDimension,
+        autreDimension.prix,
     ]);
         
     const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
@@ -244,7 +254,7 @@ export default function CalendrierPlateau({item, activeSection, getDevis, getPri
 
                   <div className="w-full lg:w-1/2 scroll-mt-20">
                     {/* Input pour dimension "personnalisé" */}
-                    {devisEncours.dimension === 'autres' && (
+                    {devisEncours.dimension === 'autres' ? (
                     <div className="mt-3 px-2">
                         <div className="space-y-3">
                             <h1 className='text-sm font-bold ml-2'> Dimension personnalisé</h1>
@@ -261,6 +271,30 @@ export default function CalendrierPlateau({item, activeSection, getDevis, getPri
                                     type="number"
                                     value={autreDimension.prix || ''}
                                     onChange={(e) => setAutreDimension(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                    placeholder="Prix supplémentaire"
+                                    min="0"
+                                />
+                                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                            </div>
+                        </div>
+                    </div>
+                    ) : ( devisEncours.dimension &&
+                    <div className="mt-3 px-2">
+                        <div className="space-y-3">
+                            <h1 className='text-sm font-bold ml-2'> { devisEncours.dimension} </h1>
+                            {/* <div className="relative">
+                                <Input
+                                    type="text"
+                                    value={autreDimension.nom}
+                                    onChange={(e) => setAutreDimension(prev => ({ ...prev, nom: e.target.value }))}
+                                    placeholder="Description de la dimension personnalisé"
+                                />
+                            </div> */}
+                            <div className="relative">
+                                <Input
+                                    type="number"
+                                    value={prixDimension || ''}
+                                    onChange={(e) => setPrixDimension(Number(e.target.value))}
                                     placeholder="Prix supplémentaire"
                                     min="0"
                                 />
