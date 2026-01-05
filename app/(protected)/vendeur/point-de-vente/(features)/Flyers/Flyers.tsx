@@ -43,9 +43,7 @@ export default function Carterie({ userRole, param, handleAddCart }: CataloguePr
 
     const itemData = {
         types: [
-            { id: 1, type: 'visite', nom: 'Carte de visite' },
-            { id: 2, type: 'fidelite', nom: 'Carte de fidélité' },
-            { id: 3, type: 'jeux', nom: 'Jeux de cartes' },
+            { id: 1, type: 'flyers', nom: 'Flyers' },
         ]
     };
 
@@ -99,7 +97,7 @@ export default function Carterie({ userRole, param, handleAddCart }: CataloguePr
     return (
         <Card className="w-full">
             <CardHeader className="pb-2">
-                { flyers ? ( <CardTitle className="flex text-slate-700 animate-pulse items-center gap-2 text-lg font-semibold">
+                { flyersLoading ? ( <CardTitle className="flex text-slate-700 animate-pulse items-center gap-2 text-lg font-semibold">
                     <FileImageIcon className="h-6 w-6 text-red-500" />
                     Préparation...
                 </CardTitle> ) :    
@@ -180,7 +178,7 @@ export default function Carterie({ userRole, param, handleAddCart }: CataloguePr
                                 </div>
 
                                 {/* Rendu Conditionnel des Enfants avec passage de activeTab */}
-                                {selectedCatalogueType === 'visite' && (
+                                {selectedCatalogueType === 'flyers' && (
                                     <FlyersComponent 
                                         item={flyers} 
                                         userRole={String(userRole)} 

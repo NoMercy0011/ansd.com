@@ -21,6 +21,12 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
         prixTotal: 0,
         prixUnitaire: 0,
     })
+    const [autreParticularite, setAutreParticularite] = useState({
+        nom: '',
+        prix: 0,
+    })
+
+    const [prixDimension, setPrixDimension] = useState(0)
     
     const [ratioState, setRatioState] = useState(1);
 
@@ -56,9 +62,7 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
 
     // --- États pour les options personnalisées ---
     const [autreMateriau, setAutreMateriau] = useState({ nom: "", prix: 0 });
-    const [autreDecoupe, setAutreDecoupe] = useState({ nom: "", prix: 0 });
     const [autreDimension, setAutreDimension] = useState({ nom: "", prix: 0 });
-
 
     const [devisEncours, setDevisHangtag] = useState<devisData>({
         client_id: 0,
@@ -100,16 +104,28 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
         return categories;
     }, [item.matieres]);
 
-    // --- Filtrage des grammages selon la catégorie ---
+    // --- Filtrage des grammages selon la catégorie ET la dimension ---
     const grammagesDisponibles = useMemo(() => {
-        if (!devisEncours.categorie || devisEncours.categorie === 'autres') {
+        if (!devisEncours.categorie || devisEncours.categorie === 'autres' || !devisEncours.dimension) {
             return [];
         }
 
+        // Déterminer si on filtre par A3 ou A4
+        let detailsFiltre = '';
+        if (devisEncours.dimension === 'A3') {
+            detailsFiltre = 'A3';
+        } else if (['A4', 'A5', 'A6', 'B5', 'DL'].includes(devisEncours.dimension)) {
+            detailsFiltre = 'A4';
+        }
+
+        if (!detailsFiltre) return [];
+
+        // Filtrer par catégorie ET dimension
         return item.matieres!.filter(matiere => 
-            matiere.type === devisEncours.categorie
+            matiere.type === devisEncours.categorie && 
+            matiere.details === detailsFiltre
         );
-    }, [devisEncours.categorie, item.matieres]);
+    }, [devisEncours.categorie, devisEncours.dimension, item.matieres]);
 
     useEffect(() => {
         getDevis(devisEncours);
@@ -120,20 +136,28 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
     useEffect(() => {
         let prixUnitaire = 0;
 
-        // 1. Prix du matériau
-        if (devisEncours.categorie === 'autres') {
-            prixUnitaire += autreMateriau.prix;
-        } else {
-            const materiauSelectionne = item.matieres!.find(
-                m => m.id === devisEncours.materiau_id
-            );
-            if (materiauSelectionne) {
-                const prixBase = Number(materiauSelectionne.prix_unitaire) || 0;
-                prixUnitaire += prixBase / ratioState;
-            }
+        // 1. Prix de la dimension (si personnalisée)
+        if (devisEncours.dimension === 'autres') {
+            prixUnitaire += autreDimension.prix;
+        } else if (prixDimension > 0) {
+            prixUnitaire += prixDimension;
         }
 
-        // 2. Prix de la face (recto/verso)
+        // 2. Prix du matériau
+        if (devisEncours.categorie === 'autres') {
+            prixUnitaire += autreMateriau.prix;
+        } 
+        // else {
+        //     const materiauSelectionne = item.matieres!.find(
+        //         m => m.id === devisEncours.materiau_id
+        //     );
+        //     if (materiauSelectionne) {
+        //         const prixBase = Number(materiauSelectionne.prix_unitaire) || 0;
+        //         prixUnitaire += prixBase / ratioState;
+        //     }
+        // }
+
+        // 3. Prix de la face (recto/verso)
         const faceSelectionnee = item.faces!.find(
             f => f.id === devisEncours.recto_verso_id
         );
@@ -141,21 +165,9 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
             prixUnitaire *= Number(faceSelectionnee.code);
         }
 
-        // 3. Prix de la découpe
-        if (devisEncours.decoupe === 'autres') {
-            prixUnitaire += autreDecoupe.prix;
-        } else {
-            const decoupeSelectionnee = item.decoupes!.find(
-                d => d.decoupe === devisEncours.decoupe
-            );
-            if (decoupeSelectionnee && decoupeSelectionnee.prix) {
-                prixUnitaire += Number(decoupeSelectionnee.prix);
-            }
-        }
-
-        // 4. Prix des particularités
-        if (autreDimension.prix > 0) {
-            prixUnitaire += autreDimension.prix;
+        // 4. Prix des particularités (volet/pli)
+        if (autreParticularite.prix > 0) {
+            prixUnitaire += autreParticularite.prix;
         }
 
         // 5. Application des paliers de quantité
@@ -184,17 +196,17 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
 
     }, [
         devisEncours.dimension_id,
+        devisEncours.dimension,
         devisEncours.categorie,
         devisEncours.materiau_id,
         devisEncours.recto_verso_id,
         devisEncours.imprimante_id,
-        devisEncours.decoupe,
         devisEncours.quantite,
         ratioState,
         autreMateriau.prix,
-        //autreParticularite.prix,
-        autreDecoupe.prix,
-        autreDimension.prix
+        autreParticularite.prix,
+        autreDimension.prix,
+        prixDimension
     ]);
 
     const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
@@ -225,6 +237,9 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
                                         onClick={() => {
                                             handleSelect(dimension.id, 'dimension_id', 'dimension', dimension.dimension);
                                             setRatioState(dimension.ratio);
+                                            // Réinitialiser le matériau lors du changement de dimension
+                                            handleSelect(0, 'materiau_id', 'materiau', '');
+                                            setPrixDimension(0);
                                         }}
                                         className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.dimension_id === dimension.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                                     >
@@ -234,18 +249,18 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
                             </div>
                         </div>
 
-                        {/* Input pour matériau "autres" */}
+                        {/* Input pour dimension */}
                         <div className="w-full lg:w-1/2 scroll-mt-20 mt-1">
-                            {devisEncours.dimension === 'autres' && (
+                            {devisEncours.dimension === 'autres' ? (
                                 <div className="mt-2 px-2">
                                     <div className="space-y-3">
-                                        <h1 className='text-sm font-bold ml-2'>Dimension personnalisé</h1>
+                                        <h1 className='text-sm font-bold ml-2'>Dimension personnalisée</h1>
                                         <div className="relative">
                                             <Input
                                                 type="text"
                                                 value={autreDimension.nom}
                                                 onChange={(e) => setAutreDimension(prev => ({ ...prev, nom: e.target.value }))}
-                                                placeholder="Description de la dimension personnalisé"
+                                                placeholder="Description de la dimension"
                                             />
                                         </div>
                                         <div className="relative">
@@ -255,12 +270,30 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
                                                 onChange={(e) => {
                                                     const prix = Number(e.target.value);
                                                     setAutreDimension(prev => ({ ...prev, prix }));
-                                                    handleSelect(999, 'dimension_id', 'dimension', 'autres');
                                                 }}
                                                 placeholder="Prix de base"
                                                 min="0"
                                             />
-                                            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : devisEncours.dimension && (
+                                <div className="mt-2 px-2">
+                                    <div className="space-y-3">
+                                        <h1 className='text-sm font-bold ml-2'>{devisEncours.dimension}</h1>
+                                        <div className="relative">
+                                            <Input
+                                                type="number"
+                                                value={prixDimension || ''}
+                                                onChange={(e) => setPrixDimension(Number(e.target.value))}
+                                                placeholder="Prix de la dimension"
+                                                min="0"
+                                            />
+                                            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                        </div>
+                                        <div className="text-xs text-gray-600 dark:text-gray-400 ml-2">
+                                            Prix de base pour cette dimension
                                         </div>
                                     </div>
                                 </div>
@@ -297,25 +330,25 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
                                                 'bg-red-600 text-white border-red-600 shadow-md hover:bg-red-600 hover:text-white' :
                                                 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                                         >
-                                            {categorie.categorie === 'Papier spécial invitation' ? 'Invitation' : categorie.categorie}
+                                            {categorie.categorie}
                                         </Button>
                                     ))}
                                 </div>
                             </div>
 
                             {/* Sélection du grammage */}
-                            {devisEncours.categorie && devisEncours.categorie !== 'autres' && (
+                            {devisEncours.categorie && devisEncours.dimension && devisEncours.categorie !== 'autres' && (
                                 <div>
                                     <div className='flex ml-5 mb-4 text-gray-800 dark:text-gray-200 font-semibold'>
                                         <Weight size={22} className='mr-2' />
-                                        Grammage / Épaisseur
+                                        Grammage
                                     </div>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                                         {grammagesDisponibles.map(matiere => (
                                             <button
                                                 key={matiere.id}
                                                 onClick={() => {
-                                                    handleSelect(matiere.id, 'materiau_id', 'materiau', `${matiere.type}-${matiere.taille || matiere.caracteristiques}`.trim());
+                                                    handleSelect(matiere.id, 'materiau_id', 'materiau', `${matiere.type}-${matiere.taille}`.trim());
                                                 }}
                                                 className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 
                                                     ${devisEncours.materiau_id === matiere.id ?
@@ -323,14 +356,14 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
                                                     'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
                                             >
                                                 <div className="font-semibold">
-                                                    {matiere.taille || matiere.caracteristiques || 'Standard'}
+                                                    {matiere.taille}
                                                 </div>
                                             </button>
                                         ))}
                                     </div>
                                     {grammagesDisponibles.length === 0 && (
                                         <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 ml-5">
-                                            Aucun grammage disponible pour cette catégorie
+                                            Veuillez d&apos;abord sélectionner une dimension
                                         </p>
                                     )}
                                 </div>
@@ -348,7 +381,7 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
                                                 type="text"
                                                 value={autreMateriau.nom}
                                                 onChange={(e) => setAutreMateriau(prev => ({ ...prev, nom: e.target.value }))}
-                                                placeholder="Description du matériau personnalisé"
+                                                placeholder="Description du matériau"
                                             />
                                         </div>
                                         <div className="relative">
@@ -363,7 +396,7 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
                                                 placeholder="Prix de base"
                                                 min="0"
                                             />
-                                            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
                                         </div>
                                     </div>
                                 </div>
@@ -413,85 +446,87 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
                         </div>
                     </div>
 
-                    {/* Section Decoupe */}
-                    <div className='flex mb-4'>
-                        <div ref={decoupeRef} className="w-full lg:w-1/2 scroll-mt-20">
-                            <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
-                                <Layers className="mr-2" />
-                                Type de découpe
-                            </h4>
-                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                {item.decoupes!.map((decoupe) => (
-                                    <button
-                                        key={decoupe.id}
-                                        onClick={() => handleSelect(decoupe.decoupe, 'decoupe')}
-                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.decoupe === decoupe.decoupe ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
-                                    >
-                                        <span className="capitalize">{decoupe.decoupe}</span>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="w-full lg:w-1/2 scroll-mt-20">
-                            {devisEncours.decoupe === 'autres' && (
-                                <div className="mt-3 px-2">
-                                    <div className="space-y-3">
-                                        <h1 className='text-sm font-bold ml-2'>Découpe personnalisée</h1>
-                                        <div className="relative">
-                                            <Input
-                                                type="text"
-                                                value={autreDecoupe.nom}
-                                                onChange={(e) => setAutreDecoupe(prev => ({ ...prev, nom: e.target.value }))}
-                                                placeholder="Description de la découpe personnalisée"
-                                            />
-                                        </div>
-                                        <div className="relative">
-                                            <Input
-                                                type="number"
-                                                value={autreDecoupe.prix || ''}
-                                                onChange={(e) => setAutreDecoupe(prev => ({ ...prev, prix: Number(e.target.value) }))}
-                                                placeholder="Prix supplémentaire"
-                                                min="0"
-                                            />
-                                            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Section Particularités
+                    {/* Section Volet/Pli */}
                     <div className='flex mb-4'>
                         <div ref={particulariteRef} className="w-full lg:w-1/2 scroll-mt-20">
                             <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
                                 <Layers className="mr-2" />
-                                Particularités et Remarques
+                                Volet/Pli
                             </h4>
-                            <div className="mt-3 px-2">
-                                <div className="space-y-3">
-                                    <div className="relative">
-                                        <Input
-                                            type="text"
-                                            value={autreParticularite.nom}
-                                            onChange={(e) => setAutreParticularite(prev => ({ ...prev, nom: e.target.value }))}
-                                            placeholder="Description et remarque particulière"
-                                        />
-                                    </div>
-                                    <div className="relative">
-                                        <Input
-                                            type="number"
-                                            value={autreParticularite.prix || ''}
-                                            onChange={(e) => setAutreParticularite(prev => ({ ...prev, prix: Number(e.target.value) }))}
-                                            placeholder="Prix supplémentaire"
-                                            min="0"
-                                        />
-                                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
-                                    </div>
-                                </div>
+                            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                                {item.particularites!.map(particularite => (
+                                    <button
+                                        key={particularite.id}
+                                        onClick={() => handleSelect(particularite.id, 'particularite_id', 'particularite', particularite.particularite)}
+                                        className={`p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.particularite_id === particularite.id ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                    >
+                                        <div className="font-semibold capitalize">{particularite.particularite}</div>
+                                    </button>
+                                ))}
                             </div>
                         </div>
-                    </div> */}
+                        
+                        {/* Input pour volet "autres" */}
+                        <div className="w-full lg:w-1/2 scroll-mt-20 mt-1">
+                                {devisEncours.particularite === 'autres' ? (
+                                    <div className="mt-2 px-2">
+                                        <div className="space-y-3">
+                                            <h1 className='text-sm font-bold ml-2'>Matériau personnalisé</h1>
+                                            <div className="relative">
+                                                <Input
+                                                    type="text"
+                                                    value={autreParticularite.nom}
+                                                    onChange={(e) => setAutreParticularite(prev => ({ ...prev, nom: e.target.value }))}
+                                                    placeholder="Description du matériau"
+                                                />
+                                            </div>
+                                            <div className="relative">
+                                                <Input
+                                                    type="number"
+                                                    value={autreParticularite.prix || ''}
+                                                    onChange={(e) => {
+                                                        const prix = Number(e.target.value);
+                                                        setAutreParticularite(prev => ({ ...prev, prix }));
+                                                        handleSelect(999, 'particularite_id', 'particularite', 'autres');
+                                                    }}
+                                                    placeholder="Prix de base"
+                                                    min="0"
+                                                />
+                                                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="mt-2 px-2">
+                                        <div className="space-y-3">
+                                            <h1 className='text-sm font-bold ml-2'> Volet : { devisEncours.particularite } </h1>
+                                            <div className="relative">
+                                                <Input
+                                                    type="text"
+                                                    value={autreMateriau.nom}
+                                                    onChange={(e) => setAutreMateriau(prev => ({ ...prev, nom: e.target.value }))}
+                                                    placeholder="Description du matériau"
+                                                />
+                                            </div>
+                                            <div className="relative">
+                                                <Input
+                                                    type="number"
+                                                    value={autreMateriau.prix || ''}
+                                                    onChange={(e) => {
+                                                        const prix = Number(e.target.value);
+                                                        setAutreMateriau(prev => ({ ...prev, prix }));
+                                                        handleSelect(Number(devisEncours.particularite_id), 'particularite_id', 'particularite', 'autres');
+                                                    }}
+                                                    placeholder="Prix de base"
+                                                    min="0"
+                                                />
+                                                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+                        </div>
+                    </div>
 
                     {/* Section Quantité */}
                     <div className='flex mb-4'>
