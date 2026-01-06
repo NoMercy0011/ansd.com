@@ -158,12 +158,7 @@ export default function Etiquette({etiquette, activeSection, getDevis, getPrix} 
             if (devisEncours.decoupe === 'personnalisée') {
                 prixUnitaire += autreDecoupe.prix;
             } else {
-                const decoupeSelectionnee = etiquette.decoupes?.find(
-                    d => d.decoupe === devisEncours.decoupe
-                );
-                if (decoupeSelectionnee && decoupeSelectionnee.prix) {
-                    prixUnitaire += Number(decoupeSelectionnee.prix);
-                }
+                prixUnitaire += autreDecoupe.prix;
             }
         }
 
@@ -171,7 +166,9 @@ export default function Etiquette({etiquette, activeSection, getDevis, getPrix} 
         if (devisEncours.finition) {
             if (devisEncours.finition === 'autres') {
                 prixUnitaire += autreFinition.prix;
-            } 
+            } else {
+                prixUnitaire += autreFinition.prix;
+            }
         }
 
         // 7. Application des paliers de quantité (remise par volume)
@@ -464,10 +461,34 @@ export default function Etiquette({etiquette, activeSection, getDevis, getPrix} 
                         </div>
                     </div>
                     <div className="w-full lg:w-1/2 scroll-mt-20">
-                        {devisEncours.decoupe === 'personnalisée' && (
+                        {devisEncours.decoupe === 'personnalisée' ? (
                             <div className="mt-3 px-2">
                                 <div className="space-y-3">
                                     <h1 className='text-sm font-bold ml-2'>Découpe personnalisée</h1>
+                                    <div className="relative">
+                                        <Input
+                                            type="text"
+                                            value={autreDecoupe.nom}
+                                            onChange={(e) => setAutreDecoupe(prev => ({ ...prev, nom: e.target.value }))}
+                                            placeholder="Description de la découpe"
+                                        />
+                                    </div>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            value={autreDecoupe.prix || ''}
+                                            onChange={(e) => setAutreDecoupe(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                            placeholder="Prix supplémentaire"
+                                            min="0"
+                                        />
+                                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="mt-3 px-2">
+                                <div className="space-y-3">
+                                    <h1 className='text-sm font-bold ml-2'>Découpe : { devisEncours.decoupe} </h1>
                                     <div className="relative">
                                         <Input
                                             type="text"
@@ -513,7 +534,7 @@ export default function Etiquette({etiquette, activeSection, getDevis, getPrix} 
                         </div>
                     </div>
                     <div className="w-full lg:w-1/2 scroll-mt-20">
-                        {devisEncours.finition === 'autres' && (
+                        {devisEncours.finition === 'autres' ? (
                             <div className="mt-3 px-2">
                                 <div className="space-y-3">
                                     <h1 className='text-sm font-bold ml-2'>Finition personnalisée</h1>
@@ -522,7 +543,31 @@ export default function Etiquette({etiquette, activeSection, getDevis, getPrix} 
                                             type="text"
                                             value={autreFinition.nom}
                                             onChange={(e) => setAutreFinition(prev => ({ ...prev, nom: e.target.value }))}
-                                            placeholder="Description de la finition"
+                                            placeholder="Description supplémentaire"
+                                        />
+                                    </div>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            value={autreFinition.prix || ''}
+                                            onChange={(e) => setAutreFinition(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                            placeholder="Prix supplémentaire"
+                                            min="0"
+                                        />
+                                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="mt-3 px-2">
+                                <div className="space-y-3">
+                                    <h1 className='text-sm font-bold ml-2'>Finition : {devisEncours.finition} </h1>
+                                    <div className="relative">
+                                        <Input
+                                            type="text"
+                                            value={autreFinition.nom}
+                                            onChange={(e) => setAutreFinition(prev => ({ ...prev, nom: e.target.value }))}
+                                            placeholder="Description supplémentaire"
                                         />
                                     </div>
                                     <div className="relative">

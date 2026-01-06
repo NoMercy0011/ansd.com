@@ -471,7 +471,7 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
                                 {devisEncours.particularite === 'autres' ? (
                                     <div className="mt-2 px-2">
                                         <div className="space-y-3">
-                                            <h1 className='text-sm font-bold ml-2'>Matériau personnalisé</h1>
+                                            <h1 className='text-sm font-bold ml-2'>Volet personnalisé</h1>
                                             <div className="relative">
                                                 <Input
                                                     type="text"

@@ -33,6 +33,10 @@ const [prix, setPrix] = useState({
       nom: "",
       prix: 0,
     })
+    const [ autreParticularite, setAutreParticularite] = useState({
+        nom: '',
+        prix: 0,
+    })
     /*const [autreFinition, setAutreFinition] = useState({
       nom: "",
       prix: 0,
@@ -119,13 +123,14 @@ const [prix, setPrix] = useState({
         prixUnitaire += autreDecoupe.prix;
     } 
 
+    if (devisEncours.materiau === 'autres') {
+        prixUnitaire += autreMateriau.prix;
+    } 
+
     // 3. Prix de la couleur
-    /*const couleurSelectionnee = boite.couleurs.find(
-        c => c.id === devisEncours.couleur_id
-    );
-    if (couleurSelectionnee) {
-        prixUnitaire += couleurSelectionnee.prix;
-    }*/
+    if (devisEncours.recto === 'Recto - Verso') {
+        prixUnitaire *= 2;
+    }
 
 
     // 6. Prix de la découpe (si applicable)
@@ -144,9 +149,9 @@ const [prix, setPrix] = useState({
     }
 
     // 7. Prix de l'emplacement
-    if (devisEncours.emplacement === 'autres') {
+    if (devisEncours.emplacement) {
         prixUnitaire += autreEmplacement.prix;
-    } 
+    }
     /*else {
         const emplacementSelectionne = boite.emplacements.find(
             e => e.emplacement === devisEncours.emplacement
@@ -157,14 +162,9 @@ const [prix, setPrix] = useState({
     }*/
 
     // 8. Prix de la particularité (si sélectionnée)
-    /*if (devisEncours.particularite && devisEncours.particularite !== 'invalide') {
-        const particulariteSelectionnee = boite.particularites.find(
-            p => p.particularite === devisEncours.particularite
-        );
-        if (particulariteSelectionnee) {
-            prixUnitaire += particulariteSelectionnee.prix;
-        }
-    }*/
+    if (devisEncours.particularite) {
+        prixUnitaire += autreParticularite.prix;
+    }
 
     // 9. Application des paliers de quantité
     const quantite = devisEncours.quantite || 1;
@@ -209,6 +209,7 @@ const [prix, setPrix] = useState({
     autreMateriau.prix,
     autreDecoupe.prix,
     autreEmplacement.prix,
+    autreParticularite.prix,
 ]);
     
 
@@ -497,6 +498,7 @@ const [prix, setPrix] = useState({
     
     {/* Input pour emplacement "autres" */}
     {devisEncours.emplacement === 'autres' ? (
+        devisEncours.emplacement &&
     <div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">
         <div className="space-y-3">
             <h1 className='text-sm font-bold ml-2'> Emplacement personnalisé</h1>
@@ -521,6 +523,7 @@ const [prix, setPrix] = useState({
         </div>
     </div>
     ) : (
+        devisEncours.emplacement &&
     <div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">
         <div className="space-y-3">
             <h1 className='text-sm font-bold ml-2'> Information supplémentaire</h1>
@@ -569,6 +572,31 @@ const [prix, setPrix] = useState({
                 ))}
             </div>
         </div>
+        {/* Input pour particularité "autres" */}
+        { devisEncours.particularite  && 
+        (<div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">
+          <div className="space-y-3">
+              <h1 className='text-sm font-bold ml-2'> Particularité : { devisEncours.particularite} </h1>
+              <div className="relative">
+                  <Input
+                      type="text"
+                      value={autreParticularite.nom}
+                      onChange={(e) => setAutreParticularite(prev => ({ ...prev, nom: e.target.value }))}
+                      placeholder="Description supplémentaire"
+                  />
+              </div>
+              <div className="relative">
+                  <Input
+                      type="number"
+                      value={autreParticularite.prix || ''}
+                      onChange={(e) => setAutreParticularite(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                      placeholder="Prix supplémentaire"
+                      min="0"
+                  />
+                  <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+              </div>
+          </div>
+        </div>)}
     </div>
 
     {/* Section Quantité */}

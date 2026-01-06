@@ -58,6 +58,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
     const [autreMateriau, setAutreMateriau] = useState({ nom: "", prix: 0 });
     const [autreDecoupe, setAutreDecoupe] = useState({ nom: "", prix: 0 });
     const [autreEmplacement, setAutreEmplacement] = useState({ nom: "", prix: 0 });
+    const [autreParticularite, setAutreParticularite] = useState({ nom: "", prix: 0 });
 
     const categories = [
         { id: 1, categorie: "PCB" },
@@ -149,20 +150,25 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
         if (devisHangtag.decoupe === 'autres') {
             prixUnitaire += autreDecoupe.prix;
         } 
-        /*else {
-            const decoupeSelectionnee = boite.decoupes.find(
-                d => d.decoupe === devisEncours.decoupe
-            );
-            if (decoupeSelectionnee) {
-                prixUnitaire += decoupeSelectionnee.prix;
-            }
-        }*/
+        else {
+            prixUnitaire += autreDecoupe.prix;
+        }
+        }
+
+        if(autreParticularite) {
+            prixUnitaire += autreParticularite.prix;
+        }
+
+        if(devisHangtag.recto !== 'recto'){
+            prixUnitaire *= 2;
         }
 
         // 5. Prix de l'emplacement
         if (devisHangtag.emplacement === 'autres') {
         prixUnitaire += autreEmplacement.prix;
-        } 
+        } else {
+            prixUnitaire += autreEmplacement.prix;
+        }
 
         // 6. Application des paliers de quantité
         const quantite = devisHangtag.quantite || 1;
@@ -207,6 +213,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
         autreMateriau.prix,
         autreDecoupe.prix,
         autreEmplacement.prix,
+        autreParticularite.prix,
     ]);
 
     const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
@@ -417,7 +424,31 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
                         </div>
                         <div className="w-full lg:w-1/2 scroll-mt-20">
                             {/* Input pour découpe "personnalisé" */}
-                            {devisHangtag.decoupe === 'autres' && (
+                            {devisHangtag.decoupe === 'autres' ? (
+                                <div className="mt-3 px-2">
+                                    <div className="space-y-3">
+                                        <h1 className='text-sm font-bold ml-2'> Découpe personnalisé</h1>
+                                        <div className="relative">
+                                            <Input
+                                                type="text"
+                                                value={autreDecoupe.nom}
+                                                onChange={(e) => setAutreDecoupe(prev => ({ ...prev, nom: e.target.value }))}
+                                                placeholder="Description du découpe personnalisé"
+                                            />
+                                        </div>
+                                        <div className="relative">
+                                            <Input
+                                                type="number"
+                                                value={autreDecoupe.prix || ''}
+                                                onChange={(e) => setAutreDecoupe(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                                placeholder="Prix supplémentaire"
+                                                min="0"
+                                            />
+                                            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ): ( devisHangtag.decoupe && 
                                 <div className="mt-3 px-2">
                                     <div className="space-y-3">
                                         <h1 className='text-sm font-bold ml-2'> Découpe personnalisé</h1>
@@ -467,7 +498,7 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
                         </div>
 
                         {/* Input pour emplacement "autres" */}
-                        {devisHangtag.emplacement === 'autres' && (
+                        {devisHangtag.emplacement === 'autres' ? (
                             <div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">
                                 <div className="space-y-3">
                                     <h1 className='text-sm font-bold ml-2'> Emplacement personnalisé</h1>
@@ -477,6 +508,30 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
                                             value={autreEmplacement.nom}
                                             onChange={(e) => setAutreEmplacement(prev => ({ ...prev, nom: e.target.value }))}
                                             placeholder="Description de l'emplacement personnalisé"
+                                        />
+                                    </div>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            value={autreEmplacement.prix || ''}
+                                            onChange={(e) => setAutreEmplacement(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                            placeholder="Prix supplémentaire"
+                                            min="0"
+                                        />
+                                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">
+                                <div className="space-y-3">
+                                    <h1 className='text-sm font-bold ml-2'> Emplacement : { devisHangtag.emplacement } </h1>
+                                    <div className="relative">
+                                        <Input
+                                            type="text"
+                                            value={autreEmplacement.nom}
+                                            onChange={(e) => setAutreEmplacement(prev => ({ ...prev, nom: e.target.value }))}
+                                            placeholder="Description supplémentaire"
                                         />
                                     </div>
                                     <div className="relative">
@@ -512,6 +567,29 @@ export default function Hangtag({ hangtag, getDevis, getPrix, activeSection }: H
                                         <span>{part.particularite}</span>
                                     </button>
                                 ))}
+                            </div>
+                        </div>
+                        <div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">
+                            <div className="space-y-3">
+                                <h1 className='text-sm font-bold ml-2'> Description supplémentaire</h1>
+                                <div className="relative">
+                                    <Input
+                                        type="text"
+                                        value={autreParticularite.nom}
+                                        onChange={(e) => setAutreParticularite(prev => ({ ...prev, nom: e.target.value }))}
+                                        placeholder="Description supplémentaire"
+                                    />
+                                </div>
+                                <div className="relative">
+                                    <Input
+                                        type="number"
+                                        value={autreParticularite.prix || ''}
+                                        onChange={(e) => setAutreParticularite(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                        placeholder="Prix supplémentaire"
+                                        min="0"
+                                    />
+                                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                </div>
                             </div>
                         </div>
                     </div>

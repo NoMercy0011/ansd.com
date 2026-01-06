@@ -17,25 +17,23 @@ export default function DevisFlyers( { devis } : DevisProps) {
                         {devis?.dimension}
                     </span>
                 </div>
+
                 <div className="flex justify-between">
-                    <span>Nombre de volet :</span>
-                    <span className="font-semibold">
-                        {devis?.volet}
-                    </span>
+                    <span>Matériaux :</span>
+                    { !devis?.materiau ? (
+                        <span  className="font-semibold"> 
+                            {devis?.categorie}
+                        </span>
+                    ) :
+                    (<span className="font-semibold">
+                        {devis?.materiau}
+                    </span>)}
                 </div>
-                
-                {   devis?.support &&
-                    <div className="flex justify-between">
-                    <span>Papier :</span>
-                    <span className="font-semibold">
-                        `{devis?.support} {devis?.grammage}`
-                    </span>
-                </div>}
 
                 <div className="flex justify-between">
                     <span>Face :</span>
                     <span className="font-semibold">
-                        {devis?.face }
+                        {devis?.recto }
                     </span>
                 </div>
                 <div className="flex justify-between">
@@ -44,6 +42,14 @@ export default function DevisFlyers( { devis } : DevisProps) {
                         {devis?.imprimante}
                     </span>
                 </div>
+
+                <div className="flex justify-between">
+                    <span>Nombre de volet :</span>
+                    <span className="font-semibold">
+                        {devis?.particularite}
+                    </span>
+                </div>
+
             </div>
     </div>
   )
