@@ -344,7 +344,7 @@ export default function Doypack( { doypack, activeSection, getDevis, getPrix }: 
                                     <button
                                         key={`color-${index}`}
                                         onClick={() => handleColorSelect(color.name, color.hex)}
-                                        className={`aspect-square w-8 h-8 rounded-full border-2 hover:scale-110 transition-transform ${selectedColor === color.hex ? 'ring-2 ring-red-500 border-red-500' : 'border-slate-300 dark:border-slate-700'}`}
+                                        className={`aspect-square w-8 h-8 rounded-full border-2 hover:scale-110 transition-transform ${selectedColor === color.hex ? 'ring-2 ring-red-500 border-red-500' : 'border-cyan-400/70 dark:border-slate-400/70'}`}
                                         style={{ backgroundColor: color.hex }}
                                         title={color.name}
                                     />
