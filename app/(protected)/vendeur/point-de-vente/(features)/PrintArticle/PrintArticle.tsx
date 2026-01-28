@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState, useRef } from 'react' // Ajout de useRef
-import OptionOverview from './OptionOverview/OptionOverview'
+import OptionOverview from '../OptionOverview/OptionOverview'
 import { Button, Input } from '@/sources/components/ui'
 import { Book, BookOpen, ChevronsLeftRightEllipsisIcon, Layers, Loader2, Weight } from 'lucide-react'
 // import Accordion from '@/sources/components/ui/accordion' // Remplacé

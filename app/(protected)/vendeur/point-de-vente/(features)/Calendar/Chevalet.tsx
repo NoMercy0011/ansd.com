@@ -38,8 +38,6 @@ export default function Chevalet({item, activeSection, getDevis, getPrix} : Item
         prix: 0,
     })
 
-    const [ prixDimension, setPrixDimension] = useState(0);
-
     // Catégories de papier
     const categories = [
         { id: 1, categorie: "PCB" },
@@ -62,7 +60,7 @@ export default function Chevalet({item, activeSection, getDevis, getPrix} : Item
         montant: '',
         quantite: 1,
         recto_verso_id: 0,
-        recto: 'invalide',
+        recto: '',
         option_id: '',
         orientation_id: 0,
         orientation: '',
@@ -143,47 +141,31 @@ export default function Chevalet({item, activeSection, getDevis, getPrix} : Item
         // --- Logique de Calcul du Prix pour Chevalet de Table ---
       
         let prixUnitaire = 0;
-
-        if( devisEncours.dimension === 'autres') {
+        // 3. Prix des particularités
+        if (autreDimension.prix > 0) {
             prixUnitaire += autreDimension.prix;
-        } else {
-            prixUnitaire += prixDimension;
-        }
-      
-        // 1. Prix du matériau
-        // if (devisEncours.materiau_id === 999) {
-        //     prixUnitaire += autreMateriau.prix;
-        // } else {
-        //     const materiauSelectionne = item.matieres!.find(
-        //         m => m.id === devisEncours.materiau_id
-        //     );
-        //     if (materiauSelectionne) {
-        //         prixUnitaire += Number(materiauSelectionne.prix_unitaire);
-        //     }
-
-        //     const categorieSelectionnee = categories.find(
-        //         c => c.id === devisEncours.categorie_id
-        //     );
-        //     if (categorieSelectionnee) {
-        //         // Appliquer un coefficient selon la catégorie
-        //         if (devisEncours.categorie === 'PCB Pélliculé' &&  materiauSelectionne) {
-        //             prixUnitaire += 600 / ratioState; // +600 Ar de supplément pour pelliculé
-        //         }
-        //     }
-        // }
-        // 2. Prix du socle
-        if (devisEncours.recto === 'Recto - Verso') {
-            prixUnitaire *= 2 ;
         }
       
         // 2. Prix du socle
         if (devisEncours.socle === 'autres') {
             prixUnitaire += autreSocle.prix;
+        } else {
+            prixUnitaire += autreSocle.prix;
         }
       
-        // 3. Prix des particularités
-        if (autreDimension.prix > 0) {
-            prixUnitaire += autreDimension.prix;
+        // if (devisEncours.recto === 'Recto - Verso') {
+        //     prixUnitaire *= 2;
+        // } 
+
+        // const faceSelectionnee = item.faces!.find(
+        //     f => f.id === devisEncours.recto_verso_id
+        // );
+        // if (faceSelectionnee) {
+        //     prixUnitaire *= Number(faceSelectionnee.code) || 1;
+        // }
+
+        if( devisEncours.recto && devisEncours.recto === 'Recto - Verso') {
+            prixUnitaire *= 2;
         }
       
         // 4. Application des paliers de quantité
@@ -215,6 +197,7 @@ export default function Chevalet({item, activeSection, getDevis, getPrix} : Item
         devisEncours.materiau_id, 
         devisEncours.socle_id,
         devisEncours.recto,
+        devisEncours.recto_verso_id,
         devisEncours.imprimante, 
         devisEncours.orientation_id, 
         devisEncours.quantite,
@@ -222,7 +205,6 @@ export default function Chevalet({item, activeSection, getDevis, getPrix} : Item
         autreMateriau.prix,
         autreSocle.prix,
         autreDimension.prix,
-        prixDimension,
     ]);
         
     const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
@@ -263,7 +245,7 @@ export default function Chevalet({item, activeSection, getDevis, getPrix} : Item
                     </div>
                   </div>
 
-                  <div className="w-full lg:w-1/2 scroll-mt-20">
+                <div className="w-full lg:w-1/2 scroll-mt-20">
                     {/* Input pour dimension "personnalisé" */}
                     {devisEncours.dimension === 'autres' ? (
                     <div className="mt-3 px-2">
@@ -296,8 +278,8 @@ export default function Chevalet({item, activeSection, getDevis, getPrix} : Item
                             <div className="relative">
                                 <Input
                                     type="number"
-                                    value={prixDimension || ''}
-                                    onChange={(e) => setPrixDimension(Number(e.target.value))}
+                                    value={autreDimension.prix || ''}
+                                    onChange={(e) => setAutreDimension({...autreDimension , prix: Number(e.target.value)})}
                                     placeholder="Prix de base"
                                     min="0"
                                 />
@@ -306,7 +288,7 @@ export default function Chevalet({item, activeSection, getDevis, getPrix} : Item
                         </div>
                     </div>
                     )}
-                    </div>
+                </div>
                 </div>
 
                 {/* Section Materiaux */}
@@ -473,7 +455,7 @@ export default function Chevalet({item, activeSection, getDevis, getPrix} : Item
                         </div>
                     </div>
                     <div className="w-full lg:w-1/2 scroll-mt-20">
-                        {devisEncours.socle === 'autres' && (
+                        {devisEncours.socle === 'autres' ? (
                         <div className="mt-3 px-2">
                             <div className="space-y-3">
                                 <h1 className='text-sm font-bold ml-2'>Socle personnalisé</h1>
@@ -483,6 +465,30 @@ export default function Chevalet({item, activeSection, getDevis, getPrix} : Item
                                         value={autreSocle.nom}
                                         onChange={(e) => setAutresocle(prev => ({ ...prev, nom: e.target.value }))}
                                         placeholder="Description du socle personnalisé"
+                                    />
+                                </div>
+                                <div className="relative">
+                                    <Input
+                                        type="number"
+                                        value={autreSocle.prix || ''}
+                                        onChange={(e) => setAutresocle(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                        placeholder="Prix supplémentaire"
+                                        min="0"
+                                    />
+                                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                </div>
+                            </div>
+                        </div>
+                        ) : ( devisEncours.socle &&
+                        <div className="mt-3 px-2">
+                            <div className="space-y-3">
+                                <h1 className='text-sm font-bold ml-2'>Socle : {devisEncours.socle} </h1>
+                                <div className="relative">
+                                    <Input
+                                        type="text"
+                                        value={autreSocle.nom}
+                                        onChange={(e) => setAutresocle(prev => ({ ...prev, nom: e.target.value }))}
+                                        placeholder="Description supplémentaire"
                                     />
                                 </div>
                                 <div className="relative">

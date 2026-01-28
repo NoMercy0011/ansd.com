@@ -50,6 +50,13 @@ export default function DevisFlyers( { devis } : DevisProps) {
                     </span>
                 </div>
 
+                <div className="flex justify-between">
+                    <span>Quantités :</span>
+                    <span className="font-semibold">
+                        {devis?.quantite}
+                    </span>
+                </div>
+
             </div>
     </div>
   )

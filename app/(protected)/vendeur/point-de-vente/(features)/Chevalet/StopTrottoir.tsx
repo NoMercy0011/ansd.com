@@ -33,6 +33,11 @@ export default function StopTrottoir({item, activeSection, getDevis, getPrix} : 
         prix: 0,
     })
 
+    const [autreSocle, setAutresocle] = useState({
+        nom: "",
+        prix: 0,
+    })
+
 
     const [devisEncours, setDevisEncours] = useState<devisData>({
         client_id: 0,
@@ -40,7 +45,7 @@ export default function StopTrottoir({item, activeSection, getDevis, getPrix} : 
         socle_id: 0,
         socle: '',
         materiau_id: 0,
-        materiau: '',
+        materiau: 'invalide',
         dimension_id: 0,
         dimension: '',
         finition_id: 0,
@@ -57,7 +62,7 @@ export default function StopTrottoir({item, activeSection, getDevis, getPrix} : 
         optionPrix: '',
         finitionPrix: 0,
         decoupe: '',
-        particularite: 'invalide',
+        particularite: '',
         emplacement: 'invalide',
         categorie_id: 0,
         categorie: ''
@@ -74,6 +79,9 @@ export default function StopTrottoir({item, activeSection, getDevis, getPrix} : 
     const particulariteRef = useRef<HTMLDivElement>(null);
     const quantiteRef = useRef<HTMLDivElement>(null);
 
+    useEffect( () => {
+        setDevisEncours( { ...devisEncours, particularite: autreParticularite.nom } );
+    }, [autreParticularite.nom])
     // --- Gestion du Scroll automatique ---
     useEffect(() => {
         const sections: { [key: string]: React.RefObject<HTMLDivElement | null> } = {
@@ -105,9 +113,13 @@ export default function StopTrottoir({item, activeSection, getDevis, getPrix} : 
     let prixUnitaire = 0;
     
     // 1. Prix de base selon la dimension
-    if (devisEncours.dimension === 'autres') {
+    if (devisEncours.dimension ) {
         prixUnitaire += autreDimension.prix;
     } 
+
+    if (devisEncours.socle ) {
+        prixUnitaire += autreSocle.prix;
+    }
     /*else {
         const dimensionSelectionnee = item.dimensions!.find(
             d => d.id === devisEncours.dimension_id
@@ -143,13 +155,13 @@ export default function StopTrottoir({item, activeSection, getDevis, getPrix} : 
     let coefficientQuantite = 1;
     
     if (quantite >= 50) {
-        coefficientQuantite = 0.80; // 20% de réduction
+        coefficientQuantite = 1; // 20% de réduction
     } else if (quantite >= 25) {
-        coefficientQuantite = 0.85; // 15% de réduction
+        coefficientQuantite = 1; // 15% de réduction
     } else if (quantite >= 10) {
-        coefficientQuantite = 0.90; // 10% de réduction
+        coefficientQuantite = 1; // 10% de réduction
     } else if (quantite >= 5) {
-        coefficientQuantite = 0.95; // 5% de réduction
+        coefficientQuantite = 1; // 5% de réduction
     }
 
     const prixUnitaireFinal = prixUnitaire * coefficientQuantite;
@@ -169,6 +181,7 @@ export default function StopTrottoir({item, activeSection, getDevis, getPrix} : 
     ratioState,
     autreDimension.prix,
     autreParticularite.prix,
+    autreSocle.prix
 ]);
     
     const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
@@ -207,35 +220,50 @@ export default function StopTrottoir({item, activeSection, getDevis, getPrix} : 
                       ))}
                     </div>
                   </div>
-
                   <div className="w-full lg:w-1/2 scroll-mt-20">
-                  {/* Input pour découpe "personnalisé" */}
-                  {devisEncours.dimension === 'autres' && (
-                  <div className="mt-3 px-2">
-                    <div className="space-y-3">
-                      <h1 className='text-sm font-bold ml-2'> Dimension personnalisé</h1>
-                      <div className="relative">
-                          <Input
-                              type="text"
-                              value={autreDimension.nom}
-                              onChange={(e) => setAutreDimension(prev => ({ ...prev, nom: e.target.value }))}
-                              placeholder="Description de la dimension personnalisé"
-                          />
-                      </div>
-                      <div className="relative">
-                          <Input
-                              type="number"
-                              value={autreDimension.prix || ''}
-                              onChange={(e) => setAutreDimension(prev => ({ ...prev, prix: Number(e.target.value) }))}
-                              placeholder="Prix supplémentaire"
-                              min="0"
-                          />
-                          <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
-                      </div>
+                    {/* Input pour dimension "personnalisé" */}
+                    {devisEncours.dimension === 'autres' ? (
+                        <div className="mt-3 px-2">
+                            <div className="space-y-3">
+                                <h1 className='text-sm font-bold ml-2'> Dimension personnalisé</h1>
+                                <div className="relative">
+                                    <Input
+                                        type="text"
+                                        value={autreDimension.nom}
+                                        onChange={(e) => setAutreDimension(prev => ({ ...prev, nom: e.target.value }))}
+                                        placeholder="Description de la dimension personnalisé"
+                                    />
+                                </div>
+                                <div className="relative">
+                                    <Input
+                                        type="number"
+                                        value={autreDimension.prix || ''}
+                                        onChange={(e) => setAutreDimension(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                        placeholder="Prix supplémentaire"
+                                        min="0"
+                                    />
+                                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                </div>
+                            </div>
+                        </div>
+                        ) : ( devisEncours.dimension &&
+                        <div className="mt-3 px-2">
+                            <div className="space-y-3">
+                                <h1 className='text-sm font-bold ml-2'> { devisEncours.dimension} </h1>
+                                <div className="relative">
+                                    <Input
+                                        type="number"
+                                        value={autreDimension.prix || ''}
+                                        onChange={(e) => setAutreDimension({...autreDimension , prix: Number(e.target.value)})}
+                                        placeholder="Prix de base"
+                                        min="0"
+                                    />
+                                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                </div>
+                            </div>
+                        </div>
+                        )}
                     </div>
-                  </div>
-                  )}
-                  </div>
                 </div>
 
                 {/* Section Socle */}
@@ -256,8 +284,24 @@ export default function StopTrottoir({item, activeSection, getDevis, getPrix} : 
                                 <span>{socle.socle}</span>
                             </button>
                         ))}
-                        </div>
+                    </div>
                 </div>
+                { devisEncours.socle &&
+                <div className="mt-3 px-2">
+                    <div className="space-y-3">
+                        <h1 className='text-sm font-bold ml-2'> { devisEncours.socle} </h1>
+                        <div className="relative">
+                            <Input
+                                type="number"
+                                value={autreSocle.prix || ''}
+                                onChange={(e) => setAutresocle({...autreDimension , prix: Number(e.target.value)})}
+                                placeholder="Prix de base"
+                                min="0"
+                            />
+                            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                        </div>
+                    </div>
+                </div> }
                 </div>
 
                 {/* Section Face */}

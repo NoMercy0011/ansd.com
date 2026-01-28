@@ -24,20 +24,28 @@ export default function DevisChevalet( { devis } : DevisProps) {
                     </span>
                 </div>
 
-                <div className="flex justify-between">
-                    <span>Support :</span>
-                    <span className="font-semibold">
-                        {devis?.support}
+                { devis?.materiau === 'invalide' ? '' : (<div className="flex justify-between">
+                    <span className='flex'>Materiaux :</span>
+                    <span className="font-semibold truncate ml-5">
+                        { devis?.materiau ? devis?.materiau : devis?.categorie}
                     </span>
-                </div>
+                </div>)}
 
-                {   devis?.face &&  
+                {   devis?.socle &&  
+                    <div className="flex justify-between">
+                    <span>Socle :</span>
+                    <span className="font-semibold">
+                        {devis?.socle}
+                    </span>
+                </div>}
+
+                { devis?.recto === 'invalide' ? '' :  (devis?.recto &&  
                     <div className="flex justify-between">
                     <span>Face :</span>
                     <span className="font-semibold">
-                        {devis?.face}
+                        {devis?.recto}
                     </span>
-                </div>}
+                </div>)}
 
                 {   devis?.papier &&
                     <div className="flex justify-between">
@@ -63,13 +71,13 @@ export default function DevisChevalet( { devis } : DevisProps) {
                     </span>
                 </div>}
 
-                {   devis?.particularite &&
+                { devis?.particularite === 'invalide' ? '' :  (devis?.particularite &&
                     <div className="flex justify-between">
                     <span>Particularités :</span>
                     <span className="font-semibold">
                         {devis?.particularite || ''}
                     </span>
-                </div>}
+                </div>)}
                 <div className="flex justify-between">
                     <span>Quantités :</span>
                     <span className="font-semibold">

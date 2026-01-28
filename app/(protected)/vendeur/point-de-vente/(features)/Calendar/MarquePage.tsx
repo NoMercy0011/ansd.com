@@ -55,13 +55,15 @@ export default function MarquePage({ item, getDevis, getPrix, activeSection }: I
     }, [activeSection]);
 
     // --- États pour les options personnalisées ---
+    const [autreDimension, setAutreDimension] = useState({ nom: "", prix: 0, ratio: 1 });
     const [autreMateriau, setAutreMateriau] = useState({ nom: "", prix: 0 });
     const [ autreParticularite, setAutreParticularite] = useState({ nom: "", prix: 0 });
 
     const categories = [
         { id: 1, categorie: "PCB" },
         { id: 2, categorie: "PCB Pélliculé" },
-        { id: 3, categorie: "autres" },
+        { id: 3, categorie: "Glossy" },
+        { id: 4, categorie: "autres" },
     ]
 
     const [devisEncours, setDevisHangtag] = useState<devisData>({
@@ -85,23 +87,53 @@ export default function MarquePage({ item, getDevis, getPrix, activeSection }: I
         socle: 'invalide'
     });
 
+    const filterMatieresByCategorie = (categorie: string) => {
+      if (!item.matieres) return [];
+        
+      switch(categorie) {
+        case 'PCB':
+          // Inclure PCB et PCB Pélliculé (même que PCB)
+          return item.matieres.filter(m => 
+            m.type === 'PCB' || m.type === 'PCB pelliculé' || m.type === 'PCB Pélliculé'
+          );
+        case 'PCB Pélliculé':
+          // Inclure PCB et PCB Pélliculé (même que PCB)
+          return item.matieres.filter(m => 
+            m.type === 'PCB' || m.type === 'PCB pelliculé' || m.type === 'PCB Pélliculé'
+          );
+        case 'Glossy':
+          return item.matieres.filter(m => 
+            m.type === 'Glossy' || m.type.includes('Glossy')
+          );
+        case 'autres':
+          return []; // Pour les matériaux personnalisés
+        default:
+          return item.matieres; // Tous les matériaux par défaut
+      }
+    };
+
     useEffect( () => {
         getDevis(devisEncours);
         getPrix(prix.prixTotal, prix.prixUnitaire); 
     }, [devisEncours, prix.prixTotal, prix.prixUnitaire]);
+
+    useEffect(() => {
+       if(devisEncours.dimension === 'autres') {
+            setRatioState(autreDimension.ratio || 1);
+                    
+        }
+    }, [devisEncours.dimension, autreDimension.ratio] )
     // --- Logique de Calcul de Devis ---
 
     useEffect(() => {
 
         let prixUnitaire = 0;
 
+        
         //1. Prix de base selon la dimension (avec ratio)
-        /*const dimensionSelectionnee = item.dimensions.find(
-            d => d.id === devisEncours.dimension_id
-        );
-        if (dimensionSelectionnee) {
-            prixUnitaire /= ratioState;
-        }*/
+        if(devisEncours.dimension === 'autres') {
+            prixUnitaire += autreDimension.prix;
+        }
 
         // 2. Prix du matériau
         if (devisEncours.categorie === 'autres') {
@@ -111,8 +143,10 @@ export default function MarquePage({ item, getDevis, getPrix, activeSection }: I
             const materiauSelectionne = item.matieres!.find(
                 m => m.id === devisEncours.materiau_id
             );
+            
             if (materiauSelectionne) {
                 prixUnitaire += Number(materiauSelectionne.prix_unitaire) / ratioState;
+                
             }
 
             // Supplément selon la catégorie (PCB, PCB Pelliculé)
@@ -127,21 +161,20 @@ export default function MarquePage({ item, getDevis, getPrix, activeSection }: I
             }
         }
 
-        // 3. Prix de la face (recto/verso)
-        const faceSelectionnee = item.faces!.find(
-            f => f.id === devisEncours.recto_verso_id
-        );
-        if (faceSelectionnee) {
-            prixUnitaire *= Number(faceSelectionnee.code);
-        }
-
             // 5. Prix des particularités
         if (autreParticularite.prix > 0) {
             prixUnitaire += autreParticularite.prix;
         }
+
+        if( devisEncours.recto && devisEncours.recto === 'Recto - Verso') {
+            prixUnitaire *= 2;
+        }
+        
         // 6. Application des paliers de quantité
         const quantite = devisEncours.quantite || 1;
         const coefficientQuantite = 1;
+
+        // 3. Prix de la face (recto/verso)
         
         // if (quantite >= 10000) {
         //     coefficientQuantite = 0.70; // 30% de réduction
@@ -173,6 +206,7 @@ export default function MarquePage({ item, getDevis, getPrix, activeSection }: I
         devisEncours.categorie,
         devisEncours.materiau_id,
         devisEncours.couleur_id,
+        devisEncours.recto,
         devisEncours.recto_verso_id,
         devisEncours.imprimante_id,
         devisEncours.decoupe,
@@ -181,6 +215,8 @@ export default function MarquePage({ item, getDevis, getPrix, activeSection }: I
         devisEncours.quantite,
         autreMateriau.prix,
         autreParticularite.prix,
+        autreDimension.ratio,
+        ratioState,
     ]);
 
     const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
@@ -218,6 +254,34 @@ export default function MarquePage({ item, getDevis, getPrix, activeSection }: I
                                     </button>
                                 ))}
                             </div>
+                        </div>
+                        <div className="w-full lg:w-1/2 scroll-mt-20 ">
+                            {/* Input pour matériau "autres" */}
+                            {devisEncours.dimension === 'autres' && (
+                                <div className="mt-2 px-2">
+                                    <div className="space-y-3">
+                                        <h1 className='text-sm font-bold ml-2'> Dimension personnalisé</h1>
+                                        <div className="relative">
+                                            <Input
+                                                type="text"
+                                                value={autreDimension.nom}
+                                                onChange={(e) => setAutreDimension(prev => ({ ...prev, nom: e.target.value }))}
+                                                placeholder="Description du dimension personnalisé"
+                                            />
+                                        </div>
+                                        <div className="relative">
+                                            <Input
+                                                type="number"
+                                                value={autreDimension.ratio || ''}
+                                                onChange={(e) => setAutreDimension(prev => ({ ...prev, ratio: Number(e.target.value) }))}
+                                                placeholder="Ratio de base"
+                                                min="0"
+                                            />
+                                            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> par A4</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -257,7 +321,7 @@ export default function MarquePage({ item, getDevis, getPrix, activeSection }: I
                                         Grammage
                                     </div>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                                        {item.matieres!.map(materiau => (
+                                        {filterMatieresByCategorie(devisEncours.categorie).map(materiau => (
                                             <button
                                                 key={materiau.id}
                                                 onClick={() => {
@@ -267,7 +331,7 @@ export default function MarquePage({ item, getDevis, getPrix, activeSection }: I
                                                     ${devisEncours.materiau_id === materiau.id ?
                                                         'bg-red-600 text-white border-red-600 shadow-md' :
                                                         'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}
-                                                    ${devisEncours.categorie === 'PCB Pélliculé' && materiau.taille === '700G' ? "hidden" : ''}
+                                                    ${devisEncours.categorie === 'PCB Pélliculé' && materiau.taille === ('700G' ) ? "hidden" : ''}
                                                     `}
                                             >
                                                 <div className="text-xs">{materiau.taille ? materiau.taille : ''}</div>
@@ -370,10 +434,34 @@ export default function MarquePage({ item, getDevis, getPrix, activeSection }: I
                         </div>
                         <div className="w-full lg:w-1/2 scroll-mt-20">
                         {/* Input pour particularite "personnalisé" */}
-                        {devisEncours.particularite === 'autres' && (
+                        {devisEncours.particularite === 'autres' ? (
                         <div className="mt-3 px-2">
                             <div className="space-y-3">
                                 <h1 className='text-sm font-bold ml-2'> Patricularité personnalisé</h1>
+                                <div className="relative">
+                                    <Input
+                                        type="text"
+                                        value={autreParticularite.nom}
+                                        onChange={(e) => setAutreParticularite(prev => ({ ...prev, nom: e.target.value }))}
+                                        placeholder="Description de la particularite personnalisé"
+                                    />
+                                </div>
+                                <div className="relative">
+                                    <Input
+                                        type="number"
+                                        value={autreParticularite.prix || ''}
+                                        onChange={(e) => setAutreParticularite(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                        placeholder="Prix supplémentaire"
+                                        min="0"
+                                    />
+                                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                </div>
+                            </div>
+                        </div>
+                        ) : ( devisEncours.particularite && 
+                        <div className="mt-3 px-2">
+                            <div className="space-y-3">
+                                <h1 className='text-sm font-bold ml-2'> Patricularité : { devisEncours.particularite } </h1>
                                 <div className="relative">
                                     <Input
                                         type="text"

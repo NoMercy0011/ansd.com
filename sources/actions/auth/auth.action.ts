@@ -23,7 +23,6 @@ export async function LoginRequest(login : userLoginType){
         })
         
         const data = await response.json();
-        console.log(data.status);
 
         if(data.status === 201) {
             (await cookies()).set('token', data.token, {
@@ -39,7 +38,6 @@ export async function LoginRequest(login : userLoginType){
               path: '/',
         });
         }
-        console.log(data);
         return data;
 
     }catch(error) {

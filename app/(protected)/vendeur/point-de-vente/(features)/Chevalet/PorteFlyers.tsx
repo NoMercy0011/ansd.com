@@ -63,7 +63,7 @@ export default function RollUpStandard({item, activeSection, getDevis, getPrix} 
         optionPrix: '',
         finitionPrix: 0,
         decoupe: '',
-        particularite: 'invalide',
+        particularite: '',
         emplacement: 'invalide',
         categorie_id: 0,
         categorie: ''
@@ -79,6 +79,10 @@ export default function RollUpStandard({item, activeSection, getDevis, getPrix} 
     const emplacementRef = useRef<HTMLDivElement>(null);
     const particulariteRef = useRef<HTMLDivElement>(null);
     const quantiteRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        setDevisEncours( { ...devisEncours, particularite: autreParticularite.nom } );
+    }, [autreParticularite.nom]);
 
     // --- Gestion du Scroll automatique ---
     useEffect(() => {
@@ -122,6 +126,10 @@ export default function RollUpStandard({item, activeSection, getDevis, getPrix} 
     //     }
     // }
 
+    if( autreDimension.prix > 0 ) {
+        prixUnitaire += autreDimension.prix;
+    }   
+
     // 2. Prix du matériau
     if (devisEncours.materiau_id === 999) {
         prixUnitaire += autreMateriau.prix;
@@ -130,7 +138,7 @@ export default function RollUpStandard({item, activeSection, getDevis, getPrix} 
             m => m.id === devisEncours.materiau_id
         );
         if (materiauSelectionne) {
-            prixUnitaire += Number(materiauSelectionne.prix_unitaire);
+            prixUnitaire += autreMateriau.prix;
         }
     }
 
@@ -152,13 +160,13 @@ export default function RollUpStandard({item, activeSection, getDevis, getPrix} 
     let coefficientQuantite = 1;
     
     if (quantite >= 100) {
-        coefficientQuantite = 0.80; // 20% de réduction
+        coefficientQuantite = 1; // 20% de réduction
     } else if (quantite >= 50) {
-        coefficientQuantite = 0.85; // 15% de réduction
+        coefficientQuantite = 1; // 15% de réduction
     } else if (quantite >= 20) {
-        coefficientQuantite = 0.90; // 10% de réduction
+        coefficientQuantite = 1; // 10% de réduction
     } else if (quantite >= 10) {
-        coefficientQuantite = 0.95; // 5% de réduction
+        coefficientQuantite = 1; // 5% de réduction
     }
 
     const prixUnitaireFinal = prixUnitaire * coefficientQuantite;
@@ -218,8 +226,8 @@ export default function RollUpStandard({item, activeSection, getDevis, getPrix} 
                     </div>
                   </div>
                    <div className="w-full lg:w-1/2 scroll-mt-20">
-                    {/* Input pour découpe "personnalisé" */}
-                    {devisEncours.dimension === 'autres' && (
+                    {/* Input pour dimension "personnalisé" */}
+                    {devisEncours.dimension === 'autres' ? (
                     <div className="mt-3 px-2">
                       <div className="space-y-3">
                         <h1 className='text-sm font-bold ml-2'> Dimension personnalisé</h1>
@@ -243,7 +251,22 @@ export default function RollUpStandard({item, activeSection, getDevis, getPrix} 
                         </div>
                       </div>
                     </div>
-                    )}
+                    ) : ( devisEncours.dimension &&
+                    <div className="mt-3 px-2">
+                      <div className="space-y-3">
+                        <h1 className='text-sm font-bold ml-2'> { devisEncours.dimension} </h1>
+                        <div className="relative">
+                            <Input
+                                type="number"
+                                value={autreDimension.prix || ''}
+                                onChange={(e) => setAutreDimension(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                placeholder="Prix de base"
+                                min="0"
+                            />
+                            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                        </div>
+                      </div>
+                    </div>)}
                     </div>
                 </div>
 
@@ -278,7 +301,7 @@ export default function RollUpStandard({item, activeSection, getDevis, getPrix} 
                     </div>
 
                     {/* Input pour materiau "autres" */}
-                    {devisEncours.materiau === 'autres' && (
+                    {devisEncours.materiau === 'autres' ? (
                     <div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">
                         <div className="space-y-3">
                             <h1 className='text-sm font-bold ml-2'> Autres materiaux</h1>
@@ -302,7 +325,23 @@ export default function RollUpStandard({item, activeSection, getDevis, getPrix} 
                             </div>
                         </div>
                     </div>
-                    )}
+                    ) : ( devisEncours.materiau &&
+                    <div className="mt-3 px-2 w-full lg:w-1/2 scroll-mt-20">
+                        <div className="space-y-3">
+                            <h1 className='text-sm font-bold ml-2'> {devisEncours.materiau} </h1>
+                            
+                            <div className="relative">
+                                <Input
+                                    type="number"
+                                    value={autreMateriau.prix || ''}
+                                    onChange={(e) => setAutreMateriau(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                    placeholder="Prix de base"
+                                    min="0"
+                                />
+                                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                            </div>
+                        </div>
+                    </div>)}
                 </div>
 
                 {/* Section Orientation */}

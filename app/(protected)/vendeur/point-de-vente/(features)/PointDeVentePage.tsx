@@ -3,7 +3,7 @@
 import { CartItemsType, clientType, devisData } from '@/types/type';
 import React, { useEffect, useState } from 'react'
 import { GetClientID } from '@/sources/actions/admin/client.action';
-import PrintArticle from './PrintArticle';
+import PrintArticle from './PrintArticle/PrintArticle';
 import Packaging from './Packaging/Packaging';
 import Chevalet from './Chevalet/Chevalet';
 import Calendar from './Calendar/Calendar';

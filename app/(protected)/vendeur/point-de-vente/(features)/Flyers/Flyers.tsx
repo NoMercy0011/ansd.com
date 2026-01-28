@@ -22,7 +22,7 @@ type CatalogueProps = {
 export default function Carterie({ userRole, param, handleAddCart }: CatalogueProps) {
     const { flyers, flyersLoading, flyersError } = useFlyers();
 
-    const [selectedCatalogueType, setSelectedCatalogueType] = useState<string>('');
+    const [selectedCatalogueType, setSelectedCatalogueType] = useState<string>('flyers');
     
     // L'état activeTab est géré ici, mais utilisé pour scroller dans les enfants
     const [activeTab, setActiveTab] = useState('type'); 

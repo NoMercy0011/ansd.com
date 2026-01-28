@@ -230,7 +230,7 @@ export default function Chevalet({ userRole, param, handleAddCart }: CataloguePr
                         prixTotalReel={prix.prixTotal}
                         handleAddToCart={handleAddToCart}
                         // On cast ici car OptionOverview attend un type générique ou spécifique
-                        devisPackaging={devisPackaging as devisData} 
+                        devisChevalet={devisPackaging as devisData} 
                     />
                 </div>
             </CardContent>

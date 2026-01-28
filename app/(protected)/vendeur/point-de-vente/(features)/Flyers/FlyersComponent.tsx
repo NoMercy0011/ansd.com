@@ -175,15 +175,15 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
         let coefficientQuantite = 1;
         
         if (quantite >= 10000) {
-            coefficientQuantite = 0.75; // 25% de réduction
+            coefficientQuantite = 1; // 25% de réduction
         } else if (quantite >= 5000) {
-            coefficientQuantite = 0.80; // 20% de réduction
+            coefficientQuantite = 1; // 20% de réduction
         } else if (quantite >= 2000) {
-            coefficientQuantite = 0.85; // 15% de réduction
+            coefficientQuantite = 1; // 15% de réduction
         } else if (quantite >= 1000) {
-            coefficientQuantite = 0.90; // 10% de réduction
+            coefficientQuantite = 1; // 10% de réduction
         } else if (quantite >= 500) {
-            coefficientQuantite = 0.95; // 5% de réduction
+            coefficientQuantite = 1; // 5% de réduction
         }
 
         const prixUnitaireFinal = prixUnitaire * coefficientQuantite;
@@ -477,18 +477,14 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
                                                     type="text"
                                                     value={autreParticularite.nom}
                                                     onChange={(e) => setAutreParticularite(prev => ({ ...prev, nom: e.target.value }))}
-                                                    placeholder="Description du matériau"
+                                                    placeholder="Description du volet"
                                                 />
                                             </div>
                                             <div className="relative">
                                                 <Input
                                                     type="number"
                                                     value={autreParticularite.prix || ''}
-                                                    onChange={(e) => {
-                                                        const prix = Number(e.target.value);
-                                                        setAutreParticularite(prev => ({ ...prev, prix }));
-                                                        handleSelect(999, 'particularite_id', 'particularite', 'autres');
-                                                    }}
+                                                    onChange={(e) => setAutreParticularite(prev => ({ ...prev, prix: Number(e.target.value) }))}
                                                     placeholder="Prix de base"
                                                     min="0"
                                                 />
@@ -499,24 +495,12 @@ export default function FlyersComponent({ item, getDevis, getPrix, activeSection
                                 ) : (
                                     <div className="mt-2 px-2">
                                         <div className="space-y-3">
-                                            <h1 className='text-sm font-bold ml-2'> Volet : { devisEncours.particularite } </h1>
-                                            <div className="relative">
-                                                <Input
-                                                    type="text"
-                                                    value={autreMateriau.nom}
-                                                    onChange={(e) => setAutreMateriau(prev => ({ ...prev, nom: e.target.value }))}
-                                                    placeholder="Description du matériau"
-                                                />
-                                            </div>
+                                            <h1 className='text-sm font-bold ml-2'> Volet : { devisEncours.particularite } </h1>             
                                             <div className="relative">
                                                 <Input
                                                     type="number"
-                                                    value={autreMateriau.prix || ''}
-                                                    onChange={(e) => {
-                                                        const prix = Number(e.target.value);
-                                                        setAutreMateriau(prev => ({ ...prev, prix }));
-                                                        handleSelect(Number(devisEncours.particularite_id), 'particularite_id', 'particularite', 'autres');
-                                                    }}
+                                                    value={autreParticularite.prix || ''}
+                                                    onChange={(e) =>  setAutreParticularite(prev => ({ ...prev, prix: Number(e.target.value) })) }
                                                     placeholder="Prix de base"
                                                     min="0"
                                                 />

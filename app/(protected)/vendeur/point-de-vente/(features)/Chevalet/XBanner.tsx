@@ -28,6 +28,11 @@ export default function XBanner({item, activeSection, getDevis, getPrix} : ItemP
         prix: 0,
     })
 
+    const [autreDimension, setAutreDimension] = useState({
+        nom: "",
+        prix: 0,
+    })
+
 
     const [devisEncours, setDevisEncours] = useState<devisData>({
         client_id: 0,
@@ -106,6 +111,10 @@ useEffect(() => {
     if (dimensionSelectionnee) {
         prixUnitaire += Number(dimensionSelectionnee.prix) * ratioState;
     }*/
+   
+    if( autreDimension.prix ){
+        prixUnitaire += autreDimension.prix;
+    }
 
     // 2. Prix du matériau
     if (devisEncours.materiau_id === 999) {
@@ -132,13 +141,13 @@ useEffect(() => {
     let coefficientQuantite = 1;
     
     if (quantite >= 100) {
-        coefficientQuantite = 0.80; // 20% de réduction
+        coefficientQuantite = 1; // 20% de réduction
     } else if (quantite >= 50) {
-        coefficientQuantite = 0.85; // 15% de réduction
+        coefficientQuantite = 1; // 15% de réduction
     } else if (quantite >= 20) {
-        coefficientQuantite = 0.90; // 10% de réduction
+        coefficientQuantite = 1; // 10% de réduction
     } else if (quantite >= 10) {
-        coefficientQuantite = 0.95; // 5% de réduction
+        coefficientQuantite = 1; // 5% de réduction
     }
 
     const prixUnitaireFinal = prixUnitaire * coefficientQuantite;
@@ -156,6 +165,7 @@ useEffect(() => {
     devisEncours.quantite,
     ratioState,
     autreMateriau.prix,
+    autreDimension.prix,
     ]);
         
     const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
@@ -194,6 +204,50 @@ useEffect(() => {
                       ))}
                     </div>
                   </div>
+                  <div className="w-full lg:w-1/2 scroll-mt-20">
+                    {/* Input pour dimension "personnalisé" */}
+                    {devisEncours.dimension === 'autres' ? (
+                    <div className="mt-3 px-2">
+                        <div className="space-y-3">
+                            <h1 className='text-sm font-bold ml-2'> Dimension personnalisé</h1>
+                            <div className="relative">
+                                <Input
+                                    type="text"
+                                    value={autreDimension.nom}
+                                    onChange={(e) => setAutreDimension(prev => ({ ...prev, nom: e.target.value }))}
+                                    placeholder="Description de la dimension personnalisé"
+                                />
+                            </div>
+                            <div className="relative">
+                                <Input
+                                    type="number"
+                                    value={autreDimension.prix || ''}
+                                    onChange={(e) => setAutreDimension(prev => ({ ...prev, prix: Number(e.target.value) }))}
+                                    placeholder="Prix supplémentaire"
+                                    min="0"
+                                />
+                                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                            </div>
+                        </div>
+                    </div>
+                    ) : ( devisEncours.dimension &&
+                    <div className="mt-3 px-2">
+                        <div className="space-y-3">
+                            <h1 className='text-sm font-bold ml-2'> { devisEncours.dimension} </h1>
+                            <div className="relative">
+                                <Input
+                                    type="number"
+                                    value={autreDimension.prix || ''}
+                                    onChange={(e) => setAutreDimension({...autreDimension , prix: Number(e.target.value)})}
+                                    placeholder="Prix de base"
+                                    min="0"
+                                />
+                                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                            </div>
+                        </div>
+                    </div>
+                    )}
+                </div>
                 </div>
 
                 {/* Section Materiaux */}

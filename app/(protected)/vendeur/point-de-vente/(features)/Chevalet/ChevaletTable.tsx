@@ -74,7 +74,7 @@ export default function ChevaletTable({item, activeSection, getDevis, getPrix} :
         optionPrix: '',
         finitionPrix: 0,
         decoupe: '',
-        particularite: 'invalide',
+        particularite: '',
         emplacement: 'invalide',
         categorie_id: 0,
         categorie: ''
@@ -138,6 +138,10 @@ export default function ChevaletTable({item, activeSection, getDevis, getPrix} :
     }, [devisEncours.categorie, devisEncours.dimension, item.matieres]);
 
     useEffect( () => {
+        setDevisEncours( { ...devisEncours, particularite : autreParticularite.nom})
+    }, [autreParticularite.nom]);
+
+    useEffect( () => {
         getDevis(devisEncours);
         getPrix(prix.prixTotal, prix.prixUnitaire); 
     }, [devisEncours, prix.prixTotal, prix.prixUnitaire]);
@@ -150,27 +154,14 @@ export default function ChevaletTable({item, activeSection, getDevis, getPrix} :
         // 1. Prix du matériau
         if (devisEncours.materiau_id === 999) {
             prixUnitaire += autreMateriau.prix;
-        } else {
-            const materiauSelectionne = item.matieres!.find(
-                m => m.id === devisEncours.materiau_id
-            );
-            if (materiauSelectionne) {
-                prixUnitaire += Number(materiauSelectionne.prix_unitaire);
-            }
+        }
 
-            const categorieSelectionnee = categories.find(
-                c => c.id === devisEncours.categorie_id
-            );
-            if (categorieSelectionnee) {
-                // Appliquer un coefficient selon la catégorie
-                if (devisEncours.categorie === 'PCB Pélliculé' &&  materiauSelectionne) {
-                    prixUnitaire += 600 / ratioState; // +600 Ar de supplément pour pelliculé
-                }
-            }
+        if (autreDimension.prix > 0) {
+            prixUnitaire += autreDimension.prix;
         }
       
         // 2. Prix du socle
-        if (devisEncours.socle === 'autres') {
+        if (devisEncours.socle) {
             prixUnitaire += autreSocle.prix;
         }
       
@@ -213,6 +204,7 @@ export default function ChevaletTable({item, activeSection, getDevis, getPrix} :
         autreMateriau.prix,
         autreSocle.prix,
         autreParticularite.prix,
+        autreDimension.prix,
     ]);
         
     const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
@@ -253,9 +245,10 @@ export default function ChevaletTable({item, activeSection, getDevis, getPrix} :
                     </div>
                   </div>
 
+
                   <div className="w-full lg:w-1/2 scroll-mt-20">
                     {/* Input pour dimension "personnalisé" */}
-                    {devisEncours.dimension === 'autres' && (
+                    {devisEncours.dimension === 'autres' ? (
                     <div className="mt-3 px-2">
                         <div className="space-y-3">
                             <h1 className='text-sm font-bold ml-2'> Dimension personnalisé</h1>
@@ -273,6 +266,22 @@ export default function ChevaletTable({item, activeSection, getDevis, getPrix} :
                                     value={autreDimension.prix || ''}
                                     onChange={(e) => setAutreDimension(prev => ({ ...prev, prix: Number(e.target.value) }))}
                                     placeholder="Prix supplémentaire"
+                                    min="0"
+                                />
+                                <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                            </div>
+                        </div>
+                    </div>
+                    ) : ( devisEncours.dimension &&
+                    <div className="mt-3 px-2">
+                        <div className="space-y-3">
+                            <h1 className='text-sm font-bold ml-2'> { devisEncours.dimension} </h1>
+                            <div className="relative">
+                                <Input
+                                    type="number"
+                                    value={autreDimension.prix || ''}
+                                    onChange={(e) => setAutreDimension({...autreDimension , prix: Number(e.target.value)})}
+                                    placeholder="Prix de base"
                                     min="0"
                                 />
                                 <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
@@ -402,10 +411,18 @@ export default function ChevaletTable({item, activeSection, getDevis, getPrix} :
                                     <span>{socle.socle}</span>
                                 </button>
                             ))}
+                            <button
+                                    title={'autre'}
+                                    key={999}
+                                    onClick={() => handleSelect(999, 'socle_id', 'socle', 'autres')}
+                                    className={`truncate p-3 border rounded-lg text-center text-sm transition-all duration-200 ${devisEncours.socle_id === 999 ? 'bg-red-600 text-white border-red-600 shadow-md' : 'bg-white dark:bg-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-600 hover:border-red-500 dark:hover:border-red-500'}`}
+                                >
+                                    <span>{ 'autres'}</span>
+                            </button>
                         </div>
                     </div>
                     <div className="w-full lg:w-1/2 scroll-mt-20">
-                        {devisEncours.socle === 'autres' && (
+                        {devisEncours.socle === 'autres' ? (
                         <div className="mt-3 px-2">
                             <div className="space-y-3">
                                 <h1 className='text-sm font-bold ml-2'>Socle personnalisé</h1>
@@ -429,6 +446,22 @@ export default function ChevaletTable({item, activeSection, getDevis, getPrix} :
                                 </div>
                             </div>
                         </div>
+                        ) : ( devisEncours.socle &&
+                            <div className="mt-3 px-2">
+                                <div className="space-y-3">
+                                    <h1 className='text-sm font-bold ml-2'> { devisEncours.socle} </h1>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            value={autreSocle.prix || ''}
+                                            onChange={(e) => setAutresocle({...autreSocle , prix: Number(e.target.value)})}
+                                            placeholder="Prix de base"
+                                            min="0"
+                                        />
+                                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                    </div>
+                                </div>
+                            </div> 
                         )}
                     </div>
                 </div>
