@@ -123,14 +123,6 @@ export default function Fidelite({ item, getDevis, getPrix, activeSection }: Ite
         // 1. Prix du matériau
         if (devisEncours.categorie === 'autres') {
             prixUnitaire += autreMateriau.prix;
-        } else {
-            const materiauSelectionne = item.matieres!.find(
-                m => m.id === devisEncours.materiau_id
-            );
-            if (materiauSelectionne) {
-                const prixBase = Number(materiauSelectionne.prix_unitaire) || 0;
-                prixUnitaire += prixBase / ratioState;
-            }
         }
 
         // 2. Prix de la face (recto/verso)
@@ -156,6 +148,10 @@ export default function Fidelite({ item, getDevis, getPrix, activeSection }: Ite
         // 4. Prix des particularités
         if (autreDimension.prix > 0) {
             prixUnitaire += autreDimension.prix;
+        }
+
+        if (devisEncours.recto === 'Recto - Verso') {
+            prixUnitaire *= 2;
         }
 
         // 5. Application des paliers de quantité
@@ -190,6 +186,7 @@ export default function Fidelite({ item, getDevis, getPrix, activeSection }: Ite
         devisEncours.imprimante_id,
         devisEncours.decoupe,
         devisEncours.quantite,
+        devisEncours.recto,
         ratioState,
         autreMateriau.prix,
         //autreParticularite.prix,
@@ -236,10 +233,10 @@ export default function Fidelite({ item, getDevis, getPrix, activeSection }: Ite
 
                         {/* Input pour matériau "autres" */}
                         <div className="w-full lg:w-1/2 scroll-mt-20 mt-1">
-                            {devisEncours.dimension === 'autres' && (
+                            {devisEncours.dimension === 'autres' ? (
                                 <div className="mt-2 px-2">
                                     <div className="space-y-3">
-                                        <h1 className='text-sm font-bold ml-2'>Dimension personnalisé</h1>
+                                        <h1 className='text-sm font-bold ml-2'>Dimension : { devisEncours.dimension} </h1>
                                         <div className="relative">
                                             <Input
                                                 type="text"
@@ -252,11 +249,7 @@ export default function Fidelite({ item, getDevis, getPrix, activeSection }: Ite
                                             <Input
                                                 type="number"
                                                 value={autreDimension.prix || ''}
-                                                onChange={(e) => {
-                                                    const prix = Number(e.target.value);
-                                                    setAutreDimension(prev => ({ ...prev, prix }));
-                                                    handleSelect(999, 'dimension_id', 'dimension', 'autres');
-                                                }}
+                                                onChange={(e) => { setAutreDimension(prev => ({ ...prev, prix: Number(e.target.value) })) }}
                                                 placeholder="Prix de base"
                                                 min="0"
                                             />
@@ -264,7 +257,23 @@ export default function Fidelite({ item, getDevis, getPrix, activeSection }: Ite
                                         </div>
                                     </div>
                                 </div>
-                            )}
+                            ) : ( devisEncours.dimension &&
+                            <div className="mt-2 px-2">
+                                <div className="space-y-3">
+                                    <h1 className='text-sm font-bold ml-2'>Dimension : { devisEncours.dimension}</h1>
+                                    
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            value={autreDimension.prix || ''}
+                                            onChange={(e) => { setAutreDimension(prev => ({ ...prev, prix : Number(e.target.value) })) }}
+                                            placeholder="Prix de base"
+                                            min="0"
+                                        />
+                                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                    </div>
+                                </div>
+                            </div>)}
                         </div>
                     </div>
 

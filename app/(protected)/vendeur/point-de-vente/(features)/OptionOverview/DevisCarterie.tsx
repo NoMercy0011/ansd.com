@@ -27,7 +27,7 @@ export default function DevisCarterie( { devis } : DevisProps) {
                 <div className={`${devis?.materiau === 'invalide' ? 'hidden' : 'flex justify-between'}`}>
                     <span>Matériau:</span>
                     <span className="font-semibold truncate ml-2.5">
-                        {devis?.materiau || ''}
+                        {devis?.materiau ? devis.materiau : devis?.categorie}
                     </span>
                 </div>
 

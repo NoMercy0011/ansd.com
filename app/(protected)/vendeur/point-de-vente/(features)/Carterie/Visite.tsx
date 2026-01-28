@@ -163,15 +163,15 @@ export default function Visite({ item, getDevis, getPrix, activeSection }: ItemP
         let coefficientQuantite = 1;
         
         if (quantite >= 10000) {
-            coefficientQuantite = 0.75; // 25% de réduction
+            coefficientQuantite = 1; // 25% de réduction
         } else if (quantite >= 5000) {
-            coefficientQuantite = 0.80; // 20% de réduction
+            coefficientQuantite = 1; // 20% de réduction
         } else if (quantite >= 2000) {
-            coefficientQuantite = 0.85; // 15% de réduction
+            coefficientQuantite = 1; // 15% de réduction
         } else if (quantite >= 1000) {
-            coefficientQuantite = 0.90; // 10% de réduction
+            coefficientQuantite = 1; // 10% de réduction
         } else if (quantite >= 500) {
-            coefficientQuantite = 0.95; // 5% de réduction
+            coefficientQuantite = 1; // 5% de réduction
         }
 
         const prixUnitaireFinal = prixUnitaire * coefficientQuantite;
@@ -236,7 +236,7 @@ export default function Visite({ item, getDevis, getPrix, activeSection }: ItemP
 
                         {/* Input pour matériau "autres" */}
                         <div className="w-full lg:w-1/2 scroll-mt-20 mt-1">
-                            {devisEncours.dimension === 'autres' && (
+                            {devisEncours.dimension === 'autres' ? (
                                 <div className="mt-2 px-2">
                                     <div className="space-y-3">
                                         <h1 className='text-sm font-bold ml-2'>Dimension personnalisé</h1>
@@ -252,11 +252,7 @@ export default function Visite({ item, getDevis, getPrix, activeSection }: ItemP
                                             <Input
                                                 type="number"
                                                 value={autreDimension.prix || ''}
-                                                onChange={(e) => {
-                                                    const prix = Number(e.target.value);
-                                                    setAutreDimension(prev => ({ ...prev, prix }));
-                                                    handleSelect(999, 'dimension_id', 'dimension', 'autres');
-                                                }}
+                                                onChange={(e) => {  setAutreDimension(prev => ({ ...prev, prix: Number(e.target.value) })) }}
                                                 placeholder="Prix de base"
                                                 min="0"
                                             />
@@ -264,7 +260,22 @@ export default function Visite({ item, getDevis, getPrix, activeSection }: ItemP
                                         </div>
                                     </div>
                                 </div>
-                            )}
+                            ) : ( devisEncours.dimension && 
+                            <div className="mt-2 px-2">
+                                <div className="space-y-3">
+                                    <h1 className='text-sm font-bold ml-2'> Dimension : { devisEncours.dimension} </h1>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            value={autreDimension.prix || ''}
+                                            onChange={(e) => { setAutreDimension(prev => ({ ...prev, prix: Number(e.target.value) }))}}
+                                            placeholder="Prix de base"
+                                            min="0"
+                                        />
+                                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                    </div>
+                                </div>
+                            </div>)}
                         </div>
                     </div>
 

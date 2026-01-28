@@ -120,25 +120,13 @@ export default function Jeux({ item, getDevis, getPrix, activeSection }: ItemPro
     useEffect(() => {
         let prixUnitaire = 0;
 
+        if (devisEncours.dimension ) {
+            prixUnitaire += autreDimension.prix;
+        }
         // 1. Prix du matériau
+
         if (devisEncours.categorie === 'autres') {
             prixUnitaire += autreMateriau.prix;
-        } else {
-            const materiauSelectionne = item.matieres!.find(
-                m => m.id === devisEncours.materiau_id
-            );
-            if (materiauSelectionne) {
-                const prixBase = Number(materiauSelectionne.prix_unitaire) || 0;
-                prixUnitaire += prixBase / ratioState;
-            }
-        }
-
-        // 2. Prix de la face (recto/verso)
-        const faceSelectionnee = item.faces!.find(
-            f => f.id === devisEncours.recto_verso_id
-        );
-        if (faceSelectionnee) {
-            prixUnitaire *= Number(faceSelectionnee.code);
         }
 
         // 3. Prix de la découpe
@@ -156,6 +144,10 @@ export default function Jeux({ item, getDevis, getPrix, activeSection }: ItemPro
         // 4. Prix des particularités
         if (autreDimension.prix > 0) {
             prixUnitaire += autreDimension.prix;
+        }
+
+        if (devisEncours.recto === 'Recto - Verso') {
+            prixUnitaire *= 2;
         }
 
         // 5. Application des paliers de quantité
@@ -236,35 +228,47 @@ export default function Jeux({ item, getDevis, getPrix, activeSection }: ItemPro
 
                         {/* Input pour matériau "autres" */}
                         <div className="w-full lg:w-1/2 scroll-mt-20 mt-1">
-                            {devisEncours.dimension === 'autres' && (
-                                <div className="mt-2 px-2">
-                                    <div className="space-y-3">
-                                        <h1 className='text-sm font-bold ml-2'>Dimension personnalisé</h1>
-                                        <div className="relative">
-                                            <Input
-                                                type="text"
-                                                value={autreDimension.nom}
-                                                onChange={(e) => setAutreDimension(prev => ({ ...prev, nom: e.target.value }))}
-                                                placeholder="Description de la dimension personnalisé"
-                                            />
-                                        </div>
-                                        <div className="relative">
-                                            <Input
-                                                type="number"
-                                                value={autreDimension.prix || ''}
-                                                onChange={(e) => {
-                                                    const prix = Number(e.target.value);
-                                                    setAutreDimension(prev => ({ ...prev, prix }));
-                                                    handleSelect(999, 'dimension_id', 'dimension', 'autres');
-                                                }}
-                                                placeholder="Prix de base"
-                                                min="0"
-                                            />
-                                            <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
-                                        </div>
+                        {devisEncours.dimension === 'autres' ? (
+                            <div className="mt-2 px-2">
+                                <div className="space-y-3">
+                                    <h1 className='text-sm font-bold ml-2'>Dimension : { devisEncours.dimension} </h1>
+                                    <div className="relative">
+                                        <Input
+                                            type="text"
+                                            value={autreDimension.nom}
+                                            onChange={(e) => setAutreDimension(prev => ({ ...prev, nom: e.target.value }))}
+                                            placeholder="Description de la dimension personnalisé"
+                                        />
+                                    </div>
+                                    <div className="relative">
+                                        <Input
+                                            type="number"
+                                            value={autreDimension.prix || ''}
+                                            onChange={(e) => { setAutreDimension(prev => ({ ...prev, prix: Number(e.target.value) })) }}
+                                            placeholder="Prix de base"
+                                            min="0"
+                                        />
+                                        <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
                                     </div>
                                 </div>
-                            )}
+                            </div>
+                        ) : ( devisEncours.dimension &&
+                        <div className="mt-2 px-2">
+                            <div className="space-y-3">
+                                <h1 className='text-sm font-bold ml-2'>Dimension : { devisEncours.dimension}</h1>
+                                    
+                                <div className="relative">
+                                    <Input
+                                        type="number"
+                                        value={autreDimension.prix || ''}
+                                        onChange={(e) => { setAutreDimension(prev => ({ ...prev, prix : Number(e.target.value) })) }}
+                                        placeholder="Prix de base"
+                                        min="0"
+                                    />
+                                    <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-500"> | Ar</span>
+                                </div>
+                                </div>
+                            </div>)}
                         </div>
                     </div>
 
