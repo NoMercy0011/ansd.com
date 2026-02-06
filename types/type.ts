@@ -183,6 +183,8 @@ export type devisData = {
   categorie?: string;
   categorie_id?: number;
   ratio?: number;
+  longueur_id?: number;
+  longueur?: string;
 }
 
 export type CartItemsType = {

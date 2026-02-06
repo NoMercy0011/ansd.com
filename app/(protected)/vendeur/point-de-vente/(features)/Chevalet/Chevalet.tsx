@@ -34,7 +34,7 @@ export default function Chevalet({ userRole, param, handleAddCart }: CataloguePr
     // L'état activeTab est géré ici, mais utilisé pour scroller dans les enfants
     const [activeTab, setActiveTab] = useState('type'); 
     
-    const [devisPackaging, setDevisPackaging] = useState<devisData>();
+    const [devisEncours, setDevisEncours] = useState<devisData>();
     const [prix, setPrix] = useState({
         prixTotal: 0,
         prixUnitaire: 0,
@@ -42,7 +42,7 @@ export default function Chevalet({ userRole, param, handleAddCart }: CataloguePr
 
     // Callbacks pour remonter les données des enfants
     const getDevis = (devis: devisData) => {
-        setDevisPackaging(devis);
+        setDevisEncours(devis);
     }
     const getPrix = (prixTotal: number, prixUnitaire: number) => {
         setPrix({ ...prix, prixTotal: prixTotal, prixUnitaire: prixUnitaire });
@@ -66,7 +66,7 @@ export default function Chevalet({ userRole, param, handleAddCart }: CataloguePr
             GetClientID(Number(param))
                 .then(res => {
                     const clientData = res.data;
-                    setDevisPackaging(prev => ({ ...prev, client_id: Number(clientData?.id_client) } as devisData));
+                    setDevisEncours(prev => ({ ...prev, client_id: Number(clientData?.id_client) } as devisData));
                 });
         }
     }, [param]);
@@ -74,30 +74,30 @@ export default function Chevalet({ userRole, param, handleAddCart }: CataloguePr
     const handleAddToCart = () => {
         // Construction de la description détaillée pour le panier
         const detailsDevis = `
-            Type: ${devisPackaging?.type}
-            Dimension: ${devisPackaging?.dimension || 'Non spécifié'}
-            Matériau: ${devisPackaging?.materiau || 'Non spécifié'}
-            Couleur: ${devisPackaging?.couleur || 'Non spécifié'}
-            Face: ${devisPackaging?.recto || 'Non spécifié'}
-            Impression: ${devisPackaging?.imprimante || 'Non spécifié'}
-            Finition: ${devisPackaging?.finition || 'Aucune'}
-            Découpe: ${devisPackaging?.decoupe || 'Standard'}
-            Emplacement: ${devisPackaging?.emplacement || 'Standard'}
-            Particularité: ${devisPackaging?.particularite || 'Aucune'}
+            Type: ${devisEncours?.type}
+            Dimension: ${devisEncours?.dimension || 'Non spécifié'}
+            Matériau: ${devisEncours?.materiau || 'Non spécifié'}
+            Couleur: ${devisEncours?.couleur || 'Non spécifié'}
+            Face: ${devisEncours?.recto || 'Non spécifié'}
+            Impression: ${devisEncours?.imprimante || 'Non spécifié'}
+            Finition: ${devisEncours?.finition || 'Aucune'}
+            Découpe: ${devisEncours?.decoupe || 'Standard'}
+            Emplacement: ${devisEncours?.emplacement || 'Standard'}
+            Particularité: ${devisEncours?.particularite || 'Aucune'}
         `;
 
         const packagingItem: CartItemsType = {
             id: Date.now(),
-            designation: `Packaging - ${devisPackaging?.type}`,
+            designation: `Chevalet - ${devisEncours?.type}`,
             detail_description: detailsDevis,
             prix_unitaire_ht: prix.prixUnitaire,
-            quantite: Number(devisPackaging?.quantite),
+            quantite: Number(devisEncours?.quantite),
             remise: 0.00,
-            service: 'Packaging',
+            service: 'Chevalet',
         };
 
-        if (handleAddCart && devisPackaging) {
-            handleAddCart(packagingItem, { ...devisPackaging, montant: String(prix.prixTotal) });
+        if (handleAddCart && devisEncours) {
+            handleAddCart(packagingItem, { ...devisEncours, montant: String(prix.prixTotal) });
         }
         
         // Reset (Optionnel)
@@ -230,7 +230,7 @@ export default function Chevalet({ userRole, param, handleAddCart }: CataloguePr
                         prixTotalReel={prix.prixTotal}
                         handleAddToCart={handleAddToCart}
                         // On cast ici car OptionOverview attend un type générique ou spécifique
-                        devisChevalet={devisPackaging as devisData} 
+                        devisChevalet={devisEncours as devisData} 
                     />
                 </div>
             </CardContent>

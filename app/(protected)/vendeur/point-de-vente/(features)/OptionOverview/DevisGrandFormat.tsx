@@ -17,6 +17,14 @@ export default function DevisGrandFormat( { devis } : DevisProps) {
                         {devis?.type}
                     </span>
                 </div>
+
+                <div className="flex justify-between">
+                    <span>Longueur :</span>
+                    <span className="font-semibold">
+                        {devis?.longueur}
+                    </span>
+                </div>
+
                 <div className="flex justify-between">
                     <span>Laize (largeur) :</span>
                     <span className="font-semibold">

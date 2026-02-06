@@ -113,8 +113,8 @@ useEffect(() => {
     }*/
 
     if( autreDimension.prix ){
-    prixUnitaire += autreDimension.prix;
-   }
+        prixUnitaire += autreDimension.prix;
+    }
 
     // 2. Prix du matériau
     if (devisEncours.materiau_id === 999) {
@@ -247,7 +247,7 @@ useEffect(() => {
                            </div>
                        </div>
                        )}
-                    </div>
+                  </div>
                 </div>
 
                 {/* Section Materiaux */}

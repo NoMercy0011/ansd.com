@@ -11,7 +11,7 @@ import Cartetie from './Carterie/Cartetie';
 import CartSection from './CartSection';
 import Flyers from './Flyers/Flyers';
 import Finition from './Finition';
-import GrandFormat from './GrandFormat';
+import GrandFormat from './GrandFormat/GrandFormat';
 import Textile from './Textile';
 import Goodies from './Goodies';
 import Evenement from './Evenement';

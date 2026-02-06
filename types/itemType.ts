@@ -73,6 +73,11 @@ export type matiereType = {
     unitee: string;
 }
 
+export type epaisseurType = {
+    id: number;
+    epaisseur: string;
+}
+
 export type itemType = {
   id: number;
   type: string;
@@ -89,4 +94,5 @@ export type itemType = {
   faces?: faceType[];
   socles?: socleType[];
   orientations?: orientationType[];
+  epaisseurs?: epaisseurType[];
 }

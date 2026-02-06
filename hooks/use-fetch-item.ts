@@ -1,5 +1,5 @@
 
-import { GetCalendar, GetCarterie, GetChevalet, GetFlyers, GetPackaging } from "@/sources/actions/admin/get-item.action";
+import { GetCalendar, GetCarterie, GetChevalet, GetFlyers, GetGrandFormat, GetPackaging } from "@/sources/actions/admin/get-item.action";
 import { itemType } from "@/types/itemType";
 import useSWR from "swr";
 
@@ -65,6 +65,23 @@ export function useFlyers() {
         flyers: data?.data[0] as itemType,
         flyersLoading: isLoading,
         flyersError: error,
+        mutate,
+    }
+}
+
+export function useGrandFormat() {
+    const { data , isLoading, error, mutate} = useSWR( 'get-grand-format', GetGrandFormat);
+    return {
+        vinyl: data?.data[0] as itemType,
+        dos_bleu: data?.data[1] as itemType,
+        bache: data?.data[2] as itemType,
+        drapeau: data?.data[3] as itemType,
+        onewayvision: data?.data[4] as itemType,
+        pvc: data?.data[5] as itemType,
+        plexi: data?.data[6] as itemType,
+        film_reflechissant: data?.data[7] as itemType,
+        grandFormatLoading: isLoading,
+        grandFormatError: error,
         mutate,
     }
 }

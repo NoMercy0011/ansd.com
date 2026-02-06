@@ -123,3 +123,27 @@ export async function GetFlyers() {
             throw new Error ("Erreur lors de données :" , error!);
         }
 }
+
+export async function GetGrandFormat() {
+    const header = (await cookies()).get('header')?.value;
+    const token = (await cookies()).get('token')?.value;
+    
+        try {
+    
+            const response = await fetch (`${process.env.NEXT_PUBLIC_API_URI}/grand-format`, {
+                method: "GET",
+                headers: { "Content-Type": "application/json" , "client-id" : `${header}`, "Authorization" : `Bearer ${token}`},
+            });
+    
+            const item = await response.json();
+            //console.log(item.grand_format[0]);
+            return {
+                message : 'Les données sur les grand formats',
+                data: item.grand_format as itemType[],
+            }
+    
+        }catch(error) {
+            console.error('Erreur : ' , error);
+            throw new Error ("Erreur lors de données :" , error!);
+        }
+}
