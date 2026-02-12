@@ -78,6 +78,11 @@ export type epaisseurType = {
     epaisseur: string;
 }
 
+export type grammageType = {
+    id: number;
+    grammage: string;
+}
+
 export type itemType = {
   id: number;
   type: string;
@@ -95,4 +100,6 @@ export type itemType = {
   socles?: socleType[];
   orientations?: orientationType[];
   epaisseurs?: epaisseurType[];
+  tailles?: dimensionType[];
+  grammages?: grammageType[];
 }

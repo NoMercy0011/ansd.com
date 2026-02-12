@@ -185,6 +185,8 @@ export type devisData = {
   ratio?: number;
   longueur_id?: number;
   longueur?: string;
+  souches?: number;
+  souche_id?: number;
 }
 
 export type CartItemsType = {

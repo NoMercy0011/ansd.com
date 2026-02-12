@@ -1,12 +1,11 @@
 import { GetClientID } from '@/sources/actions/admin/client.action'
-import { Input } from '@/sources/components/ui'
-// import Accordion from '@/sources/components/ui/accordion' // Remplacé
 import { CartItemsType, clientType, devisGoodiesData } from '@/types/type'
 import { Layers, Gift } from 'lucide-react'
 import React, { useEffect, useState, useRef } from 'react' // Ajout de useRef
-import OptionOverview from './OptionOverview/OptionOverview'
+import OptionOverview from '../OptionOverview/OptionOverview'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card' // Ajout
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs' // Ajout
+import { Input } from '@/components/ui/input'
 
 type PrintArticleProps = {
     userRole?: string;
@@ -217,7 +216,14 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
     const [selectedType, setSelectedType] = useState<string>('');
     const [prixUnitaireReel, setPrixUnitaireReel] = useState<number>(0.00);
     const [prixTotalReel, setPrixTotalReel] = useState<number>(0.00);
+
     const [autreType, setAutreType] = useState({ nom: '', prix: '' });
+    const [autreCapacite, setAutreCapacite] = useState({ nom: '', prix: '' });
+    const [autreEmplacement, setAutreEmplacement] = useState({ nom: '', prix: '' });
+    
+
+    
+
 
     // --- Ajout des Refs et activeTab ---
     const [activeTab, setActiveTab] = useState('type');
@@ -328,34 +334,22 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
 
     // Calcul du prix (utilisation de safeNumber)
     useEffect(() => {
-        if (!selectedType) {
-            setPrixUnitaireReel(0);
-            setPrixTotalReel(0);
-            return;
-        }
 
         let prixTotal = 0;
 
         // Prix de base selon le type spécifique
-        const typeSpecifique = getCurrentTypesSpecifiques().find(t => t.id === devisGoodies.type_specifique_id);
-        if (typeSpecifique) {
-            if (typeSpecifique.type === 'autres') {
-                prixTotal += safeNumber(autreType.prix);
-            } else {
-                prixTotal += safeNumber(typeSpecifique.prix_base);
-            }
+        if( devisGoodies.type_specifique_id && autreType.prix) {
+            prixTotal += safeNumber(autreType.prix);
         }
 
         // Prix de la capacité
-        const capacite = getCurrentCapacites().find(c => c.id === devisGoodies.capacite_id);
-        if (capacite) {
-            prixTotal += safeNumber(capacite.prix);
+        if (devisGoodies.capacite_id && autreCapacite.prix) {
+            prixTotal += safeNumber(autreCapacite.prix);
         }
 
         // Prix de l'emplacement
-        const emplacement = getCurrentEmplacements().find(e => e.id === devisGoodies.emplacement_id);
-        if (emplacement) {
-            prixTotal += safeNumber(emplacement.prix);
+        if (devisGoodies.emplacement_id && autreEmplacement.prix) {
+            prixTotal += safeNumber(autreEmplacement.prix);
         }
 
         // Prix de la technologie
@@ -376,7 +370,12 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
         setPrixUnitaireReel(prixUnitaire);
         setPrixTotalReel(prixTotalAvecQuantite);
 
-    }, [devisGoodies, selectedType, autreType]);
+    }, [devisGoodies,
+        selectedType, 
+        autreType.prix,
+        autreCapacite.prix,
+        autreEmplacement.prix
+    ]);
 
     // useEffect GetClientID (inchangé)
     useEffect(() => {
@@ -512,7 +511,8 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
                             {selectedType && (
                                 <>
                                     {/* Type Spécifique */}
-                                    <div ref={specifiqueRef} className="scroll-mt-20">
+                                <div className='flex mb-4'>
+                                    <div ref={specifiqueRef} className="w-full lg:w-1/2 scroll-mt-20">
                                         <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
                                             <Layers className="mr-2" />
                                             Type Spécifique
@@ -528,9 +528,11 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
                                                 </button>
                                             ))}
                                         </div>
+                                        </div>
 
+                                    <div className="w-full lg:w-1/2 scroll-mt-20">
                                         {/* Input pour type "autres" */}
-                                        {devisGoodies.type_specifique === 'autres' && (
+                                        {devisGoodies.type_specifique === 'autres' ? (
                                             <div className="mt-4 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
                                                 <h5 className="font-semibold mb-3">Type personnalisé</h5>
                                                 <div className="space-y-3">
@@ -554,11 +556,37 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
                                                     </div>
                                                 </div>
                                             </div>
-                                        )}
+                                        ) : ( devisGoodies.type_specifique && 
+                                        <div className="mt-4 p-4 ">
+                                                <h5 className="font-semibold mb-3">Type : {devisGoodies.type_specifique} </h5>
+                                                <div className="space-y-3">
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="text"
+                                                            value={autreType.nom}
+                                                            onChange={(e) => setAutreType(prev => ({ ...prev, nom: e.target.value }))}
+                                                            placeholder="Description du type personnalisé"
+                                                        />
+                                                    </div>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="number"
+                                                            value={autreType.prix}
+                                                            onChange={(e) => setAutreType(prev => ({ ...prev, prix: e.target.value }))}
+                                                            placeholder="Prix supplémentaire"
+                                                            min="0"
+                                                        />
+                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">| Ar</span>
+                                                    </div>
+                                                </div>
+                                        </div>) }
                                     </div>
+                                    
+                                </div>
 
-                                    {/* Capacité / Taille */}
-                                    <div ref={capaciteRef} className="scroll-mt-20">
+                                {/* Capacité / Taille */}
+                                <div className='flex mb-4'>
+                                    <div ref={capaciteRef} className="w-full lg:w-1/2 scroll-mt-20">
                                         <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
                                             <Layers className="mr-2" />
                                             Capacité / Taille
@@ -576,8 +604,63 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
                                         </div>
                                     </div>
 
+                                    <div className="w-full lg:w-1/2 scroll-mt-20">
+                                        {/* Input pour type "autres" */}
+                                        {devisGoodies.capacite === 'autres' ? (
+                                            <div className="mt-0 p-4 border rounded-lg bg-slate-50 dark:bg-slate-800">
+                                                <h5 className="font-semibold mb-3">Capacité personnalisé</h5>
+                                                <div className="space-y-3">
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="text"
+                                                            value={autreCapacite.nom}
+                                                            onChange={(e) => setAutreCapacite(prev => ({ ...prev, nom: e.target.value }))}
+                                                            placeholder="Description du type personnalisé"
+                                                        />
+                                                    </div>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="number"
+                                                            value={autreCapacite.prix}
+                                                            onChange={(e) => setAutreCapacite(prev => ({ ...prev, prix: e.target.value }))}
+                                                            placeholder="Prix supplémentaire"
+                                                            min="0"
+                                                        />
+                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : ( devisGoodies.capacite && 
+                                        <div className="mt-0 p-4 ">
+                                                <h5 className="font-semibold mb-3">Type : {devisGoodies.capacite} </h5>
+                                                <div className="space-y-3">
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="text"
+                                                            value={autreCapacite.nom}
+                                                            onChange={(e) => setAutreCapacite(prev => ({ ...prev, nom: e.target.value }))}
+                                                            placeholder="Description du type personnalisé"
+                                                        />
+                                                    </div>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="number"
+                                                            value={autreCapacite.prix}
+                                                            onChange={(e) => setAutreCapacite(prev => ({ ...prev, prix: e.target.value }))}
+                                                            placeholder="Prix supplémentaire"
+                                                            min="0"
+                                                        />
+                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">| Ar</span>
+                                                    </div>
+                                                </div>
+                                        </div>) }
+                                    </div>
+
+                                </div>
+
                                     {/* Emplacement d'impression */}
-                                    <div ref={emplacementRef} className="scroll-mt-20">
+                                <div className='flex mb-4'>
+                                    <div ref={emplacementRef} className="w-full lg:w-1/2 scroll-mt-20">
                                         <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
                                             <Layers className="mr-2" />
                                             Emplacement d&apos;impression
@@ -595,8 +678,61 @@ export default function Goodies({ param, userRole, handleAddCart }: PrintArticle
                                         </div>
                                     </div>
 
+                                    <div className="w-full lg:w-1/2 scroll-mt-20">
+                                        {/* Input pour type "autres" */}
+                                        {devisGoodies.emplacement === 'autres' ? (
+                                            <div className="mt-4 p-1 border rounded-lg bg-slate-50 dark:bg-slate-800">
+                                                <h5 className="font-semibold mb-3">Emplacement personnalisé</h5>
+                                                <div className="space-y-3">
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="text"
+                                                            value={autreEmplacement.nom}
+                                                            onChange={(e) => setAutreEmplacement(prev => ({ ...prev, nom: e.target.value }))}
+                                                            placeholder="Description supplémentaire"
+                                                        />
+                                                    </div>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="number"
+                                                            value={autreEmplacement.prix}
+                                                            onChange={(e) => setAutreEmplacement(prev => ({ ...prev, prix: e.target.value }))}
+                                                            placeholder="Prix supplémentaire"
+                                                            min="0"
+                                                        />
+                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">Ar</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : ( devisGoodies.emplacement && 
+                                        <div className="mt-0 p-4 ">
+                                                <h5 className="font-semibold mb-3">Emplacement : {devisGoodies.emplacement} </h5>
+                                                <div className="space-y-3">
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="text"
+                                                            value={autreEmplacement.nom}
+                                                            onChange={(e) => setAutreEmplacement(prev => ({ ...prev, nom: e.target.value }))}
+                                                            placeholder="Description supplémentaire"
+                                                        />
+                                                    </div>
+                                                    <div className="relative">
+                                                        <Input
+                                                            type="number"
+                                                            value={autreEmplacement.prix}
+                                                            onChange={(e) => setAutreEmplacement(prev => ({ ...prev, prix: e.target.value }))}
+                                                            placeholder="Prix supplémentaire"
+                                                            min="0"
+                                                        />
+                                                        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500">| Ar</span>
+                                                    </div>
+                                                </div>
+                                        </div>) }
+                                    </div>
+                                </div>
+
                                     {/* Technologie d'impression */}
-                                    <div ref={technologieRef} className="scroll-mt-20">
+                                    <div ref={technologieRef} className="w-full lg:w-1/2 scroll-mt-20">
                                         <h4 className="font-semibold text-slate-700 dark:text-slate-200 mb-4 flex items-center">
                                             <Layers className="mr-2" />
                                             Technologie d&apos;impression

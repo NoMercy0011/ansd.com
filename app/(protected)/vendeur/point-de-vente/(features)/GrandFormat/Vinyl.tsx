@@ -135,7 +135,8 @@ export default function Vinyl({ item, getDevis, getPrix, activeSection }: ItemPr
         prixTotal: Math.round(prixTotalFinal)
     });
 
-    }, [ devisEncours.longueur,
+    }, [ 
+        devisEncours.longueur,
         devisEncours.longueur_id,
         devisEncours.laize,
         devisEncours.laize_id,
@@ -149,6 +150,7 @@ export default function Vinyl({ item, getDevis, getPrix, activeSection }: ItemPr
         autreLongueur.prix,
         autreFinition.prix,
         autreParticularite.prix,
+        item.faces,
         getDevis, 
         getPrix
     ]);
@@ -157,7 +159,7 @@ export default function Vinyl({ item, getDevis, getPrix, activeSection }: ItemPr
         getDevis(devisEncours);
         // Le prix est mis à jour dans l'autre useEffect
         getPrix(prix.prixTotal, prix.prixUnitaire); 
-    }, [devisEncours, prix.prixTotal, prix.prixUnitaire]);
+    }, [devisEncours, prix.prixTotal, prix.prixUnitaire, getDevis, getPrix]);
 
 
     const handleSelect = (value: number | string | null, name: string, option?: string, optionValue?: string) => {
