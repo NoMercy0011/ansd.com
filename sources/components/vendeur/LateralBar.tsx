@@ -19,17 +19,20 @@ export default function LateralBarVendeur() {
 
   const modules = [
     { id: 'point-de-vente', name: 'Point de Vente', icon: ShoppingBasket, link: '/vendeur/point-de-vente' },
-    { id: 'clients', name: 'Clients', icon: Users, link: '/vendeur/clients/' },
-    { id: 'factures-proforma', name: 'Proformas', icon: FileClock, link: '/vendeur/factures-proforma/' },
-    { id: 'factures-commerciales', name: 'Factures & Tickets', icon: FileSignature, link: '/vendeur/factures-commerciales/' },
-    { id: 'commandes', name: 'Commandes', icon: ShoppingCart, link: '/vendeur/commandes/' },
-    { id: 'automatisation', name: 'Automatisation', icon: Bot, link: '/vendeur/automatisation/' },
+    { id: 'clients', name: 'Clients', icon: Users, link: '/vendeur/clients' },
+    { id: 'factures-proforma', name: 'Proformas', icon: FileClock, link: '/vendeur/factures-proforma' },
+    { id: 'factures-commerciales', name: 'Factures & Tickets', icon: FileSignature, link: '/vendeur/factures-commerciales' },
+    { id: 'commandes', name: 'Commandes', icon: ShoppingCart, link: '/vendeur/commandes' },
+    { id: 'automatisation', name: 'Automatisation', icon: Bot, link: '/vendeur/automatisation' },
   ];
 
+  const normalizePath = (path: string) => path.replace(/\/+$|^\s+|\s+$/g, '').replace(/\/$/, '') || '/';
 
   const isActive = (moduleLink: string) => {
-    if (moduleLink === '/vendeur/point-de-vente/') return pathname === '/vendeur/point-de-vente/';
-    return pathname.startsWith(moduleLink);
+    const current = normalizePath(pathname);
+    const link = normalizePath(moduleLink);
+
+    return current === link || current.startsWith(`${link}/`);
   };
 
   return (
